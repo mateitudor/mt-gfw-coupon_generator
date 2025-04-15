@@ -41,6 +41,8 @@ class GFWCG_Generator {
 
             // Prepare email content
             $subject = $generator->email_subject ?: __('Your Coupon Code', 'gf-wc-coupon-generator');
+            
+            // Get the message template
             $message = $generator->email_message ?: $this->get_default_email_template($coupon_code, $generator);
             
             // Replace placeholders in message
@@ -54,11 +56,16 @@ class GFWCG_Generator {
                 array(
                     $coupon_code,
                     get_bloginfo('name'),
-                    $generator->discount_amount . ($generator->discount_type === 'percentage' ? '%' : ''),
-                    $generator->expiry_date ? date_i18n(get_option('date_format'), strtotime($generator->expiry_date)) : __('No expiry', 'gf-wc-coupon-generator')
+                    $generator->discount_amount . ($generator->discount_type === 'percentage' ? '%' : ' EUR'),
+                    $generator->expiry_days ? date_i18n(get_option('date_format'), strtotime('+' . $generator->expiry_days . ' days')) : __('No expiry', 'gf-wc-coupon-generator')
                 ),
                 $message
             );
+
+            // Ensure proper HTML formatting
+            if (strpos($message, '<') !== false) {
+                $message = wpautop($message);
+            }
 
             // Set email headers
             $from_name = $generator->email_from_name ?: get_bloginfo('name');
@@ -166,24 +173,28 @@ class GFWCG_Generator {
     }
 
     private function get_default_email_template($coupon_code, $generator) {
-        $template = '<div style="font-family: Arial, sans-serif;">';
-        $template .= '<h2>' . __('Your Coupon Details', 'gf-wc-coupon-generator') . '</h2>';
-        $template .= '<p><strong>' . __('Coupon Code:', 'gf-wc-coupon-generator') . '</strong> ' . $coupon_code . '</p>';
-        $template .= '<p><strong>' . __('Discount:', 'gf-wc-coupon-generator') . '</strong> ' . $generator->discount_amount . ' ' . ($generator->discount_type === 'fixed_cart' ? __('EUR', 'gf-wc-coupon-generator') : '%') . '</p>';
+        $template = '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">';
+        $template .= '<h2 style="color: #333; margin-bottom: 20px;">' . __('Your Coupon Details', 'gf-wc-coupon-generator') . '</h2>';
+        $template .= '<div style="background: #f8f8f8; padding: 20px; border-radius: 5px; margin-bottom: 20px;">';
+        $template .= '<p style="margin: 0 0 10px;"><strong>' . __('Coupon Code:', 'gf-wc-coupon-generator') . '</strong> <span style="font-size: 18px; color: #204ce5;">' . $coupon_code . '</span></p>';
+        $template .= '<p style="margin: 0 0 10px;"><strong>' . __('Discount:', 'gf-wc-coupon-generator') . '</strong> ' . $generator->discount_amount . ' ' . ($generator->discount_type === 'percentage' ? '%' : 'EUR') . '</p>';
         
         if ($generator->expiry_days) {
-            $expiry_date = date('Y-m-d', strtotime('+' . $generator->expiry_days . ' days'));
-            $template .= '<p><strong>' . __('Valid Until:', 'gf-wc-coupon-generator') . '</strong> ' . $expiry_date . '</p>';
+            $expiry_date = date_i18n(get_option('date_format'), strtotime('+' . $generator->expiry_days . ' days'));
+            $template .= '<p style="margin: 0 0 10px;"><strong>' . __('Valid Until:', 'gf-wc-coupon-generator') . '</strong> ' . $expiry_date . '</p>';
         }
         
-        if ($generator->minimum_spend > 0) {
-            $template .= '<p><strong>' . __('Minimum Order Amount:', 'gf-wc-coupon-generator') . '</strong> ' . $generator->minimum_spend . ' EUR</p>';
+        if ($generator->minimum_amount > 0) {
+            $template .= '<p style="margin: 0 0 10px;"><strong>' . __('Minimum Order Amount:', 'gf-wc-coupon-generator') . '</strong> ' . $generator->minimum_amount . ' EUR</p>';
         }
         
         if ($generator->allow_free_shipping) {
-            $template .= '<p><strong>' . __('Free Shipping:', 'gf-wc-coupon-generator') . '</strong> ' . __('Yes', 'gf-wc-coupon-generator') . '</p>';
+            $template .= '<p style="margin: 0 0 10px;"><strong>' . __('Free Shipping:', 'gf-wc-coupon-generator') . '</strong> ' . __('Yes', 'gf-wc-coupon-generator') . '</p>';
         }
         
+        $template .= '</div>';
+        $template .= '<p style="text-align: center; margin-top: 20px;">' . __('Thank you for your submission!', 'gf-wc-coupon-generator') . '</p>';
+        $template .= '<p style="text-align: center;">' . __('Happy shopping!', 'gf-wc-coupon-generator') . '</p>';
         $template .= '</div>';
         
         return $template;

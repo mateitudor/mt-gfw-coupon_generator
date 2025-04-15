@@ -113,59 +113,6 @@ add_filter('gform_shortcode_form', function($shortcode_string, $attributes) {
             $coupon->save();
             error_log('GFWCG: Coupon saved with ID: ' . $coupon->get_id());
 
-            // Prepare email
-            $subject = $generator->email_subject ?: __('Your Coupon Code', 'gravity-forms-woocommerce-coupon-generator');
-            $message = $generator->email_message ?: __('Your coupon code is: {coupon_code}', 'gravity-forms-woocommerce-coupon-generator');
-            
-            // Replace placeholders
-            $message = str_replace(
-                array(
-                    '{coupon_code}',
-                    '{site_name}',
-                    '{discount_amount}',
-                    '{expiry_date}'
-                ),
-                array(
-                    $coupon_code,
-                    get_bloginfo('name'),
-                    $generator->discount_amount . ($generator->discount_type === 'percentage' ? '%' : ''),
-                    $generator->expiry_date ? date_i18n(get_option('date_format'), strtotime($generator->expiry_date)) : __('No expiry', 'gravity-forms-woocommerce-coupon-generator')
-                ),
-                $message
-            );
-
-            // Set headers
-            $headers = array();
-            $from_name = $generator->email_from_name ?: get_bloginfo('name');
-            $from_email = $generator->email_from_email ?: get_bloginfo('admin_email');
-            $headers[] = 'From: ' . $from_name . ' <' . $from_email . '>';
-            $headers[] = 'Content-Type: text/html; charset=UTF-8';
-
-            error_log('GFWCG: Email details:');
-            error_log('GFWCG: To: ' . $email);
-            error_log('GFWCG: From: ' . $from_name . ' <' . $from_email . '>');
-            error_log('GFWCG: Subject: ' . $subject);
-            error_log('GFWCG: Message: ' . $message);
-            error_log('GFWCG: Headers: ' . print_r($headers, true));
-
-            // Send email
-            $mail_result = wp_mail($email, $subject, $message, $headers);
-            error_log('GFWCG: wp_mail result: ' . ($mail_result ? 'true' : 'false'));
-            
-            if (!$mail_result) {
-                $last_error = error_get_last();
-                error_log('GFWCG: wp_mail failed. Last error: ' . print_r($last_error, true));
-                
-                // Try sending with different headers
-                $alt_headers = array(
-                    'From: ' . $from_name . ' <' . $from_email . '>',
-                    'Content-Type: text/plain; charset=UTF-8'
-                );
-                error_log('GFWCG: Trying alternative headers: ' . print_r($alt_headers, true));
-                $alt_result = wp_mail($email, $subject, strip_tags($message), $alt_headers);
-                error_log('GFWCG: Alternative wp_mail result: ' . ($alt_result ? 'true' : 'false'));
-            }
-
         } catch (Exception $e) {
             error_log('GFWCG: Exception caught: ' . $e->getMessage());
             error_log('GFWCG: Stack trace: ' . $e->getTraceAsString());
