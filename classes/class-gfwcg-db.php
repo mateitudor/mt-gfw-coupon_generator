@@ -38,7 +38,7 @@ class GFWCG_DB {
             exclude_brands text DEFAULT NULL,
             allowed_emails text DEFAULT NULL,
             email_template text DEFAULT NULL,
-            use_wc_email_template tinyint(1) DEFAULT 1,
+            use_wc_email_template tinyint(1) DEFAULT 1 COMMENT '1 = use WooCommerce template, 0 = use custom template',
             send_email tinyint(1) DEFAULT 0,
             status varchar(20) DEFAULT 'active',
             created_at datetime NOT NULL,

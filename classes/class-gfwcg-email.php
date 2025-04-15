@@ -9,131 +9,127 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
+// Include WooCommerce email classes
+if (!class_exists('WC_Email')) {
+	require_once(WC()->plugin_path() . '/includes/emails/class-wc-email.php');
+}
+
 /**
  * Email Class
  */
-class GFWCG_Email {
-	private $to;
-	private $subject;
-	private $message;
-	private $from_name;
-	private $from_email;
-	private $headers;
-	private $is_ajax;
+class GFWCG_Email extends WC_Email {
+	public $placeholders = array();
+	public $email_message;
 
 	public function __construct() {
-		$this->is_ajax = defined('DOING_AJAX') && DOING_AJAX;
-	}
+		// Set email identification and description
+		$this->id = 'gfwcg_coupon';
+		$this->title = __('Gravity Forms WooCommerce Coupon', 'gravity-forms-woocommerce-coupon-generator');
+		$this->description = __('This email is sent when a coupon is generated through a Gravity Form.', 'gravity-forms-woocommerce-coupon-generator');
+		$this->customer_email = true;
+		$this->heading = __('Your Coupon Code', 'gravity-forms-woocommerce-coupon-generator');
+		$this->subject = __('Your Coupon Code', 'gravity-forms-woocommerce-coupon-generator');
 
-	public function send($to, $subject, $message, $from_name, $from_email, $placeholders = array()) {
-		$this->to = $to;
-		$this->subject = $this->process_placeholders($subject, $placeholders);
-		$this->message = $this->process_placeholders($message, $placeholders);
-		$this->from_name = $from_name ?: get_bloginfo('name');
-		$this->from_email = $from_email ?: get_bloginfo('admin_email');
-		$this->set_headers();
+		// Let WooCommerce handle template loading
+		$this->template_base = WC()->plugin_path() . '/templates/';
+		$this->template_html = 'emails/customer-coupon.php';
+		$this->template_plain = 'emails/plain/customer-coupon.php';
 
-		// Don't log during AJAX requests to avoid polluting the response
-		if (!$this->is_ajax) {
-			error_log('GFWCG: Starting email sending process');
-			error_log('GFWCG: Email configuration:');
-			error_log('GFWCG: - To: ' . $this->to);
-			error_log('GFWCG: - From: ' . $this->from_name . ' <' . $this->from_email . '>');
-			error_log('GFWCG: - Subject: ' . $this->subject);
-			error_log('GFWCG: - Message: ' . $this->message);
-			error_log('GFWCG: - Headers: ' . print_r($this->headers, true));
-		}
-
-		try {
-			// First try wp_mail directly
-			$wp_mail_result = wp_mail($this->to, $this->subject, $this->message, $this->headers);
-			
-			if (!$this->is_ajax) {
-				error_log('GFWCG: wp_mail result: ' . ($wp_mail_result ? 'success' : 'failed'));
-			}
-			
-			if ($wp_mail_result) {
-				return true;
-			}
-
-			// If wp_mail failed, try WooCommerce email system
-			if (function_exists('WC') && class_exists('WC_Email')) {
-				if (!$this->is_ajax) {
-					error_log('GFWCG: wp_mail failed, attempting to use WooCommerce email system');
-				}
-				
-				// Initialize WooCommerce
-				WC();
-				
-				if (!class_exists('WC_Email')) {
-					if (!$this->is_ajax) {
-						error_log('GFWCG: WC_Email class not found - Loading WooCommerce includes');
-					}
-					require_once(WC()->plugin_path() . '/includes/emails/class-wc-email.php');
-				}
-
-				$mailer = WC()->mailer();
-				if (!$mailer) {
-					if (!$this->is_ajax) {
-						error_log('GFWCG: WC mailer not initialized');
-					}
-					throw new Exception('WC mailer not initialized');
-				}
-
-				if (!$this->is_ajax) {
-					error_log('GFWCG: WooCommerce mailer initialized successfully');
-				}
-				
-				// Send the email using WooCommerce mailer
-				$result = $mailer->send($this->to, $this->subject, $this->message, $this->headers);
-				if (!$this->is_ajax) {
-					error_log('GFWCG: WC email send result: ' . ($result ? 'success' : 'failed'));
-				}
-				
-				if ($result) {
-					return true;
-				}
-			}
-
-			// If both methods failed, try one last time with simplified headers
-			if (!$this->is_ajax) {
-				error_log('GFWCG: Both wp_mail and WC mailer failed, trying with simplified headers');
-			}
-			
-			$simple_headers = array(
-				'From: ' . $this->from_name . ' <' . $this->from_email . '>',
-				'Content-Type: text/plain; charset=UTF-8'
-			);
-			
-			$final_result = wp_mail($this->to, $this->subject, strip_tags($this->message), $simple_headers);
-			
-			if (!$this->is_ajax) {
-				error_log('GFWCG: Final attempt with simplified headers: ' . ($final_result ? 'success' : 'failed'));
-			}
-			
-			return $final_result;
-			
-		} catch (Exception $e) {
-			if (!$this->is_ajax) {
-				error_log('GFWCG: Exception in email sending: ' . $e->getMessage());
-				error_log('GFWCG: Stack trace: ' . $e->getTraceAsString());
-			}
-			
-			// Final fallback to wp_mail with error suppression during AJAX
-			if ($this->is_ajax) {
-				return @wp_mail($this->to, $this->subject, $this->message, $this->headers);
-			} else {
-				return wp_mail($this->to, $this->subject, $this->message, $this->headers);
-			}
-		}
-	}
-
-	private function set_headers() {
-		$this->headers = array(
-			'Content-Type: text/html; charset=UTF-8',
-			'From: ' . $this->from_name . ' <' . $this->from_email . '>',
-			'Reply-To: ' . $this->from_name . ' <' . $this->from_email . '>'
+		$this->placeholders = array(
+			'{coupon_code}' => '',
+			'{discount_amount}' => '',
+			'{expiry_date}' => '',
 		);
+
+		// Call parent constructor
+		parent::__construct();
+	}
+
+	/**
+	 * Send coupon email
+	 *
+	 * @param object $generator The generator object
+	 * @param string $to The recipient email address
+	 * @param string $coupon_code The generated coupon code
+	 * @return bool Whether the email was sent successfully
+	 */
+	public function send_coupon_email($generator, $to, $coupon_code) {
+		if (!$this->is_enabled() || !$to || !$generator->send_email) {
+			return false;
+		}
+
+		// Prepare email content
+		$email_subject = $generator->email_subject ?: __('Your Coupon Code', 'gravity-forms-woocommerce-coupon-generator');
+		$email_message = $generator->email_message ?: __('Your coupon code is: {coupon_code}', 'gravity-forms-woocommerce-coupon-generator');
+		
+		// Process placeholders
+		$placeholders = array(
+			'coupon_code' => $coupon_code,
+			'discount_amount' => number_format($generator->discount_amount, 2, '.', '') . ($generator->discount_type === 'percentage' ? '%' : ''),
+			'expiry_date' => $generator->expiry_days ? date_i18n(get_option('date_format'), strtotime('+' . $generator->expiry_days . ' days')) : __('No expiry', 'gravity-forms-woocommerce-coupon-generator'),
+			'site_name' => get_bloginfo('name')
+		);
+
+		// Send the email
+		return $this->trigger(
+			$to,
+			$email_subject,
+			$email_message,
+			$generator->email_from_name,
+			$generator->email_from_email,
+			$placeholders,
+			$generator->use_wc_email_template
+		);
+	}
+
+	public function trigger($to, $subject, $message, $from_name = '', $from_email = '', $placeholders = array(), $use_wc_template = true) {
+		if (!$this->is_enabled() || !$to) {
+			return false;
+		}
+
+		$this->setup_locale();
+		
+		// Set placeholders
+		$this->placeholders = $placeholders;
+		
+		// Process placeholders in subject and message
+		$this->subject = $this->process_placeholders($subject, $placeholders);
+		$this->email_message = $this->process_placeholders($message, $placeholders);
+		
+		// Set from name and email if provided
+		if ($from_name && $from_email) {
+			$this->from_name = $from_name;
+			$this->from_email = $from_email;
+		}
+
+		// Set recipient
+		$this->recipient = $to;
+
+		// Send the email via WooCommerce's email system
+		$result = $this->send($this->get_recipient(), $this->get_subject(), $this->get_content($use_wc_template), $this->get_headers(), array());
+		
+		$this->restore_locale();
+		return $result;
+	}
+
+	public function get_content($use_wc_template = true) {
+		if ($use_wc_template) {
+			return $this->get_content_html();
+		} else {
+			return $this->email_message;
+		}
+	}
+
+	public function get_content_html() {
+		ob_start();
+		wc_get_template('emails/email-header.php', array('email_heading' => $this->get_heading()));
+		echo wpautop(wptexturize($this->email_message));
+		wc_get_template('emails/email-footer.php');
+		return ob_get_clean();
+	}
+
+	public function get_content_plain() {
+		return strip_tags($this->email_message);
 	}
 
 	private function process_placeholders($text, $placeholders) {
@@ -141,81 +137,6 @@ class GFWCG_Email {
 			$text = str_replace('{' . $key . '}', $value, $text);
 		}
 		return $text;
-	}
-
-	/**
-	 * Get email subject
-	 *
-	 * @param object $generator The generator object
-	 * @param string $coupon_code The generated coupon code
-	 * @return string The email subject
-	 */
-	private static function get_email_subject($generator, $coupon_code) {
-		$subject = $generator->email_subject ?: __('Your Coupon Code', 'gravity-forms-woocommerce-coupon-generator');
-		
-		// Replace placeholders
-		$subject = str_replace(
-			array('{coupon_code}', '{site_name}'),
-			array($coupon_code, get_bloginfo('name')),
-			$subject
-		);
-
-		return $subject;
-	}
-
-	/**
-	 * Get email message
-	 *
-	 * @param object $generator The generator object
-	 * @param string $coupon_code The generated coupon code
-	 * @return string The email message
-	 */
-	private static function get_email_message($generator, $coupon_code) {
-		$message = $generator->email_message ?: __('Your coupon code is: {coupon_code}', 'gravity-forms-woocommerce-coupon-generator');
-		
-		// Replace placeholders
-		$message = str_replace(
-			array(
-				'{coupon_code}',
-				'{site_name}',
-				'{discount_amount}',
-				'{expiry_date}'
-			),
-			array(
-				$coupon_code,
-				get_bloginfo('name'),
-				$generator->discount_amount . ($generator->discount_type === 'percentage' ? '%' : ''),
-				$generator->expiry_date ? date_i18n(get_option('date_format'), strtotime($generator->expiry_date)) : __('No expiry', 'gravity-forms-woocommerce-coupon-generator')
-			),
-			$message
-		);
-
-		// Add HTML formatting if needed
-		if (strpos($message, '<') !== false) {
-			$message = wpautop($message);
-		}
-
-		return $message;
-	}
-
-	/**
-	 * Get email headers
-	 *
-	 * @param object $generator The generator object
-	 * @return array The email headers
-	 */
-	private static function get_email_headers($generator) {
-		$headers = array();
-
-		// Set From header
-		$from_name = $generator->email_from_name ?: get_bloginfo('name');
-		$from_email = $generator->email_from_email ?: get_bloginfo('admin_email');
-		$headers[] = 'From: ' . $from_name . ' <' . $from_email . '>';
-
-		// Set Content-Type header
-		$headers[] = 'Content-Type: text/html; charset=UTF-8';
-
-		return $headers;
 	}
 
 	/**

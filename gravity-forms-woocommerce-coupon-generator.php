@@ -77,6 +77,12 @@ function gfwcg_init() {
     require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-admin.php';
     require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-generator.php';
     require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-coupon.php';
+    
+    // Load email class after WooCommerce is fully loaded
+    add_action('woocommerce_init', function() {
+        require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-email.php';
+    });
+    
     require_once GFWCG_PLUGIN_DIR . 'partials/gfwcg-shortcode.php';
 
     // Initialize components
@@ -97,4 +103,13 @@ function gfwcg_activate() {
     // Create database tables
     require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-db.php';
     GFWCG_DB::create_tables();
+}
+
+// Register the custom email class
+add_filter('woocommerce_email_classes', 'register_gfwcg_email_class');
+function register_gfwcg_email_class($email_classes) {
+    // Include our custom email class
+    require_once(GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-email.php');
+    $email_classes['GFWCG_Email'] = new GFWCG_Email();
+    return $email_classes;
 }

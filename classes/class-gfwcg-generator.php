@@ -2,11 +2,9 @@
 
 class GFWCG_Generator {
 	private $coupon;
-	private $email;
 
 	public function __construct() {
 		$this->coupon = new GFWCG_Coupon();
-		$this->email = new GFWCG_Email();
 		add_action('gform_after_submission', array($this, 'process_form_submission'), 10, 2);
 	}
 
@@ -38,21 +36,16 @@ class GFWCG_Generator {
 		$coupon_id = $this->coupon->create_woocommerce_coupon($coupon_code, $generator);
 		error_log('GFWCG: Created WooCommerce coupon with ID: ' . $coupon_id);
 
-		// Send email
-		$email_result = $this->email->send(
-			$to,
-			$generator->email_subject,
-			$generator->email_message,
-			$generator->email_from_name,
-			$generator->email_from_email,
-			array(
-				'coupon_code' => $coupon_code,
-				'discount_amount' => number_format($generator->discount_amount, 2, '.', '') . ($generator->discount_type === 'percentage' ? '%' : ''),
-				'expiry_date' => $generator->expiry_days ? date_i18n(get_option('date_format'), strtotime('+' . $generator->expiry_days . ' days')) : __('No expiry', 'gravity-forms-woocommerce-coupon-generator')
-			)
-		);
-		
-		error_log('GFWCG: Email sending process completed with result: ' . ($email_result ? 'success' : 'failed'));
+		// Send email using WooCommerce's mailer system
+		if ($generator->send_email) {
+			$emails = WC()->mailer()->get_emails();
+			if (isset($emails['GFWCG_Email'])) {
+				$emails['GFWCG_Email']->send_coupon_email($generator, $to, $coupon_code);
+				error_log('GFWCG: Email sending process completed');
+			} else {
+				error_log('GFWCG: Email class not found in WooCommerce mailer');
+			}
+		}
 	}
 
 	private function get_generator_by_form_id($form_id) {
