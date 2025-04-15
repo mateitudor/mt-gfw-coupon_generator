@@ -1,0 +1,100 @@
+<?php
+/**
+ * Plugin Name: Coupon Generator for Gravity Forms & WooCommerce
+ * Plugin URI: https://storiabooks.com
+ * Description: Generate WooCommerce coupon codes from Gravity Forms submissions
+ * Version: 1.0.0
+ * Author: Storia Books
+ * Author URI: https://storiabooks.com
+ * Text Domain: gravity-forms-woocommerce-coupon-generator
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
+ * WC requires at least: 5.0
+ * WC tested up to: 8.0
+ * HPOS compatible: yes
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * 
+ * @package GFWCG
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Define plugin constants
+define('GFWCG_VERSION', '1.0.0');
+define('GFWCG_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('GFWCG_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('GFWCG_PLUGIN_BASENAME', plugin_basename(__FILE__));
+define('GFWCG_PLUGIN_NAME', 'gravity-forms-woocommerce-coupon-generator');
+
+// Include admin view files
+require_once GFWCG_PLUGIN_DIR . 'views/admin-list.php';
+
+/**
+ * Get the current view from the URL parameters
+ *
+ * @return string The current view (list, grid, or edit)
+ */
+function gfwcg_get_current_view() {
+    $view = isset($_GET['view']) ? sanitize_text_field($_GET['view']) : 'list';
+    return in_array($view, array('list', 'grid', 'edit')) ? $view : 'list';
+}
+
+// Check if Gravity Forms and WooCommerce are active
+function gfwcg_check_dependencies() {
+    if (!class_exists('GFForms') || !class_exists('WooCommerce')) {
+        add_action('admin_notices', 'gfwcg_missing_dependencies_notice');
+        return false;
+    }
+    return true;
+}
+
+function gfwcg_missing_dependencies_notice() {
+    ?>
+    <div class="error">
+        <p><?php _e('Gravity Forms WooCommerce Coupon Generator requires both Gravity Forms and WooCommerce to be installed and activated.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+    </div>
+    <?php
+}
+
+// Declare HPOS compatibility
+add_action('before_woocommerce_init', function() {
+    if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+    }
+});
+
+// Initialize the plugin
+function gfwcg_init() {
+    if (!gfwcg_check_dependencies()) {
+        return;
+    }
+
+    // Load plugin files
+    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-db.php';
+    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-admin.php';
+    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-generator.php';
+    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-coupon.php';
+    require_once GFWCG_PLUGIN_DIR . 'partials/gfwcg-shortcode.php';
+
+    // Initialize components
+    new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);
+    new GFWCG_Generator();
+    new GFWCG_Coupon();
+}
+add_action('plugins_loaded', 'gfwcg_init');
+
+// Activation hook
+register_activation_hook(__FILE__, 'gfwcg_activate');
+function gfwcg_activate() {
+    if (!gfwcg_check_dependencies()) {
+        deactivate_plugins(plugin_basename(__FILE__));
+        wp_die(__('Gravity Forms WooCommerce Coupon Generator requires both Gravity Forms and WooCommerce to be installed and activated.', 'gravity-forms-woocommerce-coupon-generator'));
+    }
+
+    // Create database tables
+    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-db.php';
+    GFWCG_DB::create_tables();
+}
