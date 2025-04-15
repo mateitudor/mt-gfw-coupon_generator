@@ -52,10 +52,21 @@ class GFWCG_Email {
         }
 
         try {
-            // Try WooCommerce email first
+            // First try wp_mail directly
+            $wp_mail_result = wp_mail($this->to, $this->subject, $this->message, $this->headers);
+            
+            if (!$this->is_ajax) {
+                error_log('GFWCG: wp_mail result: ' . ($wp_mail_result ? 'success' : 'failed'));
+            }
+            
+            if ($wp_mail_result) {
+                return true;
+            }
+
+            // If wp_mail failed, try WooCommerce email system
             if (function_exists('WC') && class_exists('WC_Email')) {
                 if (!$this->is_ajax) {
-                    error_log('GFWCG: Attempting to use WooCommerce email system');
+                    error_log('GFWCG: wp_mail failed, attempting to use WooCommerce email system');
                 }
                 
                 // Initialize WooCommerce
@@ -91,26 +102,28 @@ class GFWCG_Email {
                 }
             }
 
-            // Fallback to wp_mail
+            // If both methods failed, try one last time with simplified headers
             if (!$this->is_ajax) {
-                error_log('GFWCG: Falling back to wp_mail');
+                error_log('GFWCG: Both wp_mail and WC mailer failed, trying with simplified headers');
             }
             
-            // Use wp_mail with error suppression during AJAX
-            if ($this->is_ajax) {
-                $wp_mail_result = @wp_mail($this->to, $this->subject, $this->message, $this->headers);
-            } else {
-                $wp_mail_result = wp_mail($this->to, $this->subject, $this->message, $this->headers);
-                error_log('GFWCG: wp_mail result: ' . ($wp_mail_result ? 'success' : 'failed'));
+            $simple_headers = array(
+                'From: ' . $this->from_name . ' <' . $this->from_email . '>',
+                'Content-Type: text/plain; charset=UTF-8'
+            );
+            
+            $final_result = wp_mail($this->to, $this->subject, strip_tags($this->message), $simple_headers);
+            
+            if (!$this->is_ajax) {
+                error_log('GFWCG: Final attempt with simplified headers: ' . ($final_result ? 'success' : 'failed'));
             }
             
-            return $wp_mail_result;
+            return $final_result;
             
         } catch (Exception $e) {
             if (!$this->is_ajax) {
                 error_log('GFWCG: Exception in email sending: ' . $e->getMessage());
                 error_log('GFWCG: Stack trace: ' . $e->getTraceAsString());
-                error_log('GFWCG: Final fallback to wp_mail');
             }
             
             // Final fallback to wp_mail with error suppression during AJAX

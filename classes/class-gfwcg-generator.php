@@ -30,7 +30,45 @@ class GFWCG_Generator {
         // Send email if configured
         if ($generator->send_email) {
             error_log('GFWCG: Email sending is enabled, attempting to send email');
-            $this->send_coupon_email($entry, $generator, $coupon_code);
+            
+            // Get email address from the specified field
+            $to = rgar($entry, $generator->email_field_id);
+            if (!$to) {
+                error_log('GFWCG: No email address found for recipient in field ' . $generator->email_field_id);
+                error_log('GFWCG: Available entry fields: ' . print_r(array_keys($entry), true));
+                return;
+            }
+
+            // Prepare email content
+            $subject = $generator->email_subject ?: __('Your Coupon Code', 'gf-wc-coupon-generator');
+            $message = $generator->email_message ?: $this->get_default_email_template($coupon_code, $generator);
+            
+            // Replace placeholders in message
+            $message = str_replace(
+                array(
+                    '{coupon_code}',
+                    '{site_name}',
+                    '{discount_amount}',
+                    '{expiry_date}'
+                ),
+                array(
+                    $coupon_code,
+                    get_bloginfo('name'),
+                    $generator->discount_amount . ($generator->discount_type === 'percentage' ? '%' : ''),
+                    $generator->expiry_date ? date_i18n(get_option('date_format'), strtotime($generator->expiry_date)) : __('No expiry', 'gf-wc-coupon-generator')
+                ),
+                $message
+            );
+
+            // Set email headers
+            $from_name = $generator->email_from_name ?: get_bloginfo('name');
+            $from_email = $generator->email_from_email ?: get_bloginfo('admin_email');
+            
+            // Create and send email
+            $email = new GFWCG_Email($to, $subject, $message, $from_name, $from_email);
+            $result = $email->send();
+            
+            error_log('GFWCG: Email sending process completed with result: ' . ($result ? 'success' : 'failed'));
         } else {
             error_log('GFWCG: Email sending is disabled for this generator');
         }
@@ -95,122 +133,59 @@ class GFWCG_Generator {
     private function create_woocommerce_coupon($code, $generator) {
         $coupon = new WC_Coupon();
         $coupon->set_code($code);
-        $coupon->set_discount_type($generator->discount_type);
+        
+        // Map our discount type to WooCommerce's expected values
+        $discount_type = $generator->discount_type;
+        if ($discount_type === 'percentage') {
+            $discount_type = 'percent';
+        } elseif ($discount_type === 'fixed_cart') {
+            $discount_type = 'fixed_cart';
+        } else {
+            $discount_type = 'fixed_cart'; // Default to fixed cart if unknown
+        }
+        
+        $coupon->set_discount_type($discount_type);
         $coupon->set_amount($generator->discount_amount);
         $coupon->set_individual_use($generator->individual_use);
         $coupon->set_usage_limit($generator->usage_limit_per_coupon);
         $coupon->set_usage_limit_per_user($generator->usage_limit_per_user);
-        $coupon->set_free_shipping($generator->allow_free_shipping);
+        $coupon->set_minimum_amount($generator->minimum_amount);
+        $coupon->set_maximum_amount($generator->maximum_amount);
         $coupon->set_exclude_sale_items($generator->exclude_sale_items);
-
-        if ($generator->expiry_date) {
-            $coupon->set_date_expires(strtotime($generator->expiry_date));
-        } elseif ($generator->expiry_days) {
-            $coupon->set_date_expires(strtotime('+' . $generator->expiry_days . ' days'));
-        }
-
-        if ($generator->minimum_spend) {
-            $coupon->set_minimum_amount($generator->minimum_spend);
-        }
-
-        if ($generator->maximum_spend) {
-            $coupon->set_maximum_amount($generator->maximum_spend);
-        }
-
-        if ($generator->products) {
-            $product_ids = array_map('intval', explode(',', $generator->products));
-            $coupon->set_product_ids($product_ids);
-        }
-
-        if ($generator->exclude_products) {
-            $exclude_product_ids = array_map('intval', explode(',', $generator->exclude_products));
-            $coupon->set_excluded_product_ids($exclude_product_ids);
-        }
-
-        if ($generator->product_categories) {
-            $category_ids = array_map('intval', explode(',', $generator->product_categories));
-            $coupon->set_product_categories($category_ids);
-        }
-
-        if ($generator->exclude_categories) {
-            $exclude_category_ids = array_map('intval', explode(',', $generator->exclude_categories));
-            $coupon->set_excluded_product_categories($exclude_category_ids);
-        }
-
-        if ($generator->allowed_emails) {
-            $emails = array_map('trim', explode(',', $generator->allowed_emails));
-            $coupon->set_email_restrictions($emails);
-        }
-
-        return $coupon->save();
-    }
-
-    private function send_coupon_email($entry, $generator, $coupon_code) {
-        // Don't log during AJAX requests
-        if (!defined('DOING_AJAX') || !DOING_AJAX) {
-            error_log('GFWCG: Starting email sending process');
-            error_log('GFWCG: Entry data: ' . print_r($entry, true));
-            error_log('GFWCG: Generator data: ' . print_r($generator, true));
-            error_log('GFWCG: Coupon code: ' . $coupon_code);
-        }
-
-        $to = rgar($entry, $generator->email_field_id);
-        if (!$to) {
-            if (!defined('DOING_AJAX') || !DOING_AJAX) {
-                error_log('GFWCG: No email address found for recipient in field ' . $generator->email_field_id);
-                error_log('GFWCG: Available entry fields: ' . print_r(array_keys($entry), true));
-            }
-            return;
-        }
-
-        if (!defined('DOING_AJAX') || !DOING_AJAX) {
-            error_log('GFWCG: Recipient email: ' . $to);
-            error_log('GFWCG: Using generator ID: ' . $generator->id);
-        }
-
-        $subject = $generator->email_subject ?: __('Your Coupon Code', 'gf-wc-coupon-generator');
-        
-        // Build message with coupon information
-        $message = '<div style="font-family: Arial, sans-serif;">';
-        $message .= '<h2>' . __('Your Coupon Details', 'gf-wc-coupon-generator') . '</h2>';
-        $message .= '<p><strong>' . __('Coupon Code:', 'gf-wc-coupon-generator') . '</strong> ' . $coupon_code . '</p>';
-        $message .= '<p><strong>' . __('Discount:', 'gf-wc-coupon-generator') . '</strong> ' . $generator->discount_amount . ' ' . ($generator->discount_type === 'fixed_cart' ? __('EUR', 'gf-wc-coupon-generator') : '%') . '</p>';
         
         if ($generator->expiry_days) {
             $expiry_date = date('Y-m-d', strtotime('+' . $generator->expiry_days . ' days'));
-            $message .= '<p><strong>' . __('Valid Until:', 'gf-wc-coupon-generator') . '</strong> ' . $expiry_date . '</p>';
-        }
-        
-        if ($generator->minimum_spend > 0) {
-            $message .= '<p><strong>' . __('Minimum Order Amount:', 'gf-wc-coupon-generator') . '</strong> ' . $generator->minimum_spend . ' EUR</p>';
+            $coupon->set_date_expires($expiry_date);
         }
         
         if ($generator->allow_free_shipping) {
-            $message .= '<p><strong>' . __('Free Shipping:', 'gf-wc-coupon-generator') . '</strong> ' . __('Yes', 'gf-wc-coupon-generator') . '</p>';
+            $coupon->set_free_shipping(true);
         }
         
-        $message .= '</div>';
+        return $coupon->save();
+    }
 
-        $from_name = $generator->email_from_name ?: get_bloginfo('name');
-        $from_email = $generator->email_from_email ?: get_bloginfo('admin_email');
-
-        // If this is an AJAX request, schedule the email to be sent after the response
-        if (defined('DOING_AJAX') && DOING_AJAX) {
-            add_action('shutdown', function() use ($to, $subject, $message, $from_name, $from_email) {
-                $email = new GFWCG_Email($to, $subject, $message, $from_name, $from_email);
-                $email->send();
-            });
-            return true;
-        }
-
-        // For non-AJAX requests, send immediately
-        $email = new GFWCG_Email($to, $subject, $message, $from_name, $from_email);
-        $result = $email->send();
+    private function get_default_email_template($coupon_code, $generator) {
+        $template = '<div style="font-family: Arial, sans-serif;">';
+        $template .= '<h2>' . __('Your Coupon Details', 'gf-wc-coupon-generator') . '</h2>';
+        $template .= '<p><strong>' . __('Coupon Code:', 'gf-wc-coupon-generator') . '</strong> ' . $coupon_code . '</p>';
+        $template .= '<p><strong>' . __('Discount:', 'gf-wc-coupon-generator') . '</strong> ' . $generator->discount_amount . ' ' . ($generator->discount_type === 'fixed_cart' ? __('EUR', 'gf-wc-coupon-generator') : '%') . '</p>';
         
-        if (!defined('DOING_AJAX') || !DOING_AJAX) {
-            error_log('GFWCG: Email sending process completed with result: ' . ($result ? 'success' : 'failed'));
+        if ($generator->expiry_days) {
+            $expiry_date = date('Y-m-d', strtotime('+' . $generator->expiry_days . ' days'));
+            $template .= '<p><strong>' . __('Valid Until:', 'gf-wc-coupon-generator') . '</strong> ' . $expiry_date . '</p>';
         }
         
-        return $result;
+        if ($generator->minimum_spend > 0) {
+            $template .= '<p><strong>' . __('Minimum Order Amount:', 'gf-wc-coupon-generator') . '</strong> ' . $generator->minimum_spend . ' EUR</p>';
+        }
+        
+        if ($generator->allow_free_shipping) {
+            $template .= '<p><strong>' . __('Free Shipping:', 'gf-wc-coupon-generator') . '</strong> ' . __('Yes', 'gf-wc-coupon-generator') . '</p>';
+        }
+        
+        $template .= '</div>';
+        
+        return $template;
     }
 } 
