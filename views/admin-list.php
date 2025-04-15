@@ -12,6 +12,7 @@ if (!defined('ABSPATH')) {
 // Include the partials
 require_once dirname(dirname(__FILE__)) . '/partials/admin-submenu.php';
 require_once dirname(dirname(__FILE__)) . '/partials/admin-header.php';
+require_once dirname(dirname(__FILE__)) . '/partials/gfwcg-actions.php';
 
 /**
  * Display the generators list view
@@ -82,12 +83,10 @@ function gfwcg_display_list_view($generators) {
                             </span>
                         </td>
                         <td>
-                            <a href="<?php echo esc_url(admin_url('admin.php?page=gfwcg-generators&view=edit&id=' . $generator->id)); ?>" class="button button-small">
-                                <?php _e('Edit', 'gravity-forms-woocommerce-coupon-generator'); ?>
-                            </a>
-                            <button type="button" class="button button-small delete-generator" data-id="<?php echo esc_attr($generator->id); ?>">
-                                <?php _e('Delete', 'gravity-forms-woocommerce-coupon-generator'); ?>
-                            </button>
+                            <?php 
+                                gfwcg_display_edit_button($generator->id);
+                                gfwcg_display_delete_button($generator->id);
+                            ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

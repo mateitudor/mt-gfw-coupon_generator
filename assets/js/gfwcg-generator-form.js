@@ -178,42 +178,89 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Handle delete action
-    $('.button-link-delete').on('click', function(e) {
-        e.preventDefault();
-        
-        if (!confirm(gfwcgAdmin.confirmDeleteText)) {
-            return;
-        }
+    // Handle delete generator button
+    const deleteButtons = document.querySelectorAll('.delete-generator');
+    deleteButtons.forEach(button => {
+        let isConfirming = false;
+        const originalText = button.textContent;
+        const confirmText = button.dataset.confirmText;
+        const deleteText = button.dataset.deleteText;
 
-        var $row = $(this).closest('tr');
-        var id = $(this).data('id');
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (!isConfirming) {
+                // First click - show confirmation
+                isConfirming = true;
+                button.textContent = confirmText;
+                button.classList.add('button-link-delete');
+                return;
+            }
 
-        $.ajax({
-            url: gfwcgAdmin.ajaxUrl,
-            type: 'POST',
-            data: {
-                action: 'gfwcg_delete_generator',
-                nonce: gfwcgAdmin.nonce,
-                id: id
-            },
-            beforeSend: function() {
-                $row.addClass('loading');
-            },
-            success: function(response) {
-                if (response.success) {
-                    $row.fadeOut(400, function() {
-                        $(this).remove();
-                    });
+            // Second click - proceed with deletion
+            const generatorId = button.dataset.id;
+            const nonce = button.dataset.nonce;
+            
+            button.disabled = true;
+            
+            fetch(ajaxurl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: 'gfwcg_delete_generator',
+                    generator_id: generatorId,
+                    nonce: nonce
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Find the closest row or grid item
+                    const container = button.closest('tr, .gfwcg-grid-item');
+                    if (container) {
+                        // Add fade out animation
+                        container.style.transition = 'opacity 0.3s';
+                        container.style.opacity = '0';
+                        
+                        // Remove after animation
+                        setTimeout(() => {
+                            container.remove();
+                            
+                            // Check if we need to show empty message
+                            const remainingItems = document.querySelectorAll('.gfwcg-grid-item, .wp-list-table tbody tr');
+                            if (remainingItems.length === 0) {
+                                const grid = document.querySelector('.gfwcg-grid');
+                                const tableBody = document.querySelector('.wp-list-table tbody');
+                                
+                                if (grid) {
+                                    grid.innerHTML = `<div class="gfwcg-grid-empty">${data.data}</div>`;
+                                } else if (tableBody) {
+                                    tableBody.innerHTML = `<tr><td colspan="8">${data.data}</td></tr>`;
+                                }
+                            }
+                        }, 300);
+                    }
                 } else {
-                    alert(response.data.message || gfwcgAdmin.errorText);
+                    alert(data.data);
                 }
-            },
-            error: function() {
-                alert(gfwcgAdmin.errorText);
-            },
-            complete: function() {
-                $row.removeClass('loading');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the generator.');
+            })
+            .finally(() => {
+                button.disabled = false;
+            });
+        });
+
+        // Reset button state if clicking outside
+        document.addEventListener('click', function(e) {
+            if (!button.contains(e.target)) {
+                isConfirming = false;
+                button.textContent = originalText;
+                button.classList.remove('button-link-delete');
             }
         });
     });

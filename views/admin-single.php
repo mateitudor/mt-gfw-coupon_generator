@@ -9,6 +9,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Include the partials
+require_once dirname(dirname(__FILE__)) . '/partials/gfwcg-actions.php';
+
 /**
  * Display the generator form
  *
@@ -37,6 +40,11 @@ function gfwcg_display_generator_form($generator = null) {
         <a href="<?php echo esc_url(admin_url('admin.php?page=gfwcg-generators')); ?>" class="page-title-action">
             <?php _e('Back to List', 'gravity-forms-woocommerce-coupon-generator'); ?>
         </a>
+        <?php if ($generator) : ?>
+            <div class="gfwcg-generator-actions">
+                <?php gfwcg_display_delete_button($generator->id, 'button-link-delete'); ?>
+            </div>
+        <?php endif; ?>
         <hr class="wp-header-end">
         <form method="post" action="" class="gfwcg-generator-form">
             <?php wp_nonce_field('gfwcg_admin_nonce', 'nonce'); ?>
