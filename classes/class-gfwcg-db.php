@@ -77,6 +77,17 @@ class GFWCG_DB {
         ));
     }
 
+    /**
+     * Get the next available ID for a new generator
+     *
+     * @return int The next available ID
+     */
+    public static function get_next_available_id() {
+        global $wpdb;
+        $max_id = $wpdb->get_var("SELECT MAX(id) FROM {$wpdb->prefix}gfwcg_generators");
+        return $max_id ? $max_id + 1 : 1;
+    }
+
     public static function save_generator($data) {
         global $wpdb;
         
@@ -92,12 +103,14 @@ class GFWCG_DB {
             );
             return $id;
         } else {
+            // Set the ID for new generators
+            $data['id'] = self::get_next_available_id();
             $data['created_at'] = current_time('mysql');
             $wpdb->insert(
                 $wpdb->prefix . 'gfwcg_generators',
                 $data
             );
-            return $wpdb->insert_id;
+            return $data['id'];
         }
     }
 

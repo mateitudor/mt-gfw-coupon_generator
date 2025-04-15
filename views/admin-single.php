@@ -9,6 +9,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Include required classes
+require_once dirname(dirname(__FILE__)) . '/classes/class-gfwcg-db.php';
+
 // Include the partials
 require_once dirname(dirname(__FILE__)) . '/partials/gfwcg-actions.php';
 
@@ -48,6 +51,15 @@ function gfwcg_display_generator_form($generator = null) {
             <div class="gfwcg-form-section">
                 <h2><?php _e('Basic Information', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
                 <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="generator_id"><?php _e('Generator ID', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+                        </th>
+                        <td>
+                            <input type="text" id="generator_id" class="regular-text" value="<?php echo $generator ? esc_attr($generator->id) : esc_attr(GFWCG_DB::get_next_available_id()); ?>" readonly>
+                            <p class="description"><?php _e('This is the unique identifier for this generator.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+                        </td>
+                    </tr>
                     <tr>
                         <th scope="row">
                             <label for="title"><?php _e('Title', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
