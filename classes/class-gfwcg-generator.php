@@ -32,7 +32,7 @@ class GFWCG_Generator {
 		}
 
 		// Generate and create coupon
-		$coupon_code = $this->coupon->generate_coupon_code($generator);
+		$coupon_code = $this->coupon->generate_coupon_code($generator, $entry);
 		error_log('GFWCG: Generated coupon code: ' . $coupon_code);
 
 		$coupon_id = $this->coupon->create_woocommerce_coupon($coupon_code, $generator);
@@ -47,7 +47,7 @@ class GFWCG_Generator {
 			$generator->email_from_email,
 			array(
 				'coupon_code' => $coupon_code,
-				'discount_amount' => $generator->discount_amount . ($generator->discount_type === 'percentage' ? '%' : ''),
+				'discount_amount' => number_format($generator->discount_amount, 2, '.', '') . ($generator->discount_type === 'percentage' ? '%' : ''),
 				'expiry_date' => $generator->expiry_days ? date_i18n(get_option('date_format'), strtotime('+' . $generator->expiry_days . ' days')) : __('No expiry', 'gravity-forms-woocommerce-coupon-generator')
 			)
 		);

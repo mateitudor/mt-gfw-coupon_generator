@@ -1,23 +1,64 @@
 <?php
 
 class GFWCG_Coupon {
-		public function generate_coupon_code($generator) {
-				if ($generator->coupon_type === 'field' && $generator->coupon_field_id) {
-						return rgar($entry, $generator->coupon_field_id);
+		public function generate_coupon_code($generator, $entry = null) {
+				if ($generator->coupon_type === 'field' && $generator->coupon_field_id && $entry) {
+						// Get the form and field to understand its structure
+						$form = GFAPI::get_form($entry['form_id']);
+						$field = GFAPI::get_field($form, $generator->coupon_field_id);
+						
+						// Get the field value from the entry
+						$field_value = '';
+						if ($field && isset($field->inputs)) {
+								// For fields with inputs (like name fields), try each input
+								foreach ($field->inputs as $input) {
+										$input_id = $input['id'];
+										$value = rgar($entry, (string)$input_id);
+										if (!empty($value)) {
+												$field_value = $value;
+												break;
+										}
+								}
+						} else {
+								// For simple fields, just get the value directly
+								$field_value = rgar($entry, (string)$generator->coupon_field_id);
+						}
+						
+						error_log('GFWCG: Field ID: ' . (string)$generator->coupon_field_id);
+						error_log('GFWCG: Field type: ' . ($field ? $field->type : 'unknown'));
+						error_log('GFWCG: Entry data: ' . print_r($entry, true));
+						error_log('GFWCG: Field value: ' . $field_value);
+						
+						if ($field_value) {
+								error_log('GFWCG: Using field value for coupon code: ' . $field_value);
+								// Remove spaces from the field value
+								$field_value = str_replace(' ', '', $field_value);
+								// Apply prefix and suffix to the field value
+								$prefix = $generator->coupon_prefix ?: '';
+								$suffix = $generator->coupon_suffix ?: '';
+								$separator = $generator->coupon_separator ?: '';
+								return $prefix . $separator . $field_value . $separator . $suffix;
+						}
+						error_log('GFWCG: No field value found for coupon code, falling back to random generation');
+				} else {
+						error_log('GFWCG: Using random generation for coupon code');
 				}
 
 				$prefix = $generator->coupon_prefix ?: '';
 				$suffix = $generator->coupon_suffix ?: '';
 				$separator = $generator->coupon_separator ?: '';
-				$length = $generator->coupon_length ?: 8;
+				$length = $generator->coupon_length ?: '';
 
-				$random = wp_generate_password($length, false);
-				return $prefix . $separator . $random . $separator . $suffix;
+				$random = strtolower(wp_generate_password($length, false));
+				$code = $prefix . $separator . $random . $separator . $suffix;
+				
+				error_log('GFWCG: Generated random coupon code: ' . $code);
+				return $code;
 		}
 
 		public function create_woocommerce_coupon($code, $generator) {
 				$coupon = new WC_Coupon();
-				$coupon->set_code($code);
+				$coupon->set_code(strtolower($code));
 				
 				$discount_type = $generator->discount_type;
 				if ($discount_type === 'percentage') {
