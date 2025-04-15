@@ -40,11 +40,6 @@ function gfwcg_display_generator_form($generator = null) {
         <a href="<?php echo esc_url(admin_url('admin.php?page=gfwcg-generators')); ?>" class="page-title-action">
             <?php _e('Back to List', 'gravity-forms-woocommerce-coupon-generator'); ?>
         </a>
-        <?php if ($generator) : ?>
-            <div class="gfwcg-generator-actions">
-                <?php gfwcg_display_delete_button($generator->id, 'button-link-delete'); ?>
-            </div>
-        <?php endif; ?>
         <hr class="wp-header-end">
         <form method="post" action="" class="gfwcg-generator-form">
             <?php wp_nonce_field('gfwcg_admin_nonce', 'nonce'); ?>
@@ -299,6 +294,9 @@ function gfwcg_display_generator_form($generator = null) {
             <p class="submit">
                 <input type="submit" name="submit" id="submit" class="button button-primary" 
                        value="<?php echo $generator ? __('Update Generator', 'gravity-forms-woocommerce-coupon-generator') : __('Add Generator', 'gravity-forms-woocommerce-coupon-generator'); ?>">
+                <?php if ($generator) : ?>
+                    <?php gfwcg_display_delete_button($generator->id, 'button-link-delete'); ?>
+                <?php endif; ?>
             </p>
         </form>
     </div>

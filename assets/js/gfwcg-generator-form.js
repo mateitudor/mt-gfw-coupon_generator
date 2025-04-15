@@ -214,44 +214,60 @@ jQuery(document).ready(function($) {
                     nonce: nonce
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    // Find the closest row or grid item
-                    const container = button.closest('tr, .gfwcg-grid-item');
-                    if (container) {
-                        // Add fade out animation
-                        container.style.transition = 'opacity 0.3s';
-                        container.style.opacity = '0';
-                        
-                        // Remove after animation
-                        setTimeout(() => {
-                            container.remove();
+                    // Check if we're in single view
+                    const isSingleView = document.querySelector('.gfwcg-generator-form') !== null;
+                    
+                    if (isSingleView) {
+                        // Redirect to the generators list page
+                        window.location.href = window.location.origin + '/wp-admin/admin.php?page=gfwcg-generators';
+                    } else {
+                        // Find the closest row or grid item
+                        const container = button.closest('tr, .gfwcg-grid-item');
+                        if (container) {
+                            // Add fade out animation
+                            container.style.transition = 'opacity 0.3s';
+                            container.style.opacity = '0';
                             
-                            // Check if we need to show empty message
-                            const remainingItems = document.querySelectorAll('.gfwcg-grid-item, .wp-list-table tbody tr');
-                            if (remainingItems.length === 0) {
-                                const grid = document.querySelector('.gfwcg-grid');
-                                const tableBody = document.querySelector('.wp-list-table tbody');
+                            // Remove after animation
+                            setTimeout(() => {
+                                container.remove();
                                 
-                                if (grid) {
-                                    grid.innerHTML = `<div class="gfwcg-grid-empty">${data.data}</div>`;
-                                } else if (tableBody) {
-                                    tableBody.innerHTML = `<tr><td colspan="8">${data.data}</td></tr>`;
+                                // Check if we need to show empty message
+                                const remainingItems = document.querySelectorAll('.gfwcg-grid-item, .wp-list-table tbody tr');
+                                if (remainingItems.length === 0) {
+                                    const grid = document.querySelector('.gfwcg-grid');
+                                    const tableBody = document.querySelector('.wp-list-table tbody');
+                                    
+                                    if (grid) {
+                                        grid.innerHTML = `<div class="gfwcg-grid-empty">${data.data}</div>`;
+                                    } else if (tableBody) {
+                                        tableBody.innerHTML = `<tr><td colspan="8">${data.data}</td></tr>`;
+                                    }
                                 }
-                            }
-                        }, 300);
+                            }, 300);
+                        }
                     }
                 } else {
-                    alert(data.data);
+                    throw new Error(data.data || 'Failed to delete generator');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while deleting the generator.');
+                alert(error.message || 'An error occurred while deleting the generator.');
             })
             .finally(() => {
                 button.disabled = false;
+                isConfirming = false;
+                button.textContent = originalText;
+                button.classList.remove('button-link-delete');
             });
         });
 
