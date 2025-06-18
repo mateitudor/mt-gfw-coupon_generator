@@ -38,6 +38,7 @@ class GFWCG_Admin {
         add_action('wp_ajax_gfwcg_get_form_fields', array($this, 'ajax_get_form_fields'));
         add_action('wp_ajax_gfwcg_save_generator', array($this, 'ajax_save_generator'));
         add_action('wp_ajax_gfwcg_delete_generator', array($this, 'ajax_delete_generator'));
+        add_action('wp_ajax_gfwcg_search_products', array($this, 'ajax_search_products'));
         add_action('admin_init', array($this, 'admin_init'));
     }
 
@@ -281,6 +282,30 @@ class GFWCG_Admin {
             wp_send_json_error(array('message' => __('You do not have permission to perform this action.', 'gravity-forms-woocommerce-coupon-generator')));
         }
 
+        // Handle product IDs
+        $product_ids = array();
+        if (isset($_POST['product_ids']) && is_array($_POST['product_ids'])) {
+            $product_ids = array_map('intval', array_filter($_POST['product_ids']));
+        }
+
+        // Handle exclude product IDs
+        $exclude_product_ids = array();
+        if (isset($_POST['exclude_product_ids']) && is_array($_POST['exclude_product_ids'])) {
+            $exclude_product_ids = array_map('intval', array_filter($_POST['exclude_product_ids']));
+        }
+
+        // Handle product categories
+        $product_categories = array();
+        if (isset($_POST['product_categories']) && is_array($_POST['product_categories'])) {
+            $product_categories = array_map('intval', array_filter($_POST['product_categories']));
+        }
+
+        // Handle exclude product categories
+        $exclude_product_categories = array();
+        if (isset($_POST['exclude_product_categories']) && is_array($_POST['exclude_product_categories'])) {
+            $exclude_product_categories = array_map('intval', array_filter($_POST['exclude_product_categories']));
+        }
+
         $data = array(
             'title' => isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '',
             'form_id' => isset($_POST['form_id']) ? intval($_POST['form_id']) : 0,
@@ -310,6 +335,10 @@ class GFWCG_Admin {
             'email_from_email' => isset($_POST['email_from_email']) ? sanitize_email($_POST['email_from_email']) : '',
             'description' => isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '',
             'is_debug' => isset($_POST['is_debug']) ? 1 : 0,
+            'product_ids' => !empty($product_ids) ? serialize($product_ids) : null,
+            'exclude_products' => !empty($exclude_product_ids) ? serialize($exclude_product_ids) : null,
+            'product_categories' => !empty($product_categories) ? serialize($product_categories) : null,
+            'exclude_categories' => !empty($exclude_product_categories) ? serialize($exclude_product_categories) : null,
             'status' => 'active'
         );
 
@@ -356,6 +385,93 @@ class GFWCG_Admin {
         }
 
         wp_send_json_success(array('message' => __('Generator deleted successfully.', 'gravity-forms-woocommerce-coupon-generator')));
+    }
+
+    /**
+     * AJAX handler for product search
+     */
+    public function ajax_search_products() {
+        // Debug logging
+        error_log('GFWCG: Product search AJAX called');
+        error_log('GFWCG: POST data: ' . print_r($_POST, true));
+        error_log('GFWCG: GET data: ' . print_r($_GET, true));
+        
+        // Check nonce - try both POST and GET
+        $nonce_valid = false;
+        if (isset($_POST['security']) && wp_verify_nonce($_POST['security'], 'gfwcg_admin_nonce')) {
+            $nonce_valid = true;
+            error_log('GFWCG: Nonce valid from POST');
+        } elseif (isset($_GET['security']) && wp_verify_nonce($_GET['security'], 'gfwcg_admin_nonce')) {
+            $nonce_valid = true;
+            error_log('GFWCG: Nonce valid from GET');
+        }
+
+        if (!$nonce_valid) {
+            error_log('GFWCG: Nonce validation failed');
+            wp_send_json_error('Invalid nonce');
+        }
+
+        if (!current_user_can('manage_options')) {
+            error_log('GFWCG: Permission denied');
+            wp_send_json_error('Permission denied');
+        }
+
+        // Get search term from either POST or GET
+        $term = '';
+        if (isset($_POST['term'])) {
+            $term = sanitize_text_field($_POST['term']);
+        } elseif (isset($_GET['term'])) {
+            $term = sanitize_text_field($_GET['term']);
+        }
+        
+        error_log('GFWCG: Search term: ' . $term);
+        
+        if (empty($term)) {
+            error_log('GFWCG: Empty search term, returning empty array');
+            wp_send_json(array());
+        }
+
+        // Test response for debugging
+        if ($term === 'test') {
+            error_log('GFWCG: Test search term detected, returning test data');
+            wp_send_json(array(
+                '1' => 'Test Product 1',
+                '2' => 'Test Product 2'
+            ));
+        }
+
+        $products = array();
+        
+        // Search for products - simplified query
+        $args = array(
+            'post_type' => 'product',
+            'post_status' => 'publish',
+            'posts_per_page' => 20,
+            's' => $term
+        );
+
+        error_log('GFWCG: WP_Query args: ' . print_r($args, true));
+
+        $query = new WP_Query($args);
+        
+        error_log('GFWCG: Found ' . $query->found_posts . ' products');
+        
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $product = wc_get_product(get_the_ID());
+                if ($product) {
+                    $products[$product->get_id()] = $product->get_name();
+                    error_log('GFWCG: Added product - ID: ' . $product->get_id() . ', Name: ' . $product->get_name());
+                }
+            }
+        }
+        
+        wp_reset_postdata();
+        
+        error_log('GFWCG: Final products array: ' . print_r($products, true));
+        
+        wp_send_json($products);
     }
 
     private function get_generator($id) {
@@ -406,6 +522,30 @@ class GFWCG_Admin {
         $description = isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '';
         $is_debug = isset($_POST['is_debug']) ? 1 : 0;
 
+        // Handle product IDs
+        $product_ids = array();
+        if (isset($_POST['product_ids']) && is_array($_POST['product_ids'])) {
+            $product_ids = array_map('intval', array_filter($_POST['product_ids']));
+        }
+
+        // Handle exclude product IDs
+        $exclude_product_ids = array();
+        if (isset($_POST['exclude_product_ids']) && is_array($_POST['exclude_product_ids'])) {
+            $exclude_product_ids = array_map('intval', array_filter($_POST['exclude_product_ids']));
+        }
+
+        // Handle product categories
+        $product_categories = array();
+        if (isset($_POST['product_categories']) && is_array($_POST['product_categories'])) {
+            $product_categories = array_map('intval', array_filter($_POST['product_categories']));
+        }
+
+        // Handle exclude product categories
+        $exclude_product_categories = array();
+        if (isset($_POST['exclude_product_categories']) && is_array($_POST['exclude_product_categories'])) {
+            $exclude_product_categories = array_map('intval', array_filter($_POST['exclude_product_categories']));
+        }
+
         // Validate required fields
         if (empty($title) || empty($form_id) || empty($email_field_id) || empty($coupon_type) || empty($discount_type) || empty($discount_amount)) {
             add_settings_error('gfwcg_admin', 'gfwcg_admin_error', __('Please fill in all required fields.', 'gravity-forms-woocommerce-coupon-generator'), 'error');
@@ -441,6 +581,10 @@ class GFWCG_Admin {
             'email_from_email' => $email_from_email,
             'description' => $description,
             'is_debug' => $is_debug,
+            'product_ids' => !empty($product_ids) ? serialize($product_ids) : null,
+            'exclude_products' => !empty($exclude_product_ids) ? serialize($exclude_product_ids) : null,
+            'product_categories' => !empty($product_categories) ? serialize($product_categories) : null,
+            'exclude_categories' => !empty($exclude_product_categories) ? serialize($exclude_product_categories) : null,
             'status' => 'active',
             'updated_at' => current_time('mysql')
         );

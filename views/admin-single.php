@@ -330,6 +330,124 @@ function gfwcg_display_generator_form($generator = null) {
                 </table>
             </div>
 
+            <!-- Product Restrictions -->
+            <div class="gfwcg-form-section">
+                <div class="options_group">
+                    <div class="hr-section hr-section-coupon_restrictions">And</div>
+                    <p class="form-field">
+                        <label>Products</label>
+                        <select class="wc-product-search select2-hidden-accessible enhanced" multiple="" style="width: 50%;" name="product_ids[]" data-placeholder="Search for a product…" data-action="woocommerce_json_search_products_and_variations" tabindex="-1" aria-hidden="true">
+                            <?php
+                            if ($generator && !empty($generator->product_ids)) {
+                                $product_ids = maybe_unserialize($generator->product_ids);
+                                if (is_array($product_ids)) {
+                                    foreach ($product_ids as $product_id) {
+                                        $product = wc_get_product($product_id);
+                                        if ($product) {
+                                            echo '<option value="' . esc_attr($product_id) . '" selected>' . esc_html($product->get_name()) . '</option>';
+                                        }
+                                    }
+                                }
+                            }
+                            ?>
+                        </select>
+                        <span class="woocommerce-help-tip" tabindex="0" aria-label="Products that the coupon will be applied to, or that need to be in the cart in order for the &quot;Fixed cart discount&quot; to be applied."></span>
+                    </p>
+
+                    <p class="form-field">
+                        <label>Exclude products</label>
+                        <select class="wc-product-search select2-hidden-accessible enhanced" multiple="" style="width: 50%;" name="exclude_product_ids[]" data-placeholder="Search for a product…" data-action="woocommerce_json_search_products_and_variations" tabindex="-1" aria-hidden="true">
+                            <?php
+                            if ($generator && !empty($generator->exclude_products)) {
+                                $exclude_product_ids = maybe_unserialize($generator->exclude_products);
+                                if (is_array($exclude_product_ids)) {
+                                    foreach ($exclude_product_ids as $product_id) {
+                                        $product = wc_get_product($product_id);
+                                        if ($product) {
+                                            echo '<option value="' . esc_attr($product_id) . '" selected>' . esc_html($product->get_name()) . '</option>';
+                                        }
+                                    }
+                                }
+                            }
+                            ?>
+                        </select>
+                        <span class="woocommerce-help-tip" tabindex="0" aria-label="Products that the coupon will not be applied to, or that cannot be in the cart in order for the &quot;Fixed cart discount&quot; to be applied."></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Category Restrictions -->
+            <div class="gfwcg-form-section">
+                <div class="options_group">
+                    <div class="hr-section hr-section-coupon_restrictions">And</div>
+                    <p class="form-field">
+                        <label for="product_categories">Product categories</label>
+                        <select id="product_categories" name="product_categories[]" style="width: 50%;" class="wc-enhanced-select select2-hidden-accessible enhanced" multiple="" data-placeholder="Any category" tabindex="-1" aria-hidden="true">
+                            <?php
+                            $product_categories = get_terms(array(
+                                'taxonomy' => 'product_cat',
+                                'hide_empty' => false,
+                                'hierarchical' => true,
+                                'parent' => 0
+                            ));
+                            
+                            $selected_categories = array();
+                            if ($generator && !empty($generator->product_categories)) {
+                                $selected_categories = maybe_unserialize($generator->product_categories);
+                                if (!is_array($selected_categories)) {
+                                    $selected_categories = array();
+                                }
+                            }
+                            
+                            // Function to display categories hierarchically
+                            function display_categories_hierarchically($categories, $selected_categories, $level = 0) {
+                                $output = '';
+                                foreach ($categories as $category) {
+                                    $indent = str_repeat('— ', $level);
+                                    $selected = in_array($category->term_id, $selected_categories) ? 'selected' : '';
+                                    $output .= '<option value="' . esc_attr($category->term_id) . '" ' . $selected . '>' . $indent . esc_html($category->name) . '</option>';
+                                    
+                                    // Get child categories
+                                    $child_categories = get_terms(array(
+                                        'taxonomy' => 'product_cat',
+                                        'hide_empty' => false,
+                                        'hierarchical' => true,
+                                        'parent' => $category->term_id
+                                    ));
+                                    
+                                    if (!empty($child_categories)) {
+                                        $output .= display_categories_hierarchically($child_categories, $selected_categories, $level + 1);
+                                    }
+                                }
+                                return $output;
+                            }
+                            
+                            echo display_categories_hierarchically($product_categories, $selected_categories);
+                            ?>
+                        </select>
+                        <span class="woocommerce-help-tip" tabindex="0" aria-label="Product categories that the coupon will be applied to, or that need to be in the cart in order for the &quot;Fixed cart discount&quot; to be applied."></span>
+                    </p>
+
+                    <p class="form-field">
+                        <label for="exclude_product_categories">Exclude categories</label>
+                        <select id="exclude_product_categories" name="exclude_product_categories[]" style="width: 50%;" class="wc-enhanced-select select2-hidden-accessible enhanced" multiple="" data-placeholder="No categories" tabindex="-1" aria-hidden="true">
+                            <?php
+                            $exclude_selected_categories = array();
+                            if ($generator && !empty($generator->exclude_categories)) {
+                                $exclude_selected_categories = maybe_unserialize($generator->exclude_categories);
+                                if (!is_array($exclude_selected_categories)) {
+                                    $exclude_selected_categories = array();
+                                }
+                            }
+                            
+                            echo display_categories_hierarchically($product_categories, $exclude_selected_categories);
+                            ?>
+                        </select>
+                        <span class="woocommerce-help-tip" tabindex="0" aria-label="Product categories that the coupon will not be applied to, or that cannot be in the cart in order for the &quot;Fixed cart discount&quot; to be applied."></span>
+                    </p>
+                </div>
+            </div>
+
             <div class="gfwcg-form-section">
                 <h2>Email Settings</h2>
                 <table class="form-table">

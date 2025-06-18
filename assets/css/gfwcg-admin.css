@@ -408,4 +408,149 @@
     .select2-container {
         width: 100% !important;
     }
+}
+
+/* WooCommerce-style Product and Category Restrictions */
+.options_group {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+}
+
+.hr-section {
+    font-size: 12px;
+    font-weight: 600;
+    color: #50575e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.hr-section-coupon_restrictions {
+    color: #2271b1;
+    border-bottom-color: #2271b1;
+}
+
+.form-field {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.form-field:last-child {
+    margin-bottom: 0;
+}
+
+.form-field label {
+    display: block;
+    font-weight: 600;
+    color: #1d2327;
+    margin-bottom: 5px;
+}
+
+.form-field select {
+    width: 50%;
+    min-height: 30px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    background: #fff;
+    transition: border-color 0.2s ease;
+}
+
+.form-field select:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.woocommerce-help-tip {
+    position: relative;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 5px;
+    background: #2271b1;
+    border-radius: 50%;
+    color: #fff;
+    text-align: center;
+    line-height: 16px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: help;
+    transition: background-color 0.2s ease;
+}
+
+.woocommerce-help-tip:hover {
+    background: #135e96;
+}
+
+.woocommerce-help-tip::before {
+    content: "?";
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Select2 Enhancements for WooCommerce-style fields */
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    min-height: 30px;
+}
+
+.select2-container--default .select2-selection--multiple:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: #2271b1;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 2px 6px;
+    margin: 2px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #fff;
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #f0f0f0;
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+    margin-top: 3px;
+    margin-left: 3px;
+}
+
+/* Enhanced Select2 styling */
+.select2-container--default.enhanced .select2-selection--multiple {
+    background: #f9f9f9;
+}
+
+.select2-container--default.enhanced .select2-selection--multiple:hover {
+    background: #f0f0f0;
+}
+
+/* Responsive adjustments for restriction fields */
+@media screen and (max-width: 782px) {
+    .form-field select {
+        width: 100%;
+    }
+    
+    .options_group {
+        padding: 15px;
+    }
+    
+    .hr-section {
+        font-size: 11px;
+    }
 } 

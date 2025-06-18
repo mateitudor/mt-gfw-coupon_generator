@@ -11,6 +11,67 @@ jQuery(document).ready(function($) {
     }
     initSelect2();
 
+    // Initialize WooCommerce-style product and category select fields
+    function initWooCommerceSelects() {
+        // Product search fields
+        $('select[name="product_ids[]"], select[name="exclude_product_ids[]"]').each(function() {
+            $(this).select2({
+                width: '50%',
+                placeholder: 'Search for a product…',
+                allowClear: true,
+                ajax: {
+                    url: gfwcgAdmin.ajaxUrl,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        console.log('Product search params:', params);
+                        return {
+                            action: 'gfwcg_search_products',
+                            term: params.term,
+                            security: gfwcgAdmin.nonce
+                        };
+                    },
+                    processResults: function(data) {
+                        console.log('Product search results:', data);
+                        var terms = [];
+                        if (data && typeof data === 'object') {
+                            $.each(data, function(id, text) {
+                                terms.push({
+                                    id: id,
+                                    text: text
+                                });
+                            });
+                        }
+                        return {
+                            results: terms
+                        };
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Product search error:', error);
+                        console.error('Status:', status);
+                        console.error('Response:', xhr.responseText);
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2
+            });
+        });
+
+        // Category select fields
+        $('#product_categories, #exclude_product_categories').each(function() {
+            $(this).select2({
+                width: '50%',
+                placeholder: $(this).attr('data-placeholder') || 'Any category',
+                allowClear: true
+            });
+        });
+    }
+
+    // Initialize WooCommerce selects if WooCommerce is available
+    if (typeof gfwcgAdmin !== 'undefined' && gfwcgAdmin.ajaxUrl) {
+        initWooCommerceSelects();
+    }
+
     function formatFieldOption(field) {
         if (!field.id) {
             return field.text;
@@ -201,92 +262,85 @@ jQuery(document).ready(function($) {
             if (!isConfirming) {
                 // First click - show confirmation
                 isConfirming = true;
-                button.textContent = confirmText;
-                button.classList.add('button-link-delete');
-                return;
-            }
-
-            // Second click - proceed with deletion
-            const generatorId = button.dataset.id;
-            const nonce = button.dataset.nonce;
-            
-            button.disabled = true;
-            
-            fetch(ajaxurl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    action: 'gfwcg_delete_generator',
-                    generator_id: generatorId,
-                    nonce: nonce
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                button.textContent = confirmText || 'Click again to confirm';
+                button.classList.add('confirming');
+                
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    isConfirming = false;
+                    button.textContent = originalText;
+                    button.classList.remove('confirming');
+                }, 3000);
+            } else {
+                // Second click - proceed with deletion
+                const generatorId = button.dataset.id;
+                const nonce = button.dataset.nonce;
+                
+                if (!generatorId || !nonce) {
+                    alert('Missing required data for deletion.');
+                    return;
                 }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Check if we're in single view
-                    const isSingleView = document.querySelector('.gfwcg-generator-form') !== null;
-                    
-                    if (isSingleView) {
-                        // Redirect to the generators list page
-                        window.location.href = window.location.origin + '/wp-admin/admin.php?page=gfwcg-generators';
-                    } else {
-                        // Find the closest row or grid item
-                        const container = button.closest('tr, .gfwcg-grid-item');
-                        if (container) {
-                            // Add fade out animation
-                            container.style.transition = 'opacity 0.3s';
-                            container.style.opacity = '0';
+                
+                // Show loading state
+                button.textContent = deleteText || 'Deleting...';
+                button.disabled = true;
+                
+                // Send delete request
+                $.ajax({
+                    url: gfwcgAdmin.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'gfwcg_delete_generator',
+                        id: generatorId,
+                        nonce: nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Remove the generator element from the page
+                            const generatorElement = button.closest('.gfwcg-grid-item, tr');
+                            if (generatorElement) {
+                                generatorElement.remove();
+                            }
                             
-                            // Remove after animation
-                            setTimeout(() => {
-                                container.remove();
-                                
-                                // Check if we need to show empty message
-                                const remainingItems = document.querySelectorAll('.gfwcg-grid-item, .wp-list-table tbody tr');
-                                if (remainingItems.length === 0) {
-                                    const grid = document.querySelector('.gfwcg-grid');
-                                    const tableBody = document.querySelector('.wp-list-table tbody');
-                                    
-                                    if (grid) {
-                                        grid.innerHTML = `<div class="gfwcg-grid-empty">${data.data}</div>`;
-                                    } else if (tableBody) {
-                                        tableBody.innerHTML = `<tr><td colspan="8">${data.data}</td></tr>`;
-                                    }
-                                }
-                            }, 300);
+                            // Show success message
+                            alert(response.data.message || 'Generator deleted successfully.');
+                            
+                            // Reload page if no generators left
+                            const remainingGenerators = document.querySelectorAll('.gfwcg-grid-item, .gfwcg-list-item');
+                            if (remainingGenerators.length === 0) {
+                                window.location.reload();
+                            }
+                        } else {
+                            alert(response.data.message || 'Error deleting generator.');
+                            button.disabled = false;
+                            button.textContent = originalText;
                         }
+                    },
+                    error: function() {
+                        alert('Error deleting generator.');
+                        button.disabled = false;
+                        button.textContent = originalText;
                     }
-                } else {
-                    throw new Error(data.data || 'Failed to delete generator');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert(error.message || 'An error occurred while deleting the generator.');
-            })
-            .finally(() => {
-                button.disabled = false;
-                isConfirming = false;
-                button.textContent = originalText;
-                button.classList.remove('button-link-delete');
-            });
-        });
-
-        // Reset button state if clicking outside
-        document.addEventListener('click', function(e) {
-            if (!button.contains(e.target)) {
-                isConfirming = false;
-                button.textContent = originalText;
-                button.classList.remove('button-link-delete');
+                });
             }
         });
     });
+
+    // Handle coupon type toggle
+    $('#coupon_type').on('change', function() {
+        var couponType = $(this).val();
+        var $couponFieldRow = $('#coupon_field_id_row');
+        var $couponField = $('#coupon_field_id');
+        
+        if (couponType === 'field') {
+            $couponFieldRow.show();
+            $couponField.prop('required', true);
+        } else {
+            $couponFieldRow.hide();
+            $couponField.prop('required', false);
+        }
+    });
+
+    // Initialize coupon type toggle on page load
+    $('#coupon_type').trigger('change');
 }); 

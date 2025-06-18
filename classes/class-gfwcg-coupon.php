@@ -91,6 +91,38 @@ class GFWCG_Coupon {
 				if ($generator->allow_free_shipping) {
 						$coupon->set_free_shipping(true);
 				}
+
+				// Set product restrictions
+				if (!empty($generator->product_ids)) {
+					$product_ids = maybe_unserialize($generator->product_ids);
+					if (is_array($product_ids) && !empty($product_ids)) {
+						$coupon->set_product_ids($product_ids);
+					}
+				}
+
+				// Set exclude product restrictions
+				if (!empty($generator->exclude_products)) {
+					$exclude_product_ids = maybe_unserialize($generator->exclude_products);
+					if (is_array($exclude_product_ids) && !empty($exclude_product_ids)) {
+						$coupon->set_excluded_product_ids($exclude_product_ids);
+					}
+				}
+
+				// Set product category restrictions
+				if (!empty($generator->product_categories)) {
+					$product_categories = maybe_unserialize($generator->product_categories);
+					if (is_array($product_categories) && !empty($product_categories)) {
+						$coupon->set_product_categories($product_categories);
+					}
+				}
+
+				// Set exclude product category restrictions
+				if (!empty($generator->exclude_categories)) {
+					$exclude_categories = maybe_unserialize($generator->exclude_categories);
+					if (is_array($exclude_categories) && !empty($exclude_categories)) {
+						$coupon->set_excluded_product_categories($exclude_categories);
+					}
+				}
 				
 				return $coupon->save();
 		}

@@ -138,6 +138,38 @@ class GFWCG_DB {
         }
     }
 
+    public static function update_generator($id, $data) {
+        global $wpdb;
+        
+        $data['updated_at'] = current_time('mysql');
+        
+        $result = $wpdb->update(
+            $wpdb->prefix . 'gfwcg_generators',
+            $data,
+            array('id' => $id)
+        );
+        
+        return $result !== false;
+    }
+
+    public static function add_generator($data) {
+        global $wpdb;
+        
+        $data['created_at'] = current_time('mysql');
+        $data['updated_at'] = current_time('mysql');
+        
+        if (!isset($data['id'])) {
+            $data['id'] = self::get_next_available_id();
+        }
+        
+        $result = $wpdb->insert(
+            $wpdb->prefix . 'gfwcg_generators',
+            $data
+        );
+        
+        return $result !== false ? $data['id'] : false;
+    }
+
     public static function delete_generator($id) {
         global $wpdb;
         return $wpdb->delete(
@@ -188,7 +220,13 @@ class GFWCG_DB {
             'email_from_email' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN email_from_email varchar(255) DEFAULT NULL',
             'status' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN status varchar(20) DEFAULT "active"',
             'created_at' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN created_at datetime DEFAULT CURRENT_TIMESTAMP',
-            'updated_at' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
+            'updated_at' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+            'product_ids' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN product_ids text DEFAULT NULL',
+            'exclude_products' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN exclude_products text DEFAULT NULL',
+            'product_categories' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN product_categories text DEFAULT NULL',
+            'exclude_categories' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN exclude_categories text DEFAULT NULL',
+            'description' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN description text DEFAULT NULL',
+            'is_debug' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN is_debug tinyint(1) DEFAULT 0'
         );
         
         // Check each required column
