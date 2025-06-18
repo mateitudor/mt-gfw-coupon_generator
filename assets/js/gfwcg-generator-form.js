@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
     // Initialize Select2 for form fields
     function initSelect2() {
-        $('#form_id, #email_field_id, #name_field_id').select2({
+        $('#form_id, #email_field_id, #name_field_id, #coupon_field_id').select2({
             width: '100%',
             placeholder: gfwcgAdmin.selectFieldText,
             allowClear: true,
@@ -48,10 +48,12 @@ jQuery(document).ready(function($) {
         var formId = $(this).val();
         var $emailField = $('#email_field_id');
         var $nameField = $('#name_field_id');
+        var $couponField = $('#coupon_field_id');
 
         // Clear and disable fields
         $emailField.val('').trigger('change').prop('disabled', true);
         $nameField.val('').trigger('change').prop('disabled', true);
+        $couponField.val('').trigger('change').prop('disabled', true);
 
         if (!formId) {
             return;
@@ -68,6 +70,7 @@ jQuery(document).ready(function($) {
             beforeSend: function() {
                 $emailField.addClass('loading');
                 $nameField.addClass('loading');
+                $couponField.addClass('loading');
             },
             success: function(response) {
                 if (response.success) {
@@ -82,6 +85,7 @@ jQuery(document).ready(function($) {
             complete: function() {
                 $emailField.removeClass('loading').prop('disabled', false);
                 $nameField.removeClass('loading').prop('disabled', false);
+                $couponField.removeClass('loading').prop('disabled', false);
             }
         });
     });
@@ -89,15 +93,18 @@ jQuery(document).ready(function($) {
     function updateFieldSelects(fields) {
         var $emailField = $('#email_field_id');
         var $nameField = $('#name_field_id');
+        var $couponField = $('#coupon_field_id');
 
         // Clear existing options
         $emailField.empty();
         $nameField.empty();
+        $couponField.empty();
 
         // Add default option
         var defaultOption = new Option(gfwcgAdmin.selectFieldText, '', true, true);
         $emailField.append(defaultOption);
         $nameField.append(new Option(gfwcgAdmin.selectFieldText, '', true, true));
+        $couponField.append(new Option(gfwcgAdmin.selectFieldText, '', true, true));
 
         // Add field options
         fields.forEach(function(field) {
@@ -112,11 +119,13 @@ jQuery(document).ready(function($) {
 
             $emailField.append($option.clone());
             $nameField.append($option.clone());
+            $couponField.append($option.clone());
         });
 
         // Trigger change to update Select2
         $emailField.trigger('change');
         $nameField.trigger('change');
+        $couponField.trigger('change');
     }
 
     // Handle form submission
