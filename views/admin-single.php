@@ -57,7 +57,7 @@ function gfwcg_display_generator_form($generator = null) {
                                 <label for="generator_id">Generator ID</label>
                             </th>
                             <td>
-                                <input type="text" id="generator_id" class="regular-text" value="<?php echo esc_attr($generator->id); ?>" readonly="">
+                                <input type="text" id="generator_id" class="regular-text" value="<?php echo $generator ? esc_attr($generator->id) : ''; ?>" readonly>
                                 <p class="description">This is the unique identifier for this generator.</p>
                             </td>
                         </tr>
@@ -66,7 +66,7 @@ function gfwcg_display_generator_form($generator = null) {
                                 <label for="title">Title</label>
                             </th>
                             <td>
-                                <input type="text" name="title" id="title" class="regular-text" value="<?php echo esc_attr($generator->title); ?>" required="">
+                                <input type="text" name="title" id="title" class="regular-text" value="<?php echo $generator ? esc_attr($generator->title) : ''; ?>" required>
                             </td>
                         </tr>
                         <tr>
@@ -74,10 +74,10 @@ function gfwcg_display_generator_form($generator = null) {
                                 <label for="form_id">Gravity Form</label>
                             </th>
                             <td>
-                                <select name="form_id" id="form_id" required="">
+                                <select name="form_id" id="form_id" required>
                                     <option value="">Select a form</option>
                                     <?php foreach ($forms as $form): ?>
-                                        <option value="<?php echo esc_attr($form['id']); ?>" <?php selected($generator->form_id, $form['id']); ?>>
+                                        <option value="<?php echo esc_attr($form['id']); ?>" <?php selected($generator ? $generator->form_id : '', $form['id']); ?>>
                                             <?php echo esc_html($form['title']); ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -89,11 +89,11 @@ function gfwcg_display_generator_form($generator = null) {
                                 <label for="email_field_id">Email Field</label>
                             </th>
                             <td>
-                                <select name="email_field_id" id="email_field_id" required="">
+                                <select name="email_field_id" id="email_field_id" required>
                                     <option value="">Select email field</option>
                                     <?php foreach ($form_fields as $field): ?>
                                         <?php if ($field['type'] === 'email'): ?>
-                                            <option value="<?php echo esc_attr($field['id']); ?>" <?php selected($generator->email_field_id, $field['id']); ?>>
+                                            <option value="<?php echo esc_attr($field['id']); ?>" <?php selected($generator ? $generator->email_field_id : '', $field['id']); ?>>
                                                 <?php echo esc_html($field['label']); ?>
                                             </option>
                                         <?php endif; ?>
@@ -110,7 +110,7 @@ function gfwcg_display_generator_form($generator = null) {
                                     <option value="">Select name field</option>
                                     <?php foreach ($form_fields as $field): ?>
                                         <?php if ($field['type'] === 'name'): ?>
-                                            <option value="<?php echo esc_attr($field['id']); ?>" <?php selected($generator->name_field_id, $field['id']); ?>>
+                                            <option value="<?php echo esc_attr($field['id']); ?>" <?php selected($generator ? $generator->name_field_id : '', $field['id']); ?>>
                                                 <?php echo esc_html($field['label']); ?>
                                             </option>
                                         <?php endif; ?>
@@ -130,25 +130,25 @@ function gfwcg_display_generator_form($generator = null) {
                             <label for="coupon_type">Coupon Type</label>
                         </th>
                         <td>
-                            <select name="coupon_type" id="coupon_type" required="">
-                                <option value="random" <?php selected($generator->coupon_type, 'random'); ?>>
+                            <select name="coupon_type" id="coupon_type" required>
+                                <option value="random" <?php selected($generator ? $generator->coupon_type : '', 'random'); ?>>
                                     Random
                                 </option>
-                                <option value="field" <?php selected($generator->coupon_type, 'field'); ?>>
+                                <option value="field" <?php selected($generator ? $generator->coupon_type : '', 'field'); ?>>
                                     From Form Field
                                 </option>
                             </select>
                         </td>
                     </tr>
-                    <tr id="coupon_field_id_row" style="display: <?php echo ($generator->coupon_type === 'field') ? 'table-row' : 'none'; ?>;">
+                    <tr id="coupon_field_id_row" style="display: <?php echo ($generator && $generator->coupon_type === 'field') ? 'table-row' : 'none'; ?>;">
                         <th scope="row">
                             <label for="coupon_field_id">Coupon Field</label>
                         </th>
                         <td>
-                            <select name="coupon_field_id" id="coupon_field_id" <?php echo ($generator->coupon_type === 'field') ? 'required' : ''; ?>>
+                            <select name="coupon_field_id" id="coupon_field_id" <?php echo ($generator && $generator->coupon_type === 'field') ? 'required' : ''; ?>>
                                 <option value="">Select coupon field</option>
                                 <?php foreach ($form_fields as $field): ?>
-                                    <option value="<?php echo esc_attr($field['id']); ?>" <?php selected($generator->coupon_field_id, $field['id']); ?>>
+                                    <option value="<?php echo esc_attr($field['id']); ?>" <?php selected($generator ? $generator->coupon_field_id : '', $field['id']); ?>>
                                         <?php echo esc_html($field['label']); ?> (<?php echo esc_html($field['type']); ?>)
                                     </option>
                                 <?php endforeach; ?>
