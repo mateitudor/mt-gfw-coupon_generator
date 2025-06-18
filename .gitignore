@@ -12,6 +12,7 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+.cursorrules
 
 # Dependency directories
 node_modules/
