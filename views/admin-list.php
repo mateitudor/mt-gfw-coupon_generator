@@ -70,9 +70,13 @@ function gfwcg_display_list_view($generators) {
                                 $limits = array();
                                 if ($generator->usage_limit_per_coupon > 0) {
                                     $limits[] = sprintf(__('Per coupon: %d', 'gravity-forms-woocommerce-coupon-generator'), $generator->usage_limit_per_coupon);
+                                } else {
+                                    $limits[] = __('Per coupon: Unlimited', 'gravity-forms-woocommerce-coupon-generator');
                                 }
                                 if ($generator->usage_limit_per_user > 0) {
                                     $limits[] = sprintf(__('Per user: %d', 'gravity-forms-woocommerce-coupon-generator'), $generator->usage_limit_per_user);
+                                } else {
+                                    $limits[] = __('Per user: Unlimited', 'gravity-forms-woocommerce-coupon-generator');
                                 }
                                 echo implode('<br>', $limits);
                             ?>

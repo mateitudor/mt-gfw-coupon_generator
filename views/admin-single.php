@@ -246,8 +246,9 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <input type="number" name="usage_limit_per_coupon" id="usage_limit_per_coupon" 
-                                   value="<?php echo $generator ? esc_attr($generator->usage_limit_per_coupon) : '1'; ?>" 
-                                   min="0" required>
+                                   value="<?php echo $generator && $generator->usage_limit_per_coupon > 0 ? esc_attr($generator->usage_limit_per_coupon) : ''; ?>" 
+                                   min="0">
+                            <p class="description">Leave empty for unlimited usage. Set to 0 for unlimited usage.</p>
                         </td>
                     </tr>
                     <tr>
@@ -256,8 +257,9 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <input type="number" name="usage_limit_per_user" id="usage_limit_per_user" 
-                                   value="<?php echo $generator ? esc_attr($generator->usage_limit_per_user) : '1'; ?>" 
-                                   min="0" required>
+                                   value="<?php echo $generator && $generator->usage_limit_per_user > 0 ? esc_attr($generator->usage_limit_per_user) : ''; ?>" 
+                                   min="0">
+                            <p class="description">Leave empty for unlimited usage per user. Set to 0 for unlimited usage per user.</p>
                         </td>
                     </tr>
                     <tr>
@@ -266,8 +268,9 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <input type="number" name="minimum_amount" id="minimum_amount" 
-                                   value="<?php echo $generator ? esc_attr($generator->minimum_amount) : '0'; ?>" 
+                                   value="<?php echo $generator && $generator->minimum_amount > 0 ? esc_attr($generator->minimum_amount) : ''; ?>" 
                                    step="0.01" min="0">
+                            <p class="description">Leave empty for no minimum amount. Set to 0 for no minimum amount.</p>
                         </td>
                     </tr>
                     <tr>
@@ -276,8 +279,9 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <input type="number" name="maximum_amount" id="maximum_amount" 
-                                   value="<?php echo $generator ? esc_attr($generator->maximum_amount) : '0'; ?>" 
+                                   value="<?php echo $generator && $generator->maximum_amount > 0 ? esc_attr($generator->maximum_amount) : ''; ?>" 
                                    step="0.01" min="0">
+                            <p class="description">Leave empty for no maximum amount. Set to 0 for no maximum amount.</p>
                         </td>
                     </tr>
                     <tr>

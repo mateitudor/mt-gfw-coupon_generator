@@ -294,10 +294,10 @@ class GFWCG_Admin {
             'discount_type' => isset($_POST['discount_type']) ? sanitize_text_field($_POST['discount_type']) : 'percentage',
             'discount_amount' => isset($_POST['discount_amount']) ? floatval($_POST['discount_amount']) : 0,
             'individual_use' => isset($_POST['individual_use']) ? 1 : 0,
-            'usage_limit_per_coupon' => isset($_POST['usage_limit_per_coupon']) ? intval($_POST['usage_limit_per_coupon']) : 1,
-            'usage_limit_per_user' => isset($_POST['usage_limit_per_user']) ? intval($_POST['usage_limit_per_user']) : 1,
-            'minimum_amount' => isset($_POST['minimum_amount']) ? floatval($_POST['minimum_amount']) : 0,
-            'maximum_amount' => isset($_POST['maximum_amount']) ? floatval($_POST['maximum_amount']) : 0,
+            'usage_limit_per_coupon' => isset($_POST['usage_limit_per_coupon']) && $_POST['usage_limit_per_coupon'] !== '' ? intval($_POST['usage_limit_per_coupon']) : 0,
+            'usage_limit_per_user' => isset($_POST['usage_limit_per_user']) && $_POST['usage_limit_per_user'] !== '' ? intval($_POST['usage_limit_per_user']) : 0,
+            'minimum_amount' => isset($_POST['minimum_amount']) && $_POST['minimum_amount'] !== '' ? floatval($_POST['minimum_amount']) : 0,
+            'maximum_amount' => isset($_POST['maximum_amount']) && $_POST['maximum_amount'] !== '' ? floatval($_POST['maximum_amount']) : 0,
             'exclude_sale_items' => isset($_POST['exclude_sale_items']) ? 1 : 0,
             'send_email' => isset($_POST['send_email']) ? 1 : 0,
             'use_wc_email_template' => isset($_POST['use_wc_email_template']) ? 1 : 0,
@@ -385,10 +385,10 @@ class GFWCG_Admin {
         $coupon_prefix = isset($_POST['coupon_prefix']) ? sanitize_text_field($_POST['coupon_prefix']) : '';
         $coupon_suffix = isset($_POST['coupon_suffix']) ? sanitize_text_field($_POST['coupon_suffix']) : '';
         $individual_use = isset($_POST['individual_use']) ? 1 : 0;
-        $usage_limit_per_coupon = isset($_POST['usage_limit_per_coupon']) ? intval($_POST['usage_limit_per_coupon']) : 1;
-        $usage_limit_per_user = isset($_POST['usage_limit_per_user']) ? intval($_POST['usage_limit_per_user']) : 1;
-        $minimum_amount = isset($_POST['minimum_amount']) ? floatval($_POST['minimum_amount']) : 0;
-        $maximum_amount = isset($_POST['maximum_amount']) ? floatval($_POST['maximum_amount']) : 0;
+        $usage_limit_per_coupon = isset($_POST['usage_limit_per_coupon']) && $_POST['usage_limit_per_coupon'] !== '' ? intval($_POST['usage_limit_per_coupon']) : 0;
+        $usage_limit_per_user = isset($_POST['usage_limit_per_user']) && $_POST['usage_limit_per_user'] !== '' ? intval($_POST['usage_limit_per_user']) : 0;
+        $minimum_amount = isset($_POST['minimum_amount']) && $_POST['minimum_amount'] !== '' ? floatval($_POST['minimum_amount']) : 0;
+        $maximum_amount = isset($_POST['maximum_amount']) && $_POST['maximum_amount'] !== '' ? floatval($_POST['maximum_amount']) : 0;
         $exclude_sale_items = isset($_POST['exclude_sale_items']) ? 1 : 0;
         $send_email = isset($_POST['send_email']) ? 1 : 0;
         $email_subject = isset($_POST['email_subject']) ? sanitize_text_field($_POST['email_subject']) : '';
