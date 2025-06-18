@@ -20,6 +20,8 @@ if (!class_exists('WC_Email')) {
 class GFWCG_Email extends WC_Email {
 	public $placeholders = array();
 	public $email_message;
+	public $from_name;
+	public $from_email;
 
 	public function __construct() {
 		// Set email identification and description
