@@ -172,7 +172,7 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <input type="text" name="coupon_prefix" id="coupon_prefix" class="regular-text" 
-                                   value="<?php echo $generator ? esc_attr($generator->coupon_prefix) : ''; ?>">
+                                   value="<?php echo $generator ? esc_attr($generator->coupon_prefix ?? '') : ''; ?>">
                         </td>
                     </tr>
                     <tr>
@@ -181,7 +181,7 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <input type="text" name="coupon_suffix" id="coupon_suffix" class="regular-text" 
-                                   value="<?php echo $generator ? esc_attr($generator->coupon_suffix) : ''; ?>">
+                                   value="<?php echo $generator ? esc_attr($generator->coupon_suffix ?? '') : ''; ?>">
                         </td>
                     </tr>
                     <tr>
@@ -189,8 +189,9 @@ function gfwcg_display_generator_form($generator = null) {
                             <label for="coupon_separator">Coupon Separator</label>
                         </th>
                         <td>
-                            <input type="text" name="coupon_separator" id="coupon_separator" class="regular-text" 
-                                   value="<?php echo $generator ? esc_attr($generator->coupon_separator) : ''; ?>">
+                            <input type="text" name="coupon_separator" id="coupon_separator" class="small-text" 
+                                   value="<?php echo $generator ? esc_attr($generator->coupon_separator ?? '') : ''; ?>">
+                            <p class="description">Character to separate prefix/suffix from the coupon code (e.g., "-")</p>
                         </td>
                     </tr>
                 </table>
@@ -337,7 +338,7 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <input type="text" name="email_subject" id="email_subject" class="regular-text" 
-                                   value="<?php echo $generator ? esc_attr($generator->email_subject) : __('Your Coupon Code', 'gravity-forms-woocommerce-coupon-generator'); ?>">
+                                   value="<?php echo $generator ? esc_attr($generator->email_subject ?? '') : __('Your Coupon Code', 'gravity-forms-woocommerce-coupon-generator'); ?>">
                         </td>
                     </tr>
                     <tr>
@@ -346,7 +347,7 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <textarea name="email_message" id="email_message" class="large-text" rows="5"><?php 
-                                echo $generator ? esc_textarea($generator->email_message) : $default_email_template;
+                                echo $generator ? esc_textarea($generator->email_message ?? '') : $default_email_template;
                             ?></textarea>
                             <p class="description">
                                 <?php _e('Available placeholders:', 'gravity-forms-woocommerce-coupon-generator'); ?>
@@ -360,7 +361,7 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <input type="text" name="email_from_name" id="email_from_name" class="regular-text" 
-                                   value="<?php echo $generator ? esc_attr($generator->email_from_name) : get_bloginfo('name'); ?>">
+                                   value="<?php echo $generator ? esc_attr($generator->email_from_name ?? '') : get_bloginfo('name'); ?>">
                         </td>
                     </tr>
                     <tr>
@@ -369,7 +370,7 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <input type="email" name="email_from_email" id="email_from_email" class="regular-text" 
-                                   value="<?php echo $generator ? esc_attr($generator->email_from_email) : get_bloginfo('admin_email'); ?>">
+                                   value="<?php echo $generator ? esc_attr($generator->email_from_email ?? '') : get_bloginfo('admin_email'); ?>">
                         </td>
                     </tr>
                     <tr>
@@ -404,7 +405,7 @@ function gfwcg_display_generator_form($generator = null) {
                         </th>
                         <td>
                             <textarea name="description" id="description" class="large-text" rows="3"><?php 
-                                echo $generator ? esc_textarea($generator->description) : '';
+                                echo $generator ? esc_textarea($generator->description ?? '') : '';
                             ?></textarea>
                         </td>
                     </tr>
