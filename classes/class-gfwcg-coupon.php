@@ -78,6 +78,11 @@ class GFWCG_Coupon {
 				$coupon->set_maximum_amount($generator->maximum_amount);
 				$coupon->set_exclude_sale_items($generator->exclude_sale_items);
 				
+				// Set coupon description if provided
+				if (!empty($generator->description)) {
+						$coupon->set_description($generator->description);
+				}
+				
 				if ($generator->expiry_days) {
 						$expiry_date = date('Y-m-d', strtotime('+' . $generator->expiry_days . ' days'));
 						$coupon->set_date_expires($expiry_date);

@@ -291,6 +291,7 @@ class GFWCG_Admin {
             'coupon_length' => isset($_POST['coupon_length']) ? intval($_POST['coupon_length']) : 8,
             'coupon_prefix' => isset($_POST['coupon_prefix']) ? sanitize_text_field($_POST['coupon_prefix']) : '',
             'coupon_suffix' => isset($_POST['coupon_suffix']) ? sanitize_text_field($_POST['coupon_suffix']) : '',
+            'coupon_separator' => isset($_POST['coupon_separator']) ? sanitize_text_field($_POST['coupon_separator']) : '',
             'discount_type' => isset($_POST['discount_type']) ? sanitize_text_field($_POST['discount_type']) : 'percentage',
             'discount_amount' => isset($_POST['discount_amount']) ? floatval($_POST['discount_amount']) : 0,
             'individual_use' => isset($_POST['individual_use']) ? 1 : 0,
@@ -299,12 +300,16 @@ class GFWCG_Admin {
             'minimum_amount' => isset($_POST['minimum_amount']) && $_POST['minimum_amount'] !== '' ? floatval($_POST['minimum_amount']) : 0,
             'maximum_amount' => isset($_POST['maximum_amount']) && $_POST['maximum_amount'] !== '' ? floatval($_POST['maximum_amount']) : 0,
             'exclude_sale_items' => isset($_POST['exclude_sale_items']) ? 1 : 0,
+            'allow_free_shipping' => isset($_POST['allow_free_shipping']) ? 1 : 0,
+            'expiry_days' => isset($_POST['expiry_days']) ? intval($_POST['expiry_days']) : 0,
             'send_email' => isset($_POST['send_email']) ? 1 : 0,
             'use_wc_email_template' => isset($_POST['use_wc_email_template']) ? 1 : 0,
             'email_subject' => isset($_POST['email_subject']) ? sanitize_text_field($_POST['email_subject']) : '',
             'email_message' => isset($_POST['email_message']) ? wp_kses_post($_POST['email_message']) : '',
             'email_from_name' => isset($_POST['email_from_name']) ? sanitize_text_field($_POST['email_from_name']) : '',
             'email_from_email' => isset($_POST['email_from_email']) ? sanitize_email($_POST['email_from_email']) : '',
+            'description' => isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '',
+            'is_debug' => isset($_POST['is_debug']) ? 1 : 0,
             'status' => 'active'
         );
 
@@ -384,17 +389,22 @@ class GFWCG_Admin {
         $coupon_length = isset($_POST['coupon_length']) ? intval($_POST['coupon_length']) : 8;
         $coupon_prefix = isset($_POST['coupon_prefix']) ? sanitize_text_field($_POST['coupon_prefix']) : '';
         $coupon_suffix = isset($_POST['coupon_suffix']) ? sanitize_text_field($_POST['coupon_suffix']) : '';
+        $coupon_separator = isset($_POST['coupon_separator']) ? sanitize_text_field($_POST['coupon_separator']) : '';
         $individual_use = isset($_POST['individual_use']) ? 1 : 0;
         $usage_limit_per_coupon = isset($_POST['usage_limit_per_coupon']) && $_POST['usage_limit_per_coupon'] !== '' ? intval($_POST['usage_limit_per_coupon']) : 0;
         $usage_limit_per_user = isset($_POST['usage_limit_per_user']) && $_POST['usage_limit_per_user'] !== '' ? intval($_POST['usage_limit_per_user']) : 0;
         $minimum_amount = isset($_POST['minimum_amount']) && $_POST['minimum_amount'] !== '' ? floatval($_POST['minimum_amount']) : 0;
         $maximum_amount = isset($_POST['maximum_amount']) && $_POST['maximum_amount'] !== '' ? floatval($_POST['maximum_amount']) : 0;
         $exclude_sale_items = isset($_POST['exclude_sale_items']) ? 1 : 0;
+        $allow_free_shipping = isset($_POST['allow_free_shipping']) ? 1 : 0;
+        $expiry_days = isset($_POST['expiry_days']) ? intval($_POST['expiry_days']) : 0;
         $send_email = isset($_POST['send_email']) ? 1 : 0;
         $email_subject = isset($_POST['email_subject']) ? sanitize_text_field($_POST['email_subject']) : '';
         $email_message = isset($_POST['email_message']) ? wp_kses_post($_POST['email_message']) : '';
         $email_from_name = isset($_POST['email_from_name']) ? sanitize_text_field($_POST['email_from_name']) : '';
         $email_from_email = isset($_POST['email_from_email']) ? sanitize_email($_POST['email_from_email']) : '';
+        $description = isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '';
+        $is_debug = isset($_POST['is_debug']) ? 1 : 0;
 
         // Validate required fields
         if (empty($title) || empty($form_id) || empty($email_field_id) || empty($coupon_type) || empty($discount_type) || empty($discount_amount)) {
@@ -414,18 +424,23 @@ class GFWCG_Admin {
             'coupon_length' => $coupon_length,
             'coupon_prefix' => $coupon_prefix,
             'coupon_suffix' => $coupon_suffix,
+            'coupon_separator' => $coupon_separator,
             'individual_use' => $individual_use,
             'usage_limit_per_coupon' => $usage_limit_per_coupon,
             'usage_limit_per_user' => $usage_limit_per_user,
             'minimum_amount' => $minimum_amount,
             'maximum_amount' => $maximum_amount,
             'exclude_sale_items' => $exclude_sale_items,
+            'allow_free_shipping' => $allow_free_shipping,
+            'expiry_days' => $expiry_days,
             'send_email' => $send_email,
             'use_wc_email_template' => isset($_POST['use_wc_email_template']) ? 1 : 0,
             'email_subject' => $email_subject,
             'email_message' => $email_message,
             'email_from_name' => $email_from_name,
             'email_from_email' => $email_from_email,
+            'description' => $description,
+            'is_debug' => $is_debug,
             'status' => 'active',
             'updated_at' => current_time('mysql')
         );

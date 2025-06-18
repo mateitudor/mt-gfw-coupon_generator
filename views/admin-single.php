@@ -71,6 +71,17 @@ function gfwcg_display_generator_form($generator = null) {
                         </tr>
                         <tr>
                             <th scope="row">
+                                <label for="description">Coupon Description</label>
+                            </th>
+                            <td>
+                                <textarea name="description" id="description" class="large-text" rows="3" placeholder="Enter a description for the generated coupons..."><?php 
+                                    echo $generator ? esc_textarea($generator->description ?? '') : '';
+                                ?></textarea>
+                                <p class="description">This description will be saved to the WooCommerce coupon and can be used to identify the purpose or source of the coupon. It will be visible in the WooCommerce admin area.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
                                 <label for="form_id">Gravity Form</label>
                             </th>
                             <td>
@@ -397,16 +408,6 @@ function gfwcg_display_generator_form($generator = null) {
                             <input type="checkbox" name="is_debug" id="is_debug" value="1" 
                                    <?php checked($generator ? $generator->is_debug : 0, 1); ?>>
                             <label for="is_debug">Enable debug mode for troubleshooting</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <label for="description">Description</label>
-                        </th>
-                        <td>
-                            <textarea name="description" id="description" class="large-text" rows="3"><?php 
-                                echo $generator ? esc_textarea($generator->description ?? '') : '';
-                            ?></textarea>
                         </td>
                     </tr>
                 </table>
