@@ -52,15 +52,3 @@ function gfwcg_set_current_submenu($action) {
         $plugin_page = 'gfwcg-generators';
     }
 }
-
-// Add submenu items
-add_action('admin_menu', function() {
-    add_submenu_page(
-        'woocommerce',
-        __('Coupon Generators', 'gravity-forms-woocommerce-coupon-generator'),
-        __('Coupon Generators', 'gravity-forms-woocommerce-coupon-generator'),
-        'manage_woocommerce',
-        'gfwcg-generators',
-        'gfwcg_display_list_view'
-    );
-}); 
