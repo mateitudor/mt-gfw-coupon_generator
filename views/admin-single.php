@@ -49,21 +49,21 @@ function gfwcg_display_generator_form($generator = null) {
             <input type="hidden" name="id" value="<?php echo $generator ? esc_attr($generator->id) : ''; ?>">
 
             <div class="gfwcg-form-section">
-                <h2>Basic Information</h2>
+                <h2><?php _e('Basic Information', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
                 <table class="form-table">
                     <tbody>
                         <tr>
                             <th scope="row">
-                                <label for="generator_id">Generator ID</label>
+                                <label for="generator_id"><?php _e('Generator ID', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                             </th>
                             <td>
                                 <input type="text" id="generator_id" class="regular-text" value="<?php echo $generator ? esc_attr($generator->id) : ''; ?>" readonly>
-                                <p class="description">This is the unique identifier for this generator.</p>
+                                <p class="description"><?php _e('This is the unique identifier for this generator.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="title">Title</label>
+                                <label for="title"><?php _e('Title', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                             </th>
                             <td>
                                 <input type="text" name="title" id="title" class="regular-text" value="<?php echo $generator ? esc_attr($generator->title) : ''; ?>" required>
@@ -71,22 +71,22 @@ function gfwcg_display_generator_form($generator = null) {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="description">Coupon Description</label>
+                                <label for="description"><?php _e('Coupon Description', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                             </th>
                             <td>
-                                <textarea name="description" id="description" class="large-text" rows="3" placeholder="Enter a description for the generated coupons..."><?php 
+                                <textarea name="description" id="description" class="large-text" rows="3" placeholder="<?php esc_attr_e('Enter a description for the generated coupons...', 'gravity-forms-woocommerce-coupon-generator'); ?>"><?php 
                                     echo $generator ? esc_textarea($generator->description ?? '') : '';
                                 ?></textarea>
-                                <p class="description">This description will be saved to the WooCommerce coupon and can be used to identify the purpose or source of the coupon. It will be visible in the WooCommerce admin area.</p>
+                                <p class="description"><?php _e('This description will be saved to the WooCommerce coupon and can be used to identify the purpose or source of the coupon. It will be visible in the WooCommerce admin area.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="form_id">Gravity Form</label>
+                                <label for="form_id"><?php _e('Gravity Form', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                             </th>
                             <td>
                                 <select name="form_id" id="form_id" required>
-                                    <option value="">Select a form</option>
+                                    <option value=""><?php _e('Select a form', 'gravity-forms-woocommerce-coupon-generator'); ?></option>
                                     <?php foreach ($forms as $form): ?>
                                         <option value="<?php echo esc_attr($form['id']); ?>" <?php selected($generator ? $generator->form_id : '', $form['id']); ?>>
                                             <?php echo esc_html($form['title']); ?>
@@ -97,11 +97,11 @@ function gfwcg_display_generator_form($generator = null) {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="email_field_id">Email Field</label>
+                                <label for="email_field_id"><?php _e('Email Field', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                             </th>
                             <td>
                                 <select name="email_field_id" id="email_field_id" required>
-                                    <option value="">Select email field</option>
+                                    <option value=""><?php _e('Select email field', 'gravity-forms-woocommerce-coupon-generator'); ?></option>
                                     <?php foreach ($form_fields as $field): ?>
                                         <?php if ($field['type'] === 'email'): ?>
                                             <option value="<?php echo esc_attr($field['id']); ?>" <?php selected($generator ? $generator->email_field_id : '', $field['id']); ?>>
@@ -114,11 +114,11 @@ function gfwcg_display_generator_form($generator = null) {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="name_field_id">Name Field</label>
+                                <label for="name_field_id"><?php _e('Name Field', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                             </th>
                             <td>
                                 <select name="name_field_id" id="name_field_id">
-                                    <option value="">Select name field</option>
+                                    <option value=""><?php _e('Select name field', 'gravity-forms-woocommerce-coupon-generator'); ?></option>
                                     <?php foreach ($form_fields as $field): ?>
                                         <?php if ($field['type'] === 'name'): ?>
                                             <option value="<?php echo esc_attr($field['id']); ?>" <?php selected($generator ? $generator->name_field_id : '', $field['id']); ?>>
@@ -134,42 +134,42 @@ function gfwcg_display_generator_form($generator = null) {
             </div>
 
             <div class="gfwcg-form-section">
-                <h2>Coupon Settings</h2>
+                <h2><?php _e('Coupon Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="coupon_type">Coupon Type</label>
+                            <label for="coupon_type"><?php _e('Coupon Type', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <select name="coupon_type" id="coupon_type" required>
                                 <option value="random" <?php selected($generator ? $generator->coupon_type : '', 'random'); ?>>
-                                    Random
+                                    <?php _e('Random', 'gravity-forms-woocommerce-coupon-generator'); ?>
                                 </option>
                                 <option value="field" <?php selected($generator ? $generator->coupon_type : '', 'field'); ?>>
-                                    From Form Field
+                                    <?php _e('From Form Field', 'gravity-forms-woocommerce-coupon-generator'); ?>
                                 </option>
                             </select>
                         </td>
                     </tr>
                     <tr id="coupon_field_id_row" style="display: <?php echo ($generator && $generator->coupon_type === 'field') ? 'table-row' : 'none'; ?>;">
                         <th scope="row">
-                            <label for="coupon_field_id">Coupon Field</label>
+                            <label for="coupon_field_id"><?php _e('Coupon Field', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <select name="coupon_field_id" id="coupon_field_id" <?php echo ($generator && $generator->coupon_type === 'field') ? 'required' : ''; ?>>
-                                <option value="">Select coupon field</option>
+                                <option value=""><?php _e('Select coupon field', 'gravity-forms-woocommerce-coupon-generator'); ?></option>
                                 <?php foreach ($form_fields as $field): ?>
                                     <option value="<?php echo esc_attr($field['id']); ?>" <?php selected($generator ? $generator->coupon_field_id : '', $field['id']); ?>>
                                         <?php echo esc_html($field['label']); ?> (<?php echo esc_html($field['type']); ?>)
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <p class="description">Select any form field that will contain the coupon code.</p>
+                            <p class="description"><?php _e('Select any form field that will contain the coupon code.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="coupon_length">Coupon Length</label>
+                            <label for="coupon_length"><?php _e('Coupon Length', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="number" name="coupon_length" id="coupon_length" 
@@ -179,7 +179,7 @@ function gfwcg_display_generator_form($generator = null) {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="coupon_prefix">Coupon Prefix</label>
+                            <label for="coupon_prefix"><?php _e('Coupon Prefix', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="text" name="coupon_prefix" id="coupon_prefix" class="regular-text" 
@@ -188,7 +188,7 @@ function gfwcg_display_generator_form($generator = null) {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="coupon_suffix">Coupon Suffix</label>
+                            <label for="coupon_suffix"><?php _e('Coupon Suffix', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="text" name="coupon_suffix" id="coupon_suffix" class="regular-text" 
@@ -197,23 +197,23 @@ function gfwcg_display_generator_form($generator = null) {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="coupon_separator">Coupon Separator</label>
+                            <label for="coupon_separator"><?php _e('Coupon Separator', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="text" name="coupon_separator" id="coupon_separator" class="small-text" 
                                    value="<?php echo $generator ? esc_attr($generator->coupon_separator ?? '') : ''; ?>">
-                            <p class="description">Character to separate prefix/suffix from the coupon code (e.g., "-")</p>
+                            <p class="description"><?php _e('Character to separate prefix/suffix from the coupon code (e.g., "-")', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                         </td>
                     </tr>
                 </table>
             </div>
 
             <div class="gfwcg-form-section">
-                <h2>Discount Settings</h2>
+                <h2><?php _e('Discount Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="discount_type">Discount Type</label>
+                            <label for="discount_type"><?php _e('Discount Type', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <select name="discount_type" id="discount_type" required>
@@ -228,7 +228,7 @@ function gfwcg_display_generator_form($generator = null) {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="discount_amount">Discount Amount</label>
+                            <label for="discount_amount"><?php _e('Discount Amount', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="number" name="discount_amount" id="discount_amount" 
@@ -240,91 +240,91 @@ function gfwcg_display_generator_form($generator = null) {
             </div>
 
             <div class="gfwcg-form-section">
-                <h2>Usage Restrictions</h2>
+                <h2><?php _e('Usage Restrictions', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="individual_use">Individual Use</label>
+                            <label for="individual_use"><?php _e('Individual Use', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="checkbox" name="individual_use" id="individual_use" value="1" 
                                    <?php checked($generator ? $generator->individual_use : 0, 1); ?>>
-                            <label for="individual_use">Check this box if the coupon cannot be used in conjunction with other coupons.</label>
+                            <label for="individual_use"><?php _e('Check this box if the coupon cannot be used in conjunction with other coupons.', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="usage_limit_per_coupon">Usage Limit Per Coupon</label>
+                            <label for="usage_limit_per_coupon"><?php _e('Usage Limit Per Coupon', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="number" name="usage_limit_per_coupon" id="usage_limit_per_coupon" 
                                    value="<?php echo $generator && $generator->usage_limit_per_coupon > 0 ? esc_attr($generator->usage_limit_per_coupon) : ''; ?>" 
                                    min="0">
-                            <p class="description">Leave empty for unlimited usage. Set to 0 for unlimited usage.</p>
+                            <p class="description"><?php _e('Leave empty for unlimited usage. Set to 0 for unlimited usage.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="usage_limit_per_user">Usage Limit Per User</label>
+                            <label for="usage_limit_per_user"><?php _e('Usage Limit Per User', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="number" name="usage_limit_per_user" id="usage_limit_per_user" 
                                    value="<?php echo $generator && $generator->usage_limit_per_user > 0 ? esc_attr($generator->usage_limit_per_user) : ''; ?>" 
                                    min="0">
-                            <p class="description">Leave empty for unlimited usage per user. Set to 0 for unlimited usage per user.</p>
+                            <p class="description"><?php _e('Leave empty for unlimited usage per user. Set to 0 for unlimited usage per user.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="minimum_amount">Minimum Amount</label>
+                            <label for="minimum_amount"><?php _e('Minimum Amount', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="number" name="minimum_amount" id="minimum_amount" 
                                    value="<?php echo $generator && $generator->minimum_amount > 0 ? esc_attr($generator->minimum_amount) : ''; ?>" 
                                    step="0.01" min="0">
-                            <p class="description">Leave empty for no minimum amount. Set to 0 for no minimum amount.</p>
+                            <p class="description"><?php _e('Leave empty for no minimum amount. Set to 0 for no minimum amount.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="maximum_amount">Maximum Amount</label>
+                            <label for="maximum_amount"><?php _e('Maximum Amount', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="number" name="maximum_amount" id="maximum_amount" 
                                    value="<?php echo $generator && $generator->maximum_amount > 0 ? esc_attr($generator->maximum_amount) : ''; ?>" 
                                    step="0.01" min="0">
-                            <p class="description">Leave empty for no maximum amount. Set to 0 for no maximum amount.</p>
+                            <p class="description"><?php _e('Leave empty for no maximum amount. Set to 0 for no maximum amount.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="exclude_sale_items">Exclude Sale Items</label>
+                            <label for="exclude_sale_items"><?php _e('Exclude Sale Items', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="checkbox" name="exclude_sale_items" id="exclude_sale_items" value="1" 
                                    <?php checked($generator ? $generator->exclude_sale_items : 0, 1); ?>>
-                            <label for="exclude_sale_items">Check this box if the coupon should not apply to items on sale.</label>
+                            <label for="exclude_sale_items"><?php _e('Check this box if the coupon should not apply to items on sale.', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="allow_free_shipping">Allow Free Shipping</label>
+                            <label for="allow_free_shipping"><?php _e('Allow Free Shipping', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="checkbox" name="allow_free_shipping" id="allow_free_shipping" value="1" 
                                    <?php checked($generator ? $generator->allow_free_shipping : 0, 1); ?>>
-                            <label for="allow_free_shipping">Check this box if the coupon grants free shipping.</label>
+                            <label for="allow_free_shipping"><?php _e('Check this box if the coupon grants free shipping.', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="expiry_days">Expiry Days</label>
+                            <label for="expiry_days"><?php _e('Expiry Days', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="number" name="expiry_days" id="expiry_days" 
                                    value="<?php echo $generator ? esc_attr($generator->expiry_days) : '0'; ?>" 
                                    min="0">
-                            <p class="description">Number of days until the coupon expires. Set to 0 for no expiry.</p>
+                            <p class="description"><?php _e('Number of days until the coupon expires. Set to 0 for no expiry.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                         </td>
                     </tr>
                 </table>
@@ -332,10 +332,10 @@ function gfwcg_display_generator_form($generator = null) {
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="product_ids">Products</label>
+                            <label for="product_ids"><?php _e('Products', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
-                            <select class="wc-product-search" multiple="" style="width: 100%;" name="product_ids[]" data-placeholder="Search for a product…" data-action="woocommerce_json_search_products_and_variations">
+                            <select class="wc-product-search" multiple="" style="width: 100%;" name="product_ids[]" data-placeholder="<?php esc_attr_e('Search for a product…', 'gravity-forms-woocommerce-coupon-generator'); ?>" data-action="woocommerce_json_search_products_and_variations">
                                 <?php
                                 if ($generator && !empty($generator->product_ids)) {
                                     $product_ids = maybe_unserialize($generator->product_ids);
@@ -350,15 +350,15 @@ function gfwcg_display_generator_form($generator = null) {
                                 }
                                 ?>
                             </select>
-                            <p class="description">Products that the coupon will be applied to, or that need to be in the cart in order for the "Fixed cart discount" to be applied.</p>
+                            <p class="description"><?php _e('Products that the coupon will be applied to, or that need to be in the cart in order for the "Fixed cart discount" to be applied.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="exclude_product_ids">Exclude Products</label>
+                            <label for="exclude_product_ids"><?php _e('Exclude Products', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
-                            <select class="wc-product-search" multiple="" style="width: 100%;" name="exclude_product_ids[]" data-placeholder="Search for a product…" data-action="woocommerce_json_search_products_and_variations">
+                            <select class="wc-product-search" multiple="" style="width: 100%;" name="exclude_product_ids[]" data-placeholder="<?php esc_attr_e('Search for a product…', 'gravity-forms-woocommerce-coupon-generator'); ?>" data-action="woocommerce_json_search_products_and_variations">
                                 <?php
                                 if ($generator && !empty($generator->exclude_products)) {
                                     $exclude_product_ids = maybe_unserialize($generator->exclude_products);
@@ -373,15 +373,15 @@ function gfwcg_display_generator_form($generator = null) {
                                 }
                                 ?>
                             </select>
-                            <p class="description">Products that the coupon will not be applied to, or that cannot be in the cart in order for the "Fixed cart discount" to be applied.</p>
+                            <p class="description"><?php _e('Products that the coupon will not be applied to, or that cannot be in the cart in order for the "Fixed cart discount" to be applied.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="product_categories">Product Categories</label>
+                            <label for="product_categories"><?php _e('Product Categories', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
-                            <select id="product_categories" name="product_categories[]" style="width: 100%;" class="wc-enhanced-select" multiple="" data-placeholder="Any category">
+                            <select id="product_categories" name="product_categories[]" style="width: 100%;" class="wc-enhanced-select" multiple="" data-placeholder="<?php esc_attr_e('Any category', 'gravity-forms-woocommerce-coupon-generator'); ?>">
                                 <?php
                                 $product_categories = get_terms(array(
                                     'taxonomy' => 'product_cat',
@@ -454,21 +454,21 @@ function gfwcg_display_generator_form($generator = null) {
 
 
             <div class="gfwcg-form-section">
-                <h2>Email Settings</h2>
+                <h2><?php _e('Email Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="send_email">Send Email</label>
+                            <label for="send_email"><?php _e('Send Email', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="checkbox" name="send_email" id="send_email" value="1" 
                                    <?php checked($generator ? $generator->send_email : 0, 1); ?>>
-                            <label for="send_email">Send email with coupon code to the user</label>
+                            <label for="send_email"><?php _e('Send email with coupon code to the user', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="email_subject">Email Subject</label>
+                            <label for="email_subject"><?php _e('Email Subject', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="text" name="email_subject" id="email_subject" class="regular-text" 
@@ -477,7 +477,7 @@ function gfwcg_display_generator_form($generator = null) {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="email_message">Email Message</label>
+                            <label for="email_message"><?php _e('Email Message', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <textarea name="email_message" id="email_message" class="large-text" rows="5"><?php 
@@ -513,7 +513,7 @@ function gfwcg_display_generator_form($generator = null) {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="email_from_name">From Name</label>
+                            <label for="email_from_name"><?php _e('From Name', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="text" name="email_from_name" id="email_from_name" class="regular-text" 
@@ -522,7 +522,7 @@ function gfwcg_display_generator_form($generator = null) {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="email_from_email">From Email</label>
+                            <label for="email_from_email"><?php _e('From Email', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="email" name="email_from_email" id="email_from_email" class="regular-text" 
@@ -531,28 +531,28 @@ function gfwcg_display_generator_form($generator = null) {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="use_wc_email_template">Use WooCommerce Email Template</label>
+                            <label for="use_wc_email_template"><?php _e('Use WooCommerce Email Template', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="checkbox" name="use_wc_email_template" id="use_wc_email_template" value="1" 
                                    <?php checked($generator ? $generator->use_wc_email_template : 1, 1); ?>>
-                            <label for="use_wc_email_template">Use WooCommerce email template for styling</label>
+                            <label for="use_wc_email_template"><?php _e('Use WooCommerce email template for styling', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </td>
                     </tr>
                 </table>
             </div>
 
             <div class="gfwcg-form-section">
-                <h2>Advanced Settings</h2>
+                <h2><?php _e('Advanced Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="is_debug">Debug Mode</label>
+                            <label for="is_debug"><?php _e('Debug Mode', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </th>
                         <td>
                             <input type="checkbox" name="is_debug" id="is_debug" value="1" 
                                    <?php checked($generator ? $generator->is_debug : 0, 1); ?>>
-                            <label for="is_debug">Enable debug mode for troubleshooting</label>
+                            <label for="is_debug"><?php _e('Enable debug mode for troubleshooting', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
                         </td>
                     </tr>
                 </table>
