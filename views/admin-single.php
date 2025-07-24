@@ -485,8 +485,30 @@ function gfwcg_display_generator_form($generator = null) {
                             ?></textarea>
                             <p class="description">
                                 <?php _e('Available placeholders:', 'gravity-forms-woocommerce-coupon-generator'); ?>
+                                <br><strong><?php _e('Basic:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
                                 <code>{coupon_code}</code>, <code>{site_name}</code>, <code>{discount_amount}</code>, <code>{expiry_date}</code>
+                                <br><strong><?php _e('Discount Settings:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
+                                <code>{discount_type}</code>, <code>{expiry_days}</code>
+                                <br><strong><?php _e('Usage Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
+                                <code>{individual_use}</code>, <code>{usage_limit_per_coupon}</code>, <code>{usage_limit_per_user}</code>
+                                <br><strong><?php _e('Amount Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
+                                <code>{minimum_amount}</code>, <code>{maximum_amount}</code>
+                                <br><strong><?php _e('Product Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
+                                <code>{exclude_sale_items}</code>, <code>{allow_free_shipping}</code>, <code>{products}</code>, <code>{exclude_products}</code>
+                                <br><strong><?php _e('Category Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
+                                <code>{product_categories}</code>, <code>{exclude_categories}</code>
                             </p>
+                            <div class="gfwcg-placeholder-help" style="margin-top: 10px; padding: 10px; background: #f9f9f9; border-left: 4px solid #0073aa;">
+                                <h4 style="margin-top: 0;"><?php _e('Placeholder Examples:', 'gravity-forms-woocommerce-coupon-generator'); ?></h4>
+                                <ul style="margin: 0; padding-left: 20px;">
+                                    <li><code>{coupon_code}</code> → <em>WELCOME2024</em></li>
+                                    <li><code>{discount_amount}</code> → <em>15.00%</em> or <em>10.00</em></li>
+                                    <li><code>{minimum_amount}</code> → <em>$25.00</em> or <em>No minimum</em></li>
+                                    <li><code>{usage_limit_per_coupon}</code> → <em>1</em> or <em>Unlimited</em></li>
+                                    <li><code>{products}</code> → <em>Product A, Product B</em> or <em>All products</em></li>
+                                    <li><code>{individual_use}</code> → <em>Yes</em> or <em>No</em></li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                     <tr>
