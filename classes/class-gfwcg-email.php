@@ -39,8 +39,22 @@ class GFWCG_Email extends WC_Email {
 
 		$this->placeholders = array(
 			'{coupon_code}' => '',
+			'{site_name}' => '',
 			'{discount_amount}' => '',
 			'{expiry_date}' => '',
+			'{discount_type}' => '',
+			'{individual_use}' => '',
+			'{usage_limit_per_coupon}' => '',
+			'{usage_limit_per_user}' => '',
+			'{minimum_amount}' => '',
+			'{maximum_amount}' => '',
+			'{exclude_sale_items}' => '',
+			'{allow_free_shipping}' => '',
+			'{expiry_days}' => '',
+			'{products}' => '',
+			'{exclude_products}' => '',
+			'{product_categories}' => '',
+			'{exclude_categories}' => '',
 		);
 
 		// Call parent constructor
@@ -64,13 +78,8 @@ class GFWCG_Email extends WC_Email {
 		$email_subject = $generator->email_subject ?: __('Your Coupon Code', 'gravity-forms-woocommerce-coupon-generator');
 		$email_message = $generator->email_message ?: __('Your coupon code is: {coupon_code}', 'gravity-forms-woocommerce-coupon-generator');
 		
-		// Process placeholders
-		$placeholders = array(
-			'coupon_code' => $coupon_code,
-			'discount_amount' => number_format($generator->discount_amount, 2, '.', '') . ($generator->discount_type === 'percentage' ? '%' : ''),
-			'expiry_date' => $generator->expiry_days ? date_i18n(get_option('date_format'), strtotime('+' . $generator->expiry_days . ' days')) : __('No expiry', 'gravity-forms-woocommerce-coupon-generator'),
-			'site_name' => get_bloginfo('name')
-		);
+		// Process placeholders with all coupon restrictions
+		$placeholders = $this->prepare_placeholders($generator, $coupon_code);
 
 		// Send the email
 		return $this->trigger(
@@ -82,6 +91,152 @@ class GFWCG_Email extends WC_Email {
 			$placeholders,
 			$generator->use_wc_email_template
 		);
+	}
+
+	/**
+	 * Prepare all placeholders with coupon restrictions
+	 *
+	 * @param object $generator The generator object
+	 * @param string $coupon_code The generated coupon code
+	 * @return array Array of placeholders
+	 */
+	private function prepare_placeholders($generator, $coupon_code) {
+		$placeholders = array(
+			'coupon_code' => $coupon_code,
+			'site_name' => get_bloginfo('name'),
+			'discount_amount' => $this->format_discount_amount($generator->discount_amount, $generator->discount_type),
+			'discount_type' => $this->get_discount_type_label($generator->discount_type),
+			'expiry_date' => $generator->expiry_days ? date_i18n(get_option('date_format'), strtotime('+' . $generator->expiry_days . ' days')) : __('No expiry', 'gravity-forms-woocommerce-coupon-generator'),
+			'expiry_days' => $generator->expiry_days ? $generator->expiry_days : __('No expiry', 'gravity-forms-woocommerce-coupon-generator'),
+			'individual_use' => $generator->individual_use ? __('Yes', 'gravity-forms-woocommerce-coupon-generator') : __('No', 'gravity-forms-woocommerce-coupon-generator'),
+			'usage_limit_per_coupon' => $generator->usage_limit_per_coupon ? $generator->usage_limit_per_coupon : __('Unlimited', 'gravity-forms-woocommerce-coupon-generator'),
+			'usage_limit_per_user' => $generator->usage_limit_per_user ? $generator->usage_limit_per_user : __('Unlimited', 'gravity-forms-woocommerce-coupon-generator'),
+			'minimum_amount' => $generator->minimum_amount ? $this->format_currency($generator->minimum_amount) : __('No minimum', 'gravity-forms-woocommerce-coupon-generator'),
+			'maximum_amount' => $generator->maximum_amount ? $this->format_currency($generator->maximum_amount) : __('No maximum', 'gravity-forms-woocommerce-coupon-generator'),
+			'exclude_sale_items' => $generator->exclude_sale_items ? __('Yes', 'gravity-forms-woocommerce-coupon-generator') : __('No', 'gravity-forms-woocommerce-coupon-generator'),
+			'allow_free_shipping' => $generator->allow_free_shipping ? __('Yes', 'gravity-forms-woocommerce-coupon-generator') : __('No', 'gravity-forms-woocommerce-coupon-generator'),
+			'products' => $this->format_product_list($generator->product_ids),
+			'exclude_products' => $this->format_product_list($generator->exclude_products),
+			'product_categories' => $this->format_category_list($generator->product_categories),
+			'exclude_categories' => $this->format_category_list($generator->exclude_categories),
+		);
+
+		return $placeholders;
+	}
+
+	/**
+	 * Format discount amount with proper currency
+	 *
+	 * @param float $amount The discount amount
+	 * @param string $type The discount type
+	 * @return string Formatted discount amount
+	 */
+	private function format_discount_amount($amount, $type) {
+		if ($type === 'percentage') {
+			return number_format($amount, 2, '.', '') . '%';
+		} else {
+			return $this->format_currency($amount);
+		}
+	}
+
+	/**
+	 * Format currency with proper Romanian currency (Lei)
+	 *
+	 * @param float $amount The amount to format
+	 * @return string Formatted currency
+	 */
+	private function format_currency($amount) {
+		// Check if WooCommerce is active and has currency settings
+		if (function_exists('wc_price')) {
+			return wc_price($amount);
+		}
+		
+		// Fallback formatting for Romanian currency
+		$locale = get_locale();
+		if (strpos($locale, 'ro') === 0) {
+			// Romanian formatting
+			return number_format($amount, 2, ',', '.') . ' Lei';
+		}
+		
+		// Default formatting
+		return number_format($amount, 2, '.', '') . ' ' . get_woocommerce_currency();
+	}
+
+	/**
+	 * Get localized discount type label
+	 *
+	 * @param string $type The discount type
+	 * @return string Localized discount type
+	 */
+	private function get_discount_type_label($type) {
+		$labels = array(
+			'percentage' => __('Percentage', 'gravity-forms-woocommerce-coupon-generator'),
+			'fixed_cart' => __('Fixed cart discount', 'gravity-forms-woocommerce-coupon-generator'),
+			'fixed_product' => __('Fixed product discount', 'gravity-forms-woocommerce-coupon-generator'),
+		);
+		
+		return isset($labels[$type]) ? $labels[$type] : $type;
+	}
+
+	/**
+	 * Format product list for display with links
+	 *
+	 * @param string $product_ids Serialized product IDs
+	 * @return string Formatted product list with links
+	 */
+	private function format_product_list($product_ids) {
+		if (empty($product_ids)) {
+			return __('All products', 'gravity-forms-woocommerce-coupon-generator');
+		}
+
+		$ids = maybe_unserialize($product_ids);
+		if (!is_array($ids) || empty($ids)) {
+			return __('All products', 'gravity-forms-woocommerce-coupon-generator');
+		}
+
+		$product_links = array();
+		foreach ($ids as $product_id) {
+			$product = wc_get_product($product_id);
+			if ($product) {
+				$product_url = get_permalink($product->get_id());
+				$product_name = $product->get_name();
+				$product_links[] = sprintf('<a href="%s">%s</a>', esc_url($product_url), esc_html($product_name));
+			}
+		}
+
+		return !empty($product_links) ? implode(', ', $product_links) : __('All products', 'gravity-forms-woocommerce-coupon-generator');
+	}
+
+	/**
+	 * Format category list for display with links
+	 *
+	 * @param string $category_ids Serialized category IDs
+	 * @return string Formatted category list with links
+	 */
+	private function format_category_list($category_ids) {
+		if (empty($category_ids)) {
+			return __('All categories', 'gravity-forms-woocommerce-coupon-generator');
+		}
+
+		$ids = maybe_unserialize($category_ids);
+		if (!is_array($ids) || empty($ids)) {
+			return __('All categories', 'gravity-forms-woocommerce-coupon-generator');
+		}
+
+		$category_links = array();
+		foreach ($ids as $category_id) {
+			$category = get_term($category_id, 'product_cat');
+			if ($category && !is_wp_error($category)) {
+				$category_url = get_term_link($category, 'product_cat');
+				if (!is_wp_error($category_url)) {
+					$category_links[] = sprintf('<a href="%s">%s</a>', esc_url($category_url), esc_html($category->name));
+				} else {
+					$category_links[] = esc_html($category->name);
+				}
+			}
+		}
+
+		return !empty($category_links) ? implode(', ', $category_links) : __('All categories', 'gravity-forms-woocommerce-coupon-generator');
 	}
 
 	public function trigger($to, $subject, $message, $from_name = '', $from_email = '', $placeholders = array(), $use_wc_template = true) {
@@ -154,6 +309,9 @@ class GFWCG_Email extends WC_Email {
 					<p style="margin: 0 0 10px;"><strong>%s:</strong> <span style="font-size: 18px; color: #204ce5;">{coupon_code}</span></p>
 					<p style="margin: 0 0 10px;"><strong>%s:</strong> {discount_amount}</p>
 					<p style="margin: 0 0 10px;"><strong>%s:</strong> {expiry_date}</p>
+					<p style="margin: 0 0 10px;"><strong>%s:</strong> {minimum_amount}</p>
+					<p style="margin: 0 0 10px;"><strong>%s:</strong> {usage_limit_per_coupon}</p>
+					<p style="margin: 0 0 10px;"><strong>%s:</strong> {products}</p>
 				</div>
 				<p style="text-align: center; margin-top: 20px;">%s</p>
 				<p style="text-align: center;">%s</p>
@@ -162,6 +320,9 @@ class GFWCG_Email extends WC_Email {
 			__('Coupon Code', 'gravity-forms-woocommerce-coupon-generator'),
 			__('Discount', 'gravity-forms-woocommerce-coupon-generator'),
 			__('Valid Until', 'gravity-forms-woocommerce-coupon-generator'),
+			__('Minimum Spend', 'gravity-forms-woocommerce-coupon-generator'),
+			__('Usage Limit', 'gravity-forms-woocommerce-coupon-generator'),
+			__('Applicable Products', 'gravity-forms-woocommerce-coupon-generator'),
 			__('Thank you for your submission!', 'gravity-forms-woocommerce-coupon-generator'),
 			__('Happy shopping!', 'gravity-forms-woocommerce-coupon-generator')
 		);
