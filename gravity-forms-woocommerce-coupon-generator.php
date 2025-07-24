@@ -7,6 +7,7 @@
  * Author: Storia Books
  * Author URI: https://storiabooks.com
  * Text Domain: gravity-forms-woocommerce-coupon-generator
+ * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * WC requires at least: 5.0
@@ -31,6 +32,18 @@ define('GFWCG_PLUGIN_NAME', 'gravity-forms-woocommerce-coupon-generator');
 
 // Include admin view files
 require_once GFWCG_PLUGIN_DIR . 'views/admin-list.php';
+
+/**
+ * Load plugin textdomain
+ */
+function gfwcg_load_textdomain() {
+	load_plugin_textdomain(
+		'gravity-forms-woocommerce-coupon-generator',
+		false,
+		dirname(GFWCG_PLUGIN_BASENAME) . '/languages'
+	);
+}
+add_action('plugins_loaded', 'gfwcg_load_textdomain');
 
 /**
  * Get the current view from the URL parameters
