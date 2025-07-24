@@ -20,6 +20,306 @@ msgstr ""
 msgid "Gravity Forms WooCommerce Coupon Generator requires both Gravity Forms and WooCommerce to be installed and activated."
 msgstr ""
 
+#: views/admin-single.php:42
+msgid "Back to List"
+msgstr ""
+
+#: views/admin-single.php:51
+msgid "Basic Information"
+msgstr ""
+
+#: views/admin-single.php:56
+msgid "Generator ID"
+msgstr ""
+
+#: views/admin-single.php:60
+msgid "This is the unique identifier for this generator."
+msgstr ""
+
+#: views/admin-single.php:65
+msgid "Title"
+msgstr ""
+
+#: views/admin-single.php:73
+msgid "Coupon Description"
+msgstr ""
+
+#: views/admin-single.php:76
+msgid "Enter a description for the generated coupons..."
+msgstr ""
+
+#: views/admin-single.php:79
+msgid "This description will be saved to the WooCommerce coupon and can be used to identify the purpose or source of the coupon. It will be visible in the WooCommerce admin area."
+msgstr ""
+
+#: views/admin-single.php:84
+msgid "Gravity Form"
+msgstr ""
+
+#: views/admin-single.php:88
+msgid "Select a form"
+msgstr ""
+
+#: views/admin-single.php:99
+msgid "Email Field"
+msgstr ""
+
+#: views/admin-single.php:103
+msgid "Select email field"
+msgstr ""
+
+#: views/admin-single.php:116
+msgid "Name Field"
+msgstr ""
+
+#: views/admin-single.php:120
+msgid "Select name field"
+msgstr ""
+
+#: views/admin-single.php:136
+msgid "Coupon Settings"
+msgstr ""
+
+#: views/admin-single.php:140
+msgid "Coupon Type"
+msgstr ""
+
+#: views/admin-single.php:144
+msgid "Random"
+msgstr ""
+
+#: views/admin-single.php:147
+msgid "From Form Field"
+msgstr ""
+
+#: views/admin-single.php:155
+msgid "Coupon Field"
+msgstr ""
+
+#: views/admin-single.php:159
+msgid "Select coupon field"
+msgstr ""
+
+#: views/admin-single.php:166
+msgid "Select any form field that will contain the coupon code."
+msgstr ""
+
+#: views/admin-single.php:171
+msgid "Coupon Length"
+msgstr ""
+
+#: views/admin-single.php:181
+msgid "Coupon Prefix"
+msgstr ""
+
+#: views/admin-single.php:190
+msgid "Coupon Suffix"
+msgstr ""
+
+#: views/admin-single.php:199
+msgid "Coupon Separator"
+msgstr ""
+
+#: views/admin-single.php:204
+msgid "Character to separate prefix/suffix from the coupon code (e.g., \"-\")"
+msgstr ""
+
+#: views/admin-single.php:211
+msgid "Discount Settings"
+msgstr ""
+
+#: views/admin-single.php:215
+msgid "Discount Type"
+msgstr ""
+
+#: views/admin-single.php:230
+msgid "Discount Amount"
+msgstr ""
+
+#: views/admin-single.php:242
+msgid "Usage Restrictions"
+msgstr ""
+
+#: views/admin-single.php:246
+msgid "Individual Use"
+msgstr ""
+
+#: views/admin-single.php:251
+msgid "Check this box if the coupon cannot be used in conjunction with other coupons."
+msgstr ""
+
+#: views/admin-single.php:256
+msgid "Usage Limit Per Coupon"
+msgstr ""
+
+#: views/admin-single.php:262
+msgid "Leave empty for unlimited usage. Set to 0 for unlimited usage."
+msgstr ""
+
+#: views/admin-single.php:267
+msgid "Usage Limit Per User"
+msgstr ""
+
+#: views/admin-single.php:273
+msgid "Leave empty for unlimited usage per user. Set to 0 for unlimited usage per user."
+msgstr ""
+
+#: views/admin-single.php:278
+msgid "Minimum Amount"
+msgstr ""
+
+#: views/admin-single.php:284
+msgid "Leave empty for no minimum amount. Set to 0 for no minimum amount."
+msgstr ""
+
+#: views/admin-single.php:289
+msgid "Maximum Amount"
+msgstr ""
+
+#: views/admin-single.php:295
+msgid "Leave empty for no maximum amount. Set to 0 for no maximum amount."
+msgstr ""
+
+#: views/admin-single.php:300
+msgid "Exclude Sale Items"
+msgstr ""
+
+#: views/admin-single.php:305
+msgid "Check this box if the coupon should not apply to items on sale."
+msgstr ""
+
+#: views/admin-single.php:310
+msgid "Allow Free Shipping"
+msgstr ""
+
+#: views/admin-single.php:315
+msgid "Check this box if the coupon grants free shipping."
+msgstr ""
+
+#: views/admin-single.php:320
+msgid "Expiry Days"
+msgstr ""
+
+#: views/admin-single.php:326
+msgid "Number of days until the coupon expires. Set to 0 for no expiry."
+msgstr ""
+
+#: views/admin-single.php:334
+msgid "Products"
+msgstr ""
+
+#: views/admin-single.php:338
+msgid "Search for a product…"
+msgstr ""
+
+#: views/admin-single.php:352
+msgid "Products that the coupon will be applied to, or that need to be in the cart in order for the \"Fixed cart discount\" to be applied."
+msgstr ""
+
+#: views/admin-single.php:357
+msgid "Exclude Products"
+msgstr ""
+
+#: views/admin-single.php:375
+msgid "Products that the coupon will not be applied to, or that cannot be in the cart in order for the \"Fixed cart discount\" to be applied."
+msgstr ""
+
+#: views/admin-single.php:380
+msgid "Product Categories"
+msgstr ""
+
+#: views/admin-single.php:384
+msgid "Any category"
+msgstr ""
+
+#: views/admin-single.php:426
+msgid "Product categories that the coupon will be applied to, or that need to be in the cart in order for the \"Fixed cart discount\" to be applied."
+msgstr ""
+
+#: views/admin-single.php:431
+msgid "Exclude Categories"
+msgstr ""
+
+#: views/admin-single.php:456
+msgid "Email Settings"
+msgstr ""
+
+#: views/admin-single.php:460
+msgid "Send Email"
+msgstr ""
+
+#: views/admin-single.php:465
+msgid "Send email with coupon code to the user"
+msgstr ""
+
+#: views/admin-single.php:470
+msgid "Email Subject"
+msgstr ""
+
+#: views/admin-single.php:480
+msgid "Email Message"
+msgstr ""
+
+#: views/admin-single.php:490
+msgid "Available placeholders:"
+msgstr ""
+
+#: views/admin-single.php:492
+msgid "Basic:"
+msgstr ""
+
+#: views/admin-single.php:495
+msgid "Discount Settings:"
+msgstr ""
+
+#: views/admin-single.php:498
+msgid "Usage Restrictions:"
+msgstr ""
+
+#: views/admin-single.php:501
+msgid "Amount Restrictions:"
+msgstr ""
+
+#: views/admin-single.php:504
+msgid "Product Restrictions:"
+msgstr ""
+
+#: views/admin-single.php:507
+msgid "Category Restrictions:"
+msgstr ""
+
+#: views/admin-single.php:510
+msgid "Placeholder Examples:"
+msgstr ""
+
+#: views/admin-single.php:520
+msgid "From Name"
+msgstr ""
+
+#: views/admin-single.php:530
+msgid "From Email"
+msgstr ""
+
+#: views/admin-single.php:540
+msgid "Use WooCommerce Email Template"
+msgstr ""
+
+#: views/admin-single.php:545
+msgid "Use WooCommerce email template for styling"
+msgstr ""
+
+#: views/admin-single.php:555
+msgid "Advanced Settings"
+msgstr ""
+
+#: views/admin-single.php:559
+msgid "Debug Mode"
+msgstr ""
+
+#: views/admin-single.php:563
+msgid "Enable debug mode for troubleshooting"
+msgstr ""
+
 #: classes/class-gfwcg-admin.php:25
 msgid "Gravity Forms WooCommerce Coupon Generator"
 msgstr ""
@@ -387,3 +687,8 @@ msgstr ""
 #: views/admin-single.php:507
 msgid "Category Restrictions:"
 msgstr ""
+
+#: views/admin-single.php:510
+msgid "Placeholder Examples:"
+msgstr ""
+

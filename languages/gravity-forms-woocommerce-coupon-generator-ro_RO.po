@@ -18,6 +18,231 @@ msgstr ""
 msgid "Gravity Forms WooCommerce Coupon Generator requires both Gravity Forms and WooCommerce to be installed and activated."
 msgstr "Gravity Forms WooCommerce Coupon Generator necesită atât Gravity Forms cât și WooCommerce să fie instalate și activate."
 
+msgid "Back to List"
+msgstr "Înapoi la listă"
+
+msgid "Basic Information"
+msgstr "Informații de bază"
+
+msgid "Generator ID"
+msgstr "ID Generator"
+
+msgid "This is the unique identifier for this generator."
+msgstr "Acesta este identificatorul unic pentru acest generator."
+
+msgid "Title"
+msgstr "Titlu"
+
+msgid "Coupon Description"
+msgstr "Descriere cupon"
+
+msgid "Enter a description for the generated coupons..."
+msgstr "Introduceți o descriere pentru cupoanele generate..."
+
+msgid "This description will be saved to the WooCommerce coupon and can be used to identify the purpose or source of the coupon. It will be visible in the WooCommerce admin area."
+msgstr "Această descriere va fi salvată în cuponul WooCommerce și poate fi folosită pentru a identifica scopul sau sursa cuponului. Va fi vizibilă în zona de administrare WooCommerce."
+
+msgid "Gravity Form"
+msgstr "Formular Gravity"
+
+msgid "Select a form"
+msgstr "Selectează un formular"
+
+msgid "Email Field"
+msgstr "Câmp email"
+
+msgid "Select email field"
+msgstr "Selectează câmpul de email"
+
+msgid "Name Field"
+msgstr "Câmp nume"
+
+msgid "Select name field"
+msgstr "Selectează câmpul de nume"
+
+msgid "Coupon Settings"
+msgstr "Setări cupon"
+
+msgid "Coupon Type"
+msgstr "Tip cupon"
+
+msgid "Random"
+msgstr "Aleator"
+
+msgid "From Form Field"
+msgstr "Din câmpul formularului"
+
+msgid "Coupon Field"
+msgstr "Câmp cupon"
+
+msgid "Select coupon field"
+msgstr "Selectează câmpul cuponului"
+
+msgid "Select any form field that will contain the coupon code."
+msgstr "Selectează orice câmp de formular care va conține codul cuponului."
+
+msgid "Coupon Length"
+msgstr "Lungime cupon"
+
+msgid "Coupon Prefix"
+msgstr "Prefix cupon"
+
+msgid "Coupon Suffix"
+msgstr "Sufix cupon"
+
+msgid "Coupon Separator"
+msgstr "Separator cupon"
+
+msgid "Character to separate prefix/suffix from the coupon code (e.g., \"-\")"
+msgstr "Caracter pentru a separa prefixul/sufixul de codul cuponului (ex: \"-\")"
+
+msgid "Discount Settings"
+msgstr "Setări reducere"
+
+msgid "Discount Type"
+msgstr "Tip reducere"
+
+msgid "Discount Amount"
+msgstr "Sumă reducere"
+
+msgid "Usage Restrictions"
+msgstr "Restricții utilizare"
+
+msgid "Individual Use"
+msgstr "Utilizare individuală"
+
+msgid "Check this box if the coupon cannot be used in conjunction with other coupons."
+msgstr "Bifați această casetă dacă cuponul nu poate fi folosit împreună cu alte cupoane."
+
+msgid "Usage Limit Per Coupon"
+msgstr "Limită utilizare per cupon"
+
+msgid "Leave empty for unlimited usage. Set to 0 for unlimited usage."
+msgstr "Lăsați gol pentru utilizare nelimitată. Setați la 0 pentru utilizare nelimitată."
+
+msgid "Usage Limit Per User"
+msgstr "Limită utilizare per utilizator"
+
+msgid "Leave empty for unlimited usage per user. Set to 0 for unlimited usage per user."
+msgstr "Lăsați gol pentru utilizare nelimitată per utilizator. Setați la 0 pentru utilizare nelimitată per utilizator."
+
+msgid "Minimum Amount"
+msgstr "Sumă minimă"
+
+msgid "Leave empty for no minimum amount. Set to 0 for no minimum amount."
+msgstr "Lăsați gol pentru fără sumă minimă. Setați la 0 pentru fără sumă minimă."
+
+msgid "Maximum Amount"
+msgstr "Sumă maximă"
+
+msgid "Leave empty for no maximum amount. Set to 0 for no maximum amount."
+msgstr "Lăsați gol pentru fără sumă maximă. Setați la 0 pentru fără sumă maximă."
+
+msgid "Exclude Sale Items"
+msgstr "Exclude produse la reducere"
+
+msgid "Check this box if the coupon should not apply to items on sale."
+msgstr "Bifați această casetă dacă cuponul nu ar trebui să se aplice la produsele la reducere."
+
+msgid "Allow Free Shipping"
+msgstr "Permite transport gratuit"
+
+msgid "Check this box if the coupon grants free shipping."
+msgstr "Bifați această casetă dacă cuponul oferă transport gratuit."
+
+msgid "Expiry Days"
+msgstr "Zile expirare"
+
+msgid "Number of days until the coupon expires. Set to 0 for no expiry."
+msgstr "Numărul de zile până la expirarea cuponului. Setați la 0 pentru fără expirare."
+
+msgid "Products"
+msgstr "Produse"
+
+msgid "Search for a product…"
+msgstr "Caută un produs…"
+
+msgid "Products that the coupon will be applied to, or that need to be in the cart in order for the \"Fixed cart discount\" to be applied."
+msgstr "Produsele la care se va aplica cuponul, sau care trebuie să fie în coș pentru ca reducerea \"Fixă pentru coș\" să se aplice."
+
+msgid "Exclude Products"
+msgstr "Exclude produse"
+
+msgid "Products that the coupon will not be applied to, or that cannot be in the cart in order for the \"Fixed cart discount\" to be applied."
+msgstr "Produsele la care nu se va aplica cuponul, sau care nu pot fi în coș pentru ca reducerea \"Fixă pentru coș\" să se aplice."
+
+msgid "Product Categories"
+msgstr "Categorii produse"
+
+msgid "Any category"
+msgstr "Orice categorie"
+
+msgid "Product categories that the coupon will be applied to, or that need to be in the cart in order for the \"Fixed cart discount\" to be applied."
+msgstr "Categoriile de produse la care se va aplica cuponul, sau care trebuie să fie în coș pentru ca reducerea \"Fixă pentru coș\" să se aplice."
+
+msgid "Exclude Categories"
+msgstr "Exclude categorii"
+
+msgid "Email Settings"
+msgstr "Setări email"
+
+msgid "Send Email"
+msgstr "Trimite email"
+
+msgid "Send email with coupon code to the user"
+msgstr "Trimite email cu codul cuponului către utilizator"
+
+msgid "Email Subject"
+msgstr "Subiect email"
+
+msgid "Email Message"
+msgstr "Mesaj email"
+
+msgid "Available placeholders:"
+msgstr "Placeholder-e disponibile:"
+
+msgid "Basic:"
+msgstr "De bază:"
+
+msgid "Discount Settings:"
+msgstr "Setări reducere:"
+
+msgid "Usage Restrictions:"
+msgstr "Restricții utilizare:"
+
+msgid "Amount Restrictions:"
+msgstr "Restricții sumă:"
+
+msgid "Product Restrictions:"
+msgstr "Restricții produse:"
+
+msgid "Category Restrictions:"
+msgstr "Restricții categorii:"
+
+msgid "Placeholder Examples:"
+msgstr "Exemple placeholder:"
+
+msgid "From Name"
+msgstr "De la nume"
+
+msgid "From Email"
+msgstr "De la email"
+
+msgid "Use WooCommerce Email Template"
+msgstr "Folosește șablonul de email WooCommerce"
+
+msgid "Use WooCommerce email template for styling"
+msgstr "Folosește șablonul de email WooCommerce pentru stilizare"
+
+msgid "Advanced Settings"
+msgstr "Setări avansate"
+
+msgid "Debug Mode"
+msgstr "Mod debug"
+
+msgid "Enable debug mode for troubleshooting"
+msgstr "Activează modul debug pentru depanare"
+
 msgid "Gravity Forms WooCommerce Coupon Generator"
 msgstr "Gravity Forms WooCommerce Coupon Generator"
 
@@ -219,23 +444,3 @@ msgstr "Adaugă Generator"
 msgid "Update Generator"
 msgstr "Actualizează Generator"
 
-msgid "Available placeholders:"
-msgstr "Placeholder-e disponibile:"
-
-msgid "Basic:"
-msgstr "De bază:"
-
-msgid "Discount Settings:"
-msgstr "Setări reducere:"
-
-msgid "Usage Restrictions:"
-msgstr "Restricții utilizare:"
-
-msgid "Amount Restrictions:"
-msgstr "Restricții sumă:"
-
-msgid "Product Restrictions:"
-msgstr "Restricții produse:"
-
-msgid "Category Restrictions:"
-msgstr "Restricții categorii:"
