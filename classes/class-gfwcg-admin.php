@@ -79,10 +79,11 @@ class GFWCG_Admin {
 
     public function enqueue_styles($hook) {
         // Only load on our plugin pages
-        if (strpos($hook, 'gfwcg-generators') === false) {
+        if (strpos($hook, 'gfwcg-generators') === false && strpos($hook, 'gfwcg-add-generator') === false) {
             return;
         }
 
+        // Enqueue plugin admin styles
         wp_enqueue_style(
             $this->plugin_name,
             plugin_dir_url(dirname(__FILE__)) . 'assets/css/gfwcg-admin.css',
@@ -90,6 +91,15 @@ class GFWCG_Admin {
             $this->version,
             'all'
         );
+
+        // Enqueue WooCommerce admin styles for consistency
+        if (class_exists('WooCommerce')) {
+            wp_enqueue_style('woocommerce_admin_styles', WC()->plugin_url() . '/assets/css/admin.css', array(), WC_VERSION);
+            // Enqueue WooCommerce color variables if available (since WC 8.6+)
+            if (file_exists(WC()->plugin_path() . '/assets/css/admin/variables.css')) {
+                wp_enqueue_style('woocommerce_admin_variables', WC()->plugin_url() . '/assets/css/admin/variables.css', array('woocommerce_admin_styles'), WC_VERSION);
+            }
+        }
     }
 
     public function enqueue_scripts($hook) {
@@ -98,15 +108,20 @@ class GFWCG_Admin {
             return;
         }
 
-        // Enqueue Select2
-        wp_enqueue_style('select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css');
-        wp_enqueue_script('select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'));
+        // Enqueue custom select component first
+        wp_enqueue_script(
+            'gfwcg-select',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/gfwcg-select.js',
+            array(),
+            $this->version,
+            true
+        );
 
-        // Enqueue our admin script
+        // Enqueue main generator form script
         wp_enqueue_script(
             $this->plugin_name,
             plugin_dir_url(dirname(__FILE__)) . 'assets/js/gfwcg-generator-form.js',
-            array('jquery', 'select2'),
+            array('jquery', 'gfwcg-select'),
             $this->version,
             true
         );

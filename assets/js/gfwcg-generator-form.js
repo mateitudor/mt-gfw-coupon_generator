@@ -1,76 +1,64 @@
+// Helper to destroy GFWCGSelect for a select (removes custom UI)
+function destroyGFWCGSelect(selector) {
+    document.querySelectorAll(selector).forEach(select => {
+        // Remove custom container if present
+        const next = select.nextElementSibling;
+        if (next && next.classList.contains('gfwcg-select-container')) {
+            next.remove();
+        }
+        select.style.display = '';
+        delete select.dataset.gfwcgSelect;
+    });
+}
+
 jQuery(document).ready(function($) {
-    // Initialize Select2 for form fields
-    function initSelect2() {
-        $('#form_id, #email_field_id, #name_field_id, #coupon_field_id').select2({
-            width: '100%',
-            placeholder: gfwcgAdmin.selectFieldText,
-            allowClear: true,
-            templateResult: formatFieldOption,
-            templateSelection: formatFieldSelection
-        });
-    }
-    initSelect2();
+	console.log('GFWCG Generator Form: Document ready');
+	
+	// Small delay to ensure everything is loaded
+	setTimeout(function() {
+		// Wait for GFWCGSelect to be available
+		if (typeof window.GFWCGSelect === 'undefined') {
+			console.error('GFWCGSelect not loaded');
+			return;
+		}
+		
+		console.log('GFWCG Generator Form: GFWCGSelect is available');
+		
+		// Debug: Check if select elements exist
+		console.log('GFWCG Generator Form: Checking for select elements...');
+		const formSelects = document.querySelectorAll('#form_id, #email_field_id, #name_field_id, #coupon_field_id');
+		console.log('GFWCG Generator Form: Found form selects:', formSelects.length);
+		formSelects.forEach((select, index) => {
+			console.log(`GFWCG Generator Form: Select ${index}:`, select.id, select.tagName);
+		});
 
-    // Initialize WooCommerce-style product and category select fields
-    function initWooCommerceSelects() {
-        // Product search fields
-        $('select[name="product_ids[]"], select[name="exclude_product_ids[]"]').each(function() {
-            $(this).select2({
-                width: '50%',
-                placeholder: 'Search for a product…',
-                allowClear: true,
-                ajax: {
-                    url: gfwcgAdmin.ajaxUrl,
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        console.log('Product search params:', params);
-                        return {
-                            action: 'gfwcg_search_products',
-                            term: params.term,
-                            security: gfwcgAdmin.nonce
-                        };
-                    },
-                    processResults: function(data) {
-                        console.log('Product search results:', data);
-                        var terms = [];
-                        if (data && typeof data === 'object') {
-                            $.each(data, function(id, text) {
-                                terms.push({
-                                    id: id,
-                                    text: text
-                                });
-                            });
-                        }
-                        return {
-                            results: terms
-                        };
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Product search error:', error);
-                        console.error('Status:', status);
-                        console.error('Response:', xhr.responseText);
-                    },
-                    cache: true
-                },
-                minimumInputLength: 2
-            });
-        });
+		// Initialize custom select for form fields
+		window.GFWCGSelect.init('#form_id, #email_field_id, #name_field_id, #coupon_field_id', {
+			placeholder: gfwcgAdmin.selectFieldText,
+			allowClear: true
+		});
 
-        // Category select fields
-        $('#product_categories, #exclude_product_categories').each(function() {
-            $(this).select2({
-                width: '50%',
-                placeholder: $(this).attr('data-placeholder') || 'Any category',
-                allowClear: true
-            });
-        });
-    }
+		// Debug: Check if WooCommerce select elements exist
+		console.log('GFWCG Generator Form: Checking for WooCommerce select elements...');
+		const wcSelects = document.querySelectorAll('select.wc-product-search, select[name="product_ids[]"], select[name="exclude_product_ids[]"], #product_categories, #exclude_product_categories');
+		console.log('GFWCG Generator Form: Found WooCommerce selects:', wcSelects.length);
+		wcSelects.forEach((select, index) => {
+			console.log(`GFWCG Generator Form: WC Select ${index}:`, select.className, select.name, select.id);
+		});
 
-    // Initialize WooCommerce selects if WooCommerce is available
-    if (typeof gfwcgAdmin !== 'undefined' && gfwcgAdmin.ajaxUrl) {
-        initWooCommerceSelects();
-    }
+		// Initialize custom select for WooCommerce-style product and category fields
+		window.GFWCGSelect.init('select.wc-product-search, select[name="product_ids[]"], select[name="exclude_product_ids[]"], #product_categories, #exclude_product_categories', {
+			async: true,
+			ajax: {
+				url: gfwcgAdmin.ajaxUrl,
+				action: 'gfwcg_search_products',
+				nonce: gfwcgAdmin.nonce,
+				minLength: 2,
+				placeholder: 'Search for a product…'
+			},
+			allowClear: true
+		});
+	}, 100);
 
     function formatFieldOption(field) {
         if (!field.id) {
@@ -156,6 +144,9 @@ jQuery(document).ready(function($) {
         var $nameField = $('#name_field_id');
         var $couponField = $('#coupon_field_id');
 
+        // Destroy previous custom selects
+        destroyGFWCGSelect('#email_field_id, #name_field_id, #coupon_field_id');
+
         // Clear existing options
         $emailField.empty();
         $nameField.empty();
@@ -183,10 +174,13 @@ jQuery(document).ready(function($) {
             $couponField.append($option.clone());
         });
 
-        // Trigger change to update Select2
-        $emailField.trigger('change');
-        $nameField.trigger('change');
-        $couponField.trigger('change');
+        // Re-initialize custom selects
+        setTimeout(function() {
+            window.GFWCGSelect.init('#email_field_id, #name_field_id, #coupon_field_id', {
+                placeholder: gfwcgAdmin.selectFieldText,
+                allowClear: true
+            });
+        }, 50);
     }
 
     // Handle form submission
