@@ -46,6 +46,30 @@ function gfwcg_load_textdomain() {
 add_action('plugins_loaded', 'gfwcg_load_textdomain');
 
 /**
+ * Get localized string with fallback
+ *
+ * @param string $text Text to translate
+ * @param string $context Context for translation
+ * @return string Translated text
+ */
+function gfwcg_get_text($text, $context = '') {
+	if (!empty($context)) {
+		return _x($text, $context, 'gravity-forms-woocommerce-coupon-generator');
+	}
+	return __($text, 'gravity-forms-woocommerce-coupon-generator');
+}
+
+/**
+ * Echo localized string with fallback
+ *
+ * @param string $text Text to translate
+ * @param string $context Context for translation
+ */
+function gfwcg_e($text, $context = '') {
+	echo gfwcg_get_text($text, $context);
+}
+
+/**
  * Get the current view from the URL parameters
  *
  * @return string The current view (list, grid, or edit)
