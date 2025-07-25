@@ -3,7 +3,7 @@
  * Plugin Name: Coupon Generator for Gravity Forms & WooCommerce
  * Plugin URI: https://storiabooks.com
  * Description: Generate WooCommerce coupon codes from Gravity Forms submissions
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Storia Books
  * Author URI: https://storiabooks.com
  * Text Domain: gravity-forms-woocommerce-coupon-generator
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('GFWCG_VERSION', '1.0.0');
+define('GFWCG_VERSION', '1.0.1');
 define('GFWCG_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GFWCG_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('GFWCG_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -149,4 +149,4 @@ function register_gfwcg_email_class($email_classes) {
     require_once(GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-email.php');
     $email_classes['GFWCG_Email'] = new GFWCG_Email();
     return $email_classes;
-}
+} 

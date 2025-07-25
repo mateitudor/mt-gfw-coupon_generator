@@ -2,6 +2,8 @@
 
 A powerful WordPress plugin that automatically generates WooCommerce coupon codes from Gravity Forms submissions. Perfect for creating lead magnets, newsletter signups, and promotional campaigns.
 
+**Version: 1.0.1**
+
 ## Table of Contents
 
 - [Overview](#overview)

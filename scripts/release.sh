@@ -14,9 +14,10 @@ TAG="v$VERSION"
 
 echo "🚀 Creating release for version $VERSION..."
 
-# Update version in main plugin file header comment
+# Update version in main plugin file header comment and constant
 echo "📝 Updating version in gravity-forms-woocommerce-coupon-generator.php..."
 sed -i '' "s/Version: [0-9.]*/Version: $VERSION/" gravity-forms-woocommerce-coupon-generator.php
+sed -i '' "s/define('GFWCG_VERSION', '[0-9.]*');/define('GFWCG_VERSION', '$VERSION');/" gravity-forms-woocommerce-coupon-generator.php
 
 # Update version in README.md if it exists
 if [ -f "README.md" ]; then
@@ -38,11 +39,24 @@ echo "🏷️  Creating tag $TAG..."
 git tag $TAG
 git push origin $TAG
 
-echo "✅ Release process started!"
-echo "📋 GitHub Actions will automatically:"
-echo "   - Build the plugin zip"
-echo "   - Create a release with the zip file"
-echo "   - Generate release notes"
-echo ""
-echo "🔗 Check progress at: https://github.com/mateitudor/gravity-forms-woocommerce-coupon-generator/actions"
-echo "🔗 Release will be at: https://github.com/mateitudor/gravity-forms-woocommerce-coupon-generator/releases"
+# Create GitHub release
+echo "🚀 Creating GitHub release..."
+gh release create "$TAG" \
+    --title "Version $VERSION" \
+    --notes "## What's New in Version $VERSION
+
+- Enhanced select component with category search functionality
+- Improved admin interface styling and accessibility
+- Added product category search via AJAX endpoint
+- Optimized form processing and email delivery
+- Better error handling and user experience
+
+## Requirements
+
+- WordPress 5.8+
+- PHP 7.4+
+- Gravity Forms
+- WooCommerce 5.0+"
+
+echo "✅ Release created successfully!"
+echo "🔗 View release at: https://github.com/mateitudor/gravity-forms-woocommerce-coupon-generator/releases"
