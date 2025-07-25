@@ -3,7 +3,7 @@
  * Plugin Name: Coupon Generator for Gravity Forms & WooCommerce
  * Plugin URI: https://storiabooks.com
  * Description: Generate WooCommerce coupon codes from Gravity Forms submissions
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Storia Books
  * Author URI: https://storiabooks.com
  * Text Domain: gravity-forms-woocommerce-coupon-generator
