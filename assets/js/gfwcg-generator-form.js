@@ -46,15 +46,30 @@ jQuery(document).ready(function($) {
 			console.log(`GFWCG Generator Form: WC Select ${index}:`, select.className, select.name, select.id);
 		});
 
-		// Initialize custom select for WooCommerce-style product and category fields
-		window.GFWCGSelect.init('select.wc-product-search, select[name="product_ids[]"], select[name="exclude_product_ids[]"], #product_categories, #exclude_product_categories', {
+		// Initialize custom select for product fields
+		window.GFWCGSelect.init('select.wc-product-search, select[name="product_ids[]"], select[name="exclude_product_ids[]"]', {
 			async: true,
 			ajax: {
 				url: gfwcgAdmin.ajaxUrl,
 				action: 'gfwcg_search_products',
 				nonce: gfwcgAdmin.nonce,
-				minLength: 2,
+				minLength: 1,
+				preload: true,
 				placeholder: 'Search for a product…'
+			},
+			allowClear: true
+		});
+
+		// Initialize custom select for category fields
+		window.GFWCGSelect.init('#product_categories, #exclude_product_categories', {
+			async: true,
+			ajax: {
+				url: gfwcgAdmin.ajaxUrl,
+				action: 'gfwcg_search_categories',
+				nonce: gfwcgAdmin.nonce,
+				minLength: 1,
+				preload: true,
+				placeholder: 'Search for a category…'
 			},
 			allowClear: true
 		});

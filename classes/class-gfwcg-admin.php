@@ -39,6 +39,7 @@ class GFWCG_Admin {
         add_action('wp_ajax_gfwcg_save_generator', array($this, 'ajax_save_generator'));
         add_action('wp_ajax_gfwcg_delete_generator', array($this, 'ajax_delete_generator'));
         add_action('wp_ajax_gfwcg_search_products', array($this, 'ajax_search_products'));
+        add_action('wp_ajax_gfwcg_search_categories', array($this, 'ajax_search_categories'));
         add_action('admin_init', array($this, 'admin_init'));
     }
 
@@ -406,28 +407,19 @@ class GFWCG_Admin {
      * AJAX handler for product search
      */
     public function ajax_search_products() {
-        // Debug logging
-        error_log('GFWCG: Product search AJAX called');
-        error_log('GFWCG: POST data: ' . print_r($_POST, true));
-        error_log('GFWCG: GET data: ' . print_r($_GET, true));
-        
         // Check nonce - try both POST and GET
         $nonce_valid = false;
         if (isset($_POST['security']) && wp_verify_nonce($_POST['security'], 'gfwcg_admin_nonce')) {
             $nonce_valid = true;
-            error_log('GFWCG: Nonce valid from POST');
         } elseif (isset($_GET['security']) && wp_verify_nonce($_GET['security'], 'gfwcg_admin_nonce')) {
             $nonce_valid = true;
-            error_log('GFWCG: Nonce valid from GET');
         }
 
         if (!$nonce_valid) {
-            error_log('GFWCG: Nonce validation failed');
             wp_send_json_error('Invalid nonce');
         }
 
         if (!current_user_can('manage_options')) {
-            error_log('GFWCG: Permission denied');
             wp_send_json_error('Permission denied');
         }
 
@@ -438,38 +430,29 @@ class GFWCG_Admin {
         } elseif (isset($_GET['term'])) {
             $term = sanitize_text_field($_GET['term']);
         }
-        
-        error_log('GFWCG: Search term: ' . $term);
-        
-        if (empty($term)) {
-            error_log('GFWCG: Empty search term, returning empty array');
-            wp_send_json(array());
-        }
-
-        // Test response for debugging
-        if ($term === 'test') {
-            error_log('GFWCG: Test search term detected, returning test data');
-            wp_send_json(array(
-                '1' => 'Test Product 1',
-                '2' => 'Test Product 2'
-            ));
-        }
 
         $products = array();
         
-        // Search for products - simplified query
-        $args = array(
-            'post_type' => 'product',
-            'post_status' => 'publish',
-            'posts_per_page' => 20,
-            's' => $term
-        );
-
-        error_log('GFWCG: WP_Query args: ' . print_r($args, true));
+        // If no term provided, return recent products for preload
+        if (empty($term)) {
+            $args = array(
+                'post_type' => 'product',
+                'post_status' => 'publish',
+                'posts_per_page' => 20,
+                'orderby' => 'date',
+                'order' => 'DESC'
+            );
+        } else {
+            // Search for products
+            $args = array(
+                'post_type' => 'product',
+                'post_status' => 'publish',
+                'posts_per_page' => 20,
+                's' => $term
+            );
+        }
 
         $query = new WP_Query($args);
-        
-        error_log('GFWCG: Found ' . $query->found_posts . ' products');
         
         if ($query->have_posts()) {
             while ($query->have_posts()) {
@@ -477,16 +460,75 @@ class GFWCG_Admin {
                 $product = wc_get_product(get_the_ID());
                 if ($product) {
                     $products[$product->get_id()] = $product->get_name();
-                    error_log('GFWCG: Added product - ID: ' . $product->get_id() . ', Name: ' . $product->get_name());
                 }
             }
         }
         
         wp_reset_postdata();
         
-        error_log('GFWCG: Final products array: ' . print_r($products, true));
-        
         wp_send_json($products);
+    }
+
+    /**
+     * AJAX handler for searching product categories
+     */
+    public function ajax_search_categories() {
+        // Check nonce - try both POST and GET
+        $nonce_valid = false;
+        if (isset($_POST['security']) && wp_verify_nonce($_POST['security'], 'gfwcg_admin_nonce')) {
+            $nonce_valid = true;
+        } elseif (isset($_GET['security']) && wp_verify_nonce($_GET['security'], 'gfwcg_admin_nonce')) {
+            $nonce_valid = true;
+        }
+
+        if (!$nonce_valid) {
+            wp_send_json_error('Invalid nonce');
+        }
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+        }
+
+        // Get search term from either POST or GET
+        $term = '';
+        if (isset($_POST['term'])) {
+            $term = sanitize_text_field($_POST['term']);
+        } elseif (isset($_GET['term'])) {
+            $term = sanitize_text_field($_GET['term']);
+        }
+
+        $categories = array();
+        
+        // If no term provided, return all categories for preload
+        if (empty($term)) {
+            $args = array(
+                'taxonomy' => 'product_cat',
+                'hide_empty' => false,
+                'number' => 50,
+                'orderby' => 'name',
+                'order' => 'ASC'
+            );
+        } else {
+            // Search for categories
+            $args = array(
+                'taxonomy' => 'product_cat',
+                'hide_empty' => false,
+                'number' => 50,
+                'orderby' => 'name',
+                'order' => 'ASC',
+                'name__like' => $term
+            );
+        }
+
+        $terms = get_terms($args);
+        
+        if (!is_wp_error($terms) && !empty($terms)) {
+            foreach ($terms as $term_obj) {
+                $categories[$term_obj->term_id] = $term_obj->name;
+            }
+        }
+        
+        wp_send_json($categories);
     }
 
     private function get_generator($id) {
