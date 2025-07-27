@@ -120,7 +120,7 @@ function gfwcg_init() {
         require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-email.php';
     });
     
-    require_once GFWCG_PLUGIN_DIR . 'partials/gfwcg-shortcode.php';
+    require_once GFWCG_PLUGIN_DIR . 'partials/gfwcg-shortcodes.php';
 
     // Initialize components
     new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);

@@ -444,3 +444,61 @@ msgstr "Adaugă Generator"
 msgid "Update Generator"
 msgstr "Actualizează Generator"
 
+# Shortcode translations
+msgid "Discount Details"
+msgstr "Detalii reducere"
+
+msgid "Type:"
+msgstr "Tip:"
+
+msgid "Amount:"
+msgstr "Suma:"
+
+msgid "Free Shipping:"
+msgstr "Transport gratuit:"
+
+msgid "Usage Limits"
+msgstr "Limite de utilizare"
+
+msgid "Usage per coupon:"
+msgstr "Utilizări per cupon:"
+
+msgid "Usage per user:"
+msgstr "Utilizări per utilizator:"
+
+msgid "Individual use only:"
+msgstr "Utilizare individuală doar:"
+
+msgid "Restrictions"
+msgstr "Restricții"
+
+msgid "Minimum spend:"
+msgstr "Cheltuieli minime:"
+
+msgid "Maximum spend:"
+msgstr "Cheltuieli maxime:"
+
+msgid "Exclude sale items:"
+msgstr "Exclude articolele la reducere:"
+
+msgid "Valid for products:"
+msgstr "Valabil pentru produse:"
+
+msgid "Excluded products:"
+msgstr "Produse excluse:"
+
+msgid "Valid for categories:"
+msgstr "Valabil pentru categorii:"
+
+msgid "Excluded categories:"
+msgstr "Categorii excluse:"
+
+msgid "Expiry"
+msgstr "Expirare"
+
+msgid "Coupon expires %d days after generation."
+msgstr "Cuponul expiră după %d zile de la generare."
+
+msgid "Generator not found or inactive."
+msgstr "Generator negăsit sau inactiv."
+
