@@ -188,6 +188,47 @@ Use this shortcode to display both the restrictions and the Gravity Form for gen
 3. Automatically injects generator ID as hidden field
 4. Processes form submission for generarea codului de reducere
 
+#### Display Discount Amount Only
+Use this shortcode to display only the discount amount value from a generator.
+
+**Basic Usage:**
+```
+[gfwcg_discount id="1"]
+[gfwcg_discount slug="summer-sale"]
+```
+
+**Parameters:**
+- `id` - Generator ID (optional if slug is provided)
+- `slug` - Generator slug (optional if id is provided)
+- `show_currency` - Show currency symbol/percentage (true/false, default: true)
+- `css_class` - Custom CSS class (default: gfwcg-discount)
+
+**Examples:**
+
+**Basic Discount Display:**
+```
+[gfwcg_discount id="1"]
+[gfwcg_discount slug="winter-promo"]
+```
+
+**Without Currency Symbol:**
+```
+[gfwcg_discount id="1" show_currency="false"]
+[gfwcg_discount slug="spring-sale" show_currency="false"]
+```
+
+**Custom Styling:**
+```
+[gfwcg_discount id="1" css_class="my-discount-value"]
+[gfwcg_discount slug="holiday-promo" css_class="promo-discount"]
+```
+
+**How it Works:**
+1. Retrieves the generator by ID or slug
+2. Displays only the discount amount value
+3. Optionally shows currency symbol (%) or currency code
+4. Returns empty string if generator not found
+
 ## Shortcode Settings
 
 The plugin extends Gravity Forms shortcodes with additional parameters to enable generarea codului de reducere. Here's a comprehensive guide to all available shortcode settings:

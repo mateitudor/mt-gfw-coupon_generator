@@ -384,6 +384,44 @@ function gfwcg_form_shortcode($atts) {
 }
 add_shortcode('gfwcg_form', 'gfwcg_form_shortcode');
 
+/**
+ * Shortcode to display only the discount amount
+ * Usage: [gfwcg_discount id="1"] or [gfwcg_discount slug="my-generator"]
+ */
+function gfwcg_discount_shortcode($atts) {
+	
+	$atts = shortcode_atts(array(
+		'id' => 0,
+		'slug' => '',
+		'show_currency' => 'true',
+		'css_class' => 'gfwcg-discount'
+	), $atts, 'gfwcg_discount');
+
+	// Get generator by ID or slug
+	$generator = null;
+	if (!empty($atts['id'])) {
+		$generator = GFWCG_DB::get_generator(intval($atts['id']));
+	} elseif (!empty($atts['slug'])) {
+		$generator = GFWCG_DB::get_generator_by_slug($atts['slug']);
+	}
+
+	if (!$generator || $generator->status !== 'active') {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<span class="<?php echo esc_attr($atts['css_class']); ?>">
+		<?php echo esc_html($generator->discount_amount); ?>
+		<?php if ($atts['show_currency'] === 'true'): ?>
+			<?php echo $generator->discount_type === 'percentage' ? '%' : get_woocommerce_currency_symbol(); ?>
+		<?php endif; ?>
+	</span>
+	<?php
+	return ob_get_clean();
+}
+add_shortcode('gfwcg_discount', 'gfwcg_discount_shortcode');
+
 // Hook into Gravity Forms shortcode processing for generator ID
 add_filter('gform_shortcode_form', function($shortcode_string, $attributes) {
 	if (!isset($attributes['gen'])) {
