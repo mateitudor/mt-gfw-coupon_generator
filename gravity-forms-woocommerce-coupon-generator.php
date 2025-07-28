@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Coupon Generator for Gravity Forms & WooCommerce
-* Plugin URI: https://storiabooks.com
-* Description: Generate WooCommerce coupon codes from Gravity Forms submissions
+ * Plugin URI: https://mateitudor.com
+ * Description: Generate WooCommerce coupon codes from Gravity Forms submissions
  * Version: 1.0.1
- * Author: Storia Books
- * Author URI: https://storiabooks.com
+ * Author: Matei Tudor
+ * Author URI: https://mateitudor.com
  * Text Domain: gravity-forms-woocommerce-coupon-generator
  * Domain Path: /languages
  * Requires at least: 5.8
@@ -13,8 +13,8 @@
  * WC requires at least: 5.0
  * WC tested up to: 8.0
  * HPOS compatible: yes
- * License: GPLv2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * License: Unlicense
+ * License URI: https://unlicense.org/
  * 
  * @package GFWCG
  */
