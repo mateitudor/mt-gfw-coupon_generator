@@ -355,7 +355,7 @@ msgid "All categories"
 msgstr "Toate categoriile"
 
 msgid "Percentage"
-msgstr "Procent"
+msgstr "procent"
 
 msgid "Fixed cart discount"
 msgstr "Reducere fixă pentru coș"
