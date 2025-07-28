@@ -45,7 +45,148 @@ The Gravity Forms WooCommerce Coupon Generator plugin seamlessly integrates Grav
 
 1. **Create a Generator**: Go to **Gravity Forms > Coupon Generators** and click "Add New"
 2. **Configure Settings**: Set up your form, email field, and coupon parameters
-3. **Use the Shortcode**: Add the shortcode to any page or post where you want the form to appear
+3. **Use the Shortcode**: Add the shortcode to any page or post
+
+## Shortcodes
+
+#### Display Generator Restrictions
+Use this shortcode to display the restrictions and details of a coupon generator on the frontend.
+
+**Basic Usage:**
+```
+[gfwcg_restrictions id="1"]
+```
+
+**With Slug:**
+```
+[gfwcg_restrictions slug="my-generator"]
+```
+
+**Parameters:**
+
+**Basic Parameters:**
+- `id` - Generator ID (optional if slug is provided)
+- `slug` - Generator slug (optional if id is provided)
+- `show_title` - Show generator title (true/false, default: true)
+- `show_description` - Show generator description (true/false, default: true)
+- `show_discount` - Show discount details (true/false, default: true)
+- `show_usage` - Show usage limits (true/false, default: true)
+- `show_restrictions` - Show product/category restrictions (true/false, default: true)
+- `show_expiry` - Show expiry information (true/false, default: true)
+- `css_class` - Custom CSS class (default: gfwcg-restrictions)
+- `display_section_titles` - Show section titles (true/false, default: true)
+
+**Discount Section Controls:**
+- `display_discount_labels` - Show discount labels (true/false, default: true)
+- `discount_type_value` - Show discount type value (true/false, default: true)
+- `discount_type_label` - Show discount type label (true/false, default: true)
+- `discount_amount_value` - Show discount amount value (true/false, default: true)
+- `discount_amount_label` - Show discount amount label (true/false, default: true)
+- `discount_free_shipping_value` - Show free shipping value (true/false, default: true)
+- `discount_free_shipping_label` - Show free shipping label (true/false, default: true)
+
+**Usage Section Controls:**
+- `display_usage_labels` - Show usage labels (true/false, default: true)
+- `usage_per_coupon_value` - Show per coupon usage value (true/false, default: true)
+- `usage_per_coupon_label` - Show per coupon usage label (true/false, default: true)
+- `usage_per_user_value` - Show per user usage value (true/false, default: true)
+- `usage_per_user_label` - Show per user usage label (true/false, default: true)
+- `usage_individual_value` - Show individual use value (true/false, default: true)
+- `usage_individual_label` - Show individual use label (true/false, default: true)
+
+**Restrictions Section Controls:**
+- `display_restrictions_labels` - Show restrictions labels (true/false, default: true)
+- `restrictions_minimum_value` - Show minimum spend value (true/false, default: true)
+- `restrictions_minimum_label` - Show minimum spend label (true/false, default: true)
+- `restrictions_maximum_value` - Show maximum spend value (true/false, default: true)
+- `restrictions_maximum_label` - Show maximum spend label (true/false, default: true)
+- `restrictions_exclude_sale_value` - Show exclude sale items value (true/false, default: true)
+- `restrictions_exclude_sale_label` - Show exclude sale items label (true/false, default: true)
+- `restrictions_products_value` - Show included products value (true/false, default: true)
+- `restrictions_products_label` - Show included products label (true/false, default: true)
+- `restrictions_exclude_products_value` - Show excluded products value (true/false, default: true)
+- `restrictions_exclude_products_label` - Show excluded products label (true/false, default: true)
+- `restrictions_categories_value` - Show included categories value (true/false, default: true)
+- `restrictions_categories_label` - Show included categories label (true/false, default: true)
+- `restrictions_exclude_categories_value` - Show excluded categories value (true/false, default: true)
+- `restrictions_exclude_categories_label` - Show excluded categories label (true/false, default: true)
+
+**Expiry Section Controls:**
+- `display_expiry_labels` - Show expiry labels (true/false, default: true)
+- `expiry_days_value` - Show expiry days value (true/false, default: true)
+- `expiry_days_label` - Show expiry days label (true/false, default: true)
+
+**Examples:**
+
+**Basic Usage:**
+```
+[gfwcg_restrictions id="1"]
+[gfwcg_restrictions slug="summer-sale"]
+```
+
+**Hide Specific Sections:**
+```
+[gfwcg_restrictions id="1" show_title="false" show_description="false"]
+[gfwcg_restrictions slug="winter-promo" show_restrictions="false" show_expiry="false"]
+```
+
+**Granular Control - Hide Labels Only:**
+```
+[gfwcg_restrictions id="1" display_discount_labels="false" display_usage_labels="false"]
+[gfwcg_restrictions slug="spring-sale" display_restrictions_labels="false"]
+```
+
+**Custom Styling:**
+```
+[gfwcg_restrictions id="1" css_class="my-custom-restrictions"]
+[gfwcg_restrictions slug="holiday-promo" css_class="promo-box restrictions"]
+```
+
+**Minimal Display:**
+```
+[gfwcg_restrictions id="1" show_title="false" show_description="false" display_section_titles="false" display_discount_labels="false" display_usage_labels="false" display_restrictions_labels="false" display_expiry_labels="false"]
+```
+
+#### Display Generator Form with Restrictions
+Use this shortcode to display both the restrictions and the Gravity Form for coupon generation. This combines the restrictions display with the actual form submission.
+
+**Basic Usage:**
+```
+[gfwcg_form id="1"]
+[gfwcg_form slug="summer-sale"]
+```
+
+**Parameters:**
+- `id` - Generator ID (optional if slug is provided)
+- `slug` - Generator slug (optional if id is provided)
+- `show_restrictions` - Show restrictions above form (true/false, default: true)
+- `css_class` - Custom CSS class (default: gfwcg-form)
+
+**Examples:**
+
+**Basic Form with Restrictions:**
+```
+[gfwcg_form id="1"]
+[gfwcg_form slug="winter-promo"]
+```
+
+**Form Without Restrictions Display:**
+```
+[gfwcg_form id="1" show_restrictions="false"]
+[gfwcg_form slug="spring-sale" show_restrictions="false"]
+```
+
+**Custom Styled Form:**
+```
+[gfwcg_form id="1" css_class="my-custom-form-container"]
+[gfwcg_form slug="holiday-promo" css_class="promo-form-wrapper"]
+```
+
+**How it Works:**
+1. Displays generator restrictions (if enabled)
+2. Shows the associated Gravity Form
+3. Automatically injects generator ID as hidden field
+4. Processes form submission for coupon generation
 
 ## Shortcode Settings
 
