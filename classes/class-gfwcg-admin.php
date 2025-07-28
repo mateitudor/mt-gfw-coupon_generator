@@ -466,7 +466,7 @@ class GFWCG_Admin {
 				$args = array(
 					'taxonomy' => 'product_cat',
 					'hide_empty' => false,
-					'number' => 50,
+					'number' => 100,
 					'orderby' => 'name',
 					'order' => 'ASC'
 				);
@@ -475,7 +475,7 @@ class GFWCG_Admin {
 				$args = array(
 					'taxonomy' => 'product_cat',
 					'hide_empty' => false,
-					'number' => 50,
+					'number' => 100,
 					'orderby' => 'name',
 					'order' => 'ASC',
 					'name__like' => $term
@@ -486,7 +486,8 @@ class GFWCG_Admin {
 			
 			if (!is_wp_error($terms) && !empty($terms)) {
 				foreach ($terms as $term_obj) {
-					$results[$term_obj->term_id] = $term_obj->name;
+					$category_path = $this->get_category_hierarchy($term_obj->term_id);
+					$results[$term_obj->term_id] = $category_path;
 				}
 			}
 		}
@@ -501,14 +502,39 @@ class GFWCG_Admin {
 		$this->ajax_search_generic('products');
 	}
 
-	/**
+		/**
 	 * AJAX handler for searching product categories
 	 */
 	public function ajax_search_categories() {
 		$this->ajax_search_generic('categories');
 	}
 
-    private function get_generator($id) {
+	/**
+	 * Build hierarchical category path
+	 */
+	private function get_category_hierarchy($term_id) {
+		$term = get_term($term_id, 'product_cat');
+		if (!$term || is_wp_error($term)) {
+			return '';
+		}
+
+		$hierarchy = array($term->name);
+		$parent_id = $term->parent;
+
+		while ($parent_id > 0) {
+			$parent = get_term($parent_id, 'product_cat');
+			if ($parent && !is_wp_error($parent)) {
+				array_unshift($hierarchy, $parent->name);
+				$parent_id = $parent->parent;
+			} else {
+				break;
+			}
+		}
+
+		return implode(' > ', $hierarchy);
+	}
+
+	private function get_generator($id) {
         return GFWCG_DB::get_generator($id);
     }
 
