@@ -111,12 +111,16 @@ function gfwcg_init() {
 
     // Load all required files using autoloader
     global $gfwcg_autoloader;
-    $gfwcg_autoloader->load_admin_files();
-    
-    // Load email class after WooCommerce is fully loaded
-    add_action('woocommerce_init', function() use ($gfwcg_autoloader) {
-        $gfwcg_autoloader->load_email_class();
-    });
+    if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_admin_files')) {
+        $gfwcg_autoloader->load_admin_files();
+        
+        // Load email class after WooCommerce is fully loaded
+        add_action('woocommerce_init', function() use ($gfwcg_autoloader) {
+            if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_email_class')) {
+                $gfwcg_autoloader->load_email_class();
+            }
+        });
+    }
 
     // Initialize components
     new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);
@@ -137,8 +141,12 @@ function gfwcg_activate() {
 
     // Create database tables
     global $gfwcg_autoloader;
-    $gfwcg_autoloader->load_class('GFWCG_DB');
-    GFWCG_DB::create_tables();
+    if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_class')) {
+        $gfwcg_autoloader->load_class('GFWCG_DB');
+        if (class_exists('GFWCG_DB')) {
+            GFWCG_DB::create_tables();
+        }
+    }
 }
 
 // Register the custom email class
@@ -146,7 +154,7 @@ add_filter('woocommerce_email_classes', 'register_gfwcg_email_class');
 function register_gfwcg_email_class($email_classes) {
     // Load our custom email class using autoloader
     global $gfwcg_autoloader;
-    if ($gfwcg_autoloader->load_email_class()) {
+    if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_email_class') && $gfwcg_autoloader->load_email_class()) {
         $email_classes['GFWCG_Email'] = new GFWCG_Email();
     }
     return $email_classes;
