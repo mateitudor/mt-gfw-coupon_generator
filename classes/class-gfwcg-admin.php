@@ -536,6 +536,9 @@ class GFWCG_Admin {
     }
 
     public function admin_init() {
+        // Migrate database to remove duplicate columns
+        GFWCG_DB::migrate_database();
+        
         // Verify table structure
         GFWCG_DB::verify_table_structure();
         
