@@ -283,9 +283,8 @@ jQuery(document).ready(function($) {
             } else {
                 // Second click - proceed with deletion
                 const generatorId = button.dataset.id;
-                const nonce = button.dataset.nonce;
                 
-                if (!generatorId || !nonce) {
+                if (!generatorId) {
                     alert('Missing required data for deletion.');
                     return;
                 }
@@ -301,7 +300,7 @@ jQuery(document).ready(function($) {
                     data: {
                         action: 'gfwcg_delete_generator',
                         id: generatorId,
-                        nonce: nonce
+                        nonce: gfwcgAdmin.nonce
                     },
                     success: function(response) {
                         if (response.success) {
