@@ -30,8 +30,8 @@ define('GFWCG_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('GFWCG_PLUGIN_BASENAME', plugin_basename(__FILE__));
 define('GFWCG_PLUGIN_NAME', 'gravity-forms-woocommerce-coupon-generator');
 
-// Include admin view files
-require_once GFWCG_PLUGIN_DIR . 'views/admin-list.php';
+// Load autoloader first
+require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-autoloader.php';
 
 /**
  * Load plugin textdomain
@@ -109,18 +109,14 @@ function gfwcg_init() {
         return;
     }
 
-    // Load plugin files
-    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-db.php';
-    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-admin.php';
-    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-generator.php';
-    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-coupon.php';
+    // Load all required files using autoloader
+    global $gfwcg_autoloader;
+    $gfwcg_autoloader->load_admin_files();
     
     // Load email class after WooCommerce is fully loaded
-    add_action('woocommerce_init', function() {
-        require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-email.php';
+    add_action('woocommerce_init', function() use ($gfwcg_autoloader) {
+        $gfwcg_autoloader->load_email_class();
     });
-    
-    require_once GFWCG_PLUGIN_DIR . 'partials/gfwcg-shortcodes.php';
 
     // Initialize components
     new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);
@@ -140,16 +136,19 @@ function gfwcg_activate() {
     }
 
     // Create database tables
-    require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-db.php';
+    global $gfwcg_autoloader;
+    $gfwcg_autoloader->load_class('GFWCG_DB');
     GFWCG_DB::create_tables();
 }
 
 // Register the custom email class
 add_filter('woocommerce_email_classes', 'register_gfwcg_email_class');
 function register_gfwcg_email_class($email_classes) {
-    // Include our custom email class
-    require_once(GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-email.php');
-    $email_classes['GFWCG_Email'] = new GFWCG_Email();
+    // Load our custom email class using autoloader
+    global $gfwcg_autoloader;
+    if ($gfwcg_autoloader->load_email_class()) {
+        $email_classes['GFWCG_Email'] = new GFWCG_Email();
+    }
     return $email_classes;
 }
 

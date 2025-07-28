@@ -9,11 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Include required classes
-require_once dirname(dirname(__FILE__)) . '/classes/class-gfwcg-db.php';
-
-// Include the partials
-require_once dirname(dirname(__FILE__)) . '/partials/gfwcg-actions.php';
+// Classes and partials are loaded by autoloader
 
 /**
  * Display the generator form

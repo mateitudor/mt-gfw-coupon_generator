@@ -9,10 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Include view files
-require_once plugin_dir_path(dirname(__FILE__)) . 'views/admin-list.php';
-require_once plugin_dir_path(dirname(__FILE__)) . 'views/admin-grid.php';
-require_once plugin_dir_path(dirname(__FILE__)) . 'views/admin-single.php';
+// Autoloader will handle file includes
 
 /**
  * The admin-specific functionality of the plugin.
@@ -146,10 +143,7 @@ class GFWCG_Admin {
             wp_die(__('You do not have sufficient permissions to access this page.', 'gravity-forms-woocommerce-coupon-generator'));
         }
 
-        // Include view files
-        require_once plugin_dir_path(dirname(__FILE__)) . 'views/admin-list.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'views/admin-grid.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'views/admin-single.php';
+        // Views are loaded by autoloader
 
         // Get the current view and ID
         $view = isset($_GET['view']) ? sanitize_text_field($_GET['view']) : 'list';

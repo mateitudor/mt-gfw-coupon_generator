@@ -15,8 +15,7 @@ if (defined('GFWCG_SHORTCODES_LOADED')) {
 }
 define('GFWCG_SHORTCODES_LOADED', true);
 
-// Include required classes
-require_once plugin_dir_path(dirname(__FILE__)) . 'classes/class-gfwcg-db.php';
+// Classes are loaded by autoloader
 
 /**
  * Shortcode to display generator restrictions

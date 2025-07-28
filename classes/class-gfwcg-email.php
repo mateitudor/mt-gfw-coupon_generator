@@ -9,10 +9,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-// Include WooCommerce email classes
-if (!class_exists('WC_Email')) {
-	require_once(WC()->plugin_path() . '/includes/emails/class-wc-email.php');
-}
+// WooCommerce email classes are loaded by WooCommerce
 
 /**
  * Email Class

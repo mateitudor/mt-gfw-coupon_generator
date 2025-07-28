@@ -51,7 +51,7 @@ class GFWCG_DB {
             KEY status (status)
         ) $charset_collate;";
 
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        // WordPress upgrade functions are available
         dbDelta($sql);
     }
 

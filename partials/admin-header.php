@@ -9,8 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Include the view switcher
-require_once dirname(dirname(__FILE__)) . '/partials/admin-switcher.php';
+// View switcher functions are available through autoloader
 
 /**
  * Display the admin header

@@ -9,10 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Include the partials
-require_once dirname(dirname(__FILE__)) . '/partials/admin-submenu.php';
-require_once dirname(dirname(__FILE__)) . '/partials/admin-header.php';
-require_once dirname(dirname(__FILE__)) . '/partials/gfwcg-actions.php';
+// Partial functions are available through autoloader
 
 /**
  * Display the generators list view
