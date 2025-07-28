@@ -41,6 +41,7 @@ function gfwcg_restrictions_shortcode($atts) {
 		'discount_type_label' => 'true',
 		'discount_amount_value' => 'true',
 		'discount_amount_label' => 'true',
+		'discount_amount_show_decimals' => 'false',
 		'discount_free_shipping_value' => 'true',
 		'discount_free_shipping_label' => 'true',
 		// Usage section controls
@@ -116,7 +117,13 @@ function gfwcg_restrictions_shortcode($atts) {
 								<?php if ($atts['display_discount_labels'] === 'true' && $atts['discount_amount_label'] === 'true'): ?>
 									<strong><?php echo gfwcg_get_text('Amount:'); ?></strong> 
 								<?php endif; ?>
-								<?php echo esc_html($generator->discount_amount); ?>
+								<?php 
+								$discount_amount = $generator->discount_amount;
+								if ($atts['discount_amount_show_decimals'] === 'false') {
+									$discount_amount = $generator->discount_type === 'percentage' ? round($discount_amount) : intval($discount_amount);
+								}
+								echo esc_html($discount_amount);
+								?>
 								<?php echo $generator->discount_type === 'percentage' ? '%' : get_woocommerce_currency_symbol(); ?>
 							</li>
 						<?php endif; ?>
@@ -394,6 +401,7 @@ function gfwcg_discount_shortcode($atts) {
 		'id' => 0,
 		'slug' => '',
 		'show_currency' => 'true',
+		'show_decimals' => 'false',
 		'css_class' => 'gfwcg-discount'
 	), $atts, 'gfwcg_discount');
 
@@ -412,7 +420,13 @@ function gfwcg_discount_shortcode($atts) {
 	ob_start();
 	?>
 	<span class="<?php echo esc_attr($atts['css_class']); ?>">
-		<?php echo esc_html($generator->discount_amount); ?>
+		<?php 
+		$discount_amount = $generator->discount_amount;
+		if ($atts['show_decimals'] === 'false') {
+			$discount_amount = $generator->discount_type === 'percentage' ? round($discount_amount) : intval($discount_amount);
+		}
+		echo esc_html($discount_amount);
+		?>
 		<?php if ($atts['show_currency'] === 'true'): ?>
 			<?php echo $generator->discount_type === 'percentage' ? '%' : get_woocommerce_currency_symbol(); ?>
 		<?php endif; ?>

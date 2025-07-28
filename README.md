@@ -82,6 +82,7 @@ Use this shortcode to display the restrictions and details of a generator de cod
 - `discount_type_label` - Show discount type label (true/false, default: true)
 - `discount_amount_value` - Show discount amount value (true/false, default: true)
 - `discount_amount_label` - Show discount amount label (true/false, default: true)
+- `discount_amount_show_decimals` - Show decimal places in discount amount (true/false, default: false)
 - `discount_free_shipping_value` - Show free shipping value (true/false, default: true)
 - `discount_free_shipping_label` - Show free shipping label (true/false, default: true)
 
@@ -201,6 +202,7 @@ Use this shortcode to display only the discount amount value from a generator.
 - `id` - Generator ID (optional if slug is provided)
 - `slug` - Generator slug (optional if id is provided)
 - `show_currency` - Show currency symbol/percentage (true/false, default: true)
+- `show_decimals` - Show decimal places (true/false, default: false)
 - `css_class` - Custom CSS class (default: gfwcg-discount)
 
 **Examples:**
@@ -215,6 +217,12 @@ Use this shortcode to display only the discount amount value from a generator.
 ```
 [gfwcg_discount id="1" show_currency="false"]
 [gfwcg_discount slug="spring-sale" show_currency="false"]
+```
+
+**With Decimals:**
+```
+[gfwcg_discount id="1" show_decimals="true"]
+[gfwcg_discount slug="winter-promo" show_decimals="true"]
 ```
 
 **Custom Styling:**
