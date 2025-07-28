@@ -123,8 +123,8 @@ function gfwcg_restrictions_shortcode($atts) {
 									$discount_amount = $generator->discount_type === 'percentage' ? round($discount_amount) : intval($discount_amount);
 								}
 								echo esc_html($discount_amount);
+								echo $generator->discount_type === 'percentage' ? '%' : get_woocommerce_currency_symbol();
 								?>
-								<?php echo $generator->discount_type === 'percentage' ? '%' : get_woocommerce_currency_symbol(); ?>
 							</li>
 						<?php endif; ?>
 						<?php if ($atts['discount_free_shipping_value'] === 'true' && $generator->allow_free_shipping): ?>
@@ -426,10 +426,10 @@ function gfwcg_discount_shortcode($atts) {
 			$discount_amount = $generator->discount_type === 'percentage' ? round($discount_amount) : intval($discount_amount);
 		}
 		echo esc_html($discount_amount);
+		if ($atts['show_currency'] === 'true') {
+			echo $generator->discount_type === 'percentage' ? '%' : get_woocommerce_currency_symbol();
+		}
 		?>
-		<?php if ($atts['show_currency'] === 'true'): ?>
-			<?php echo $generator->discount_type === 'percentage' ? '%' : get_woocommerce_currency_symbol(); ?>
-		<?php endif; ?>
 	</span>
 	<?php
 	return ob_get_clean();
