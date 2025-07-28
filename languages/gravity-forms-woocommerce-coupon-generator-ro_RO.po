@@ -479,7 +479,7 @@ msgid "Maximum spend:"
 msgstr "Cheltuieli maxime:"
 
 msgid "Exclude sale items:"
-msgstr "Exclude articolele la reducere:"
+msgstr "Exclude produsele la reducere:"
 
 msgid "Valid for products:"
 msgstr "Valabil pentru produse:"
