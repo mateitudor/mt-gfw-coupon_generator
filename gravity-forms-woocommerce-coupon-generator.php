@@ -126,6 +126,8 @@ function gfwcg_init() {
     new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);
     new GFWCG_Generator();
     new GFWCG_Coupon();
+    
+
 }
 add_action('plugins_loaded', 'gfwcg_init');
 
@@ -149,4 +151,73 @@ function register_gfwcg_email_class($email_classes) {
     require_once(GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-email.php');
     $email_classes['GFWCG_Email'] = new GFWCG_Email();
     return $email_classes;
+}
+
+
+
+/**
+ * Register REST API endpoints for blocks
+ */
+function gfwcg_register_rest_api() {
+	register_rest_route('gfwcg/v1', '/generators', array(
+		'methods' => 'GET',
+		'callback' => 'gfwcg_get_generators_rest',
+		'permission_callback' => '__return_true'
+	));
+}
+
+add_action('rest_api_init', 'gfwcg_register_rest_api');
+add_action('rest_api_init', 'gfwcg_cors_headers', 15);
+
+function gfwcg_cors_headers() {
+    // Remove default CORS headers sent by WordPress REST API
+    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
+    
+    add_filter('rest_pre_serve_request', function($value) {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce');
+        return $value;
+    });
+}
+
+/**
+ * Add CORS headers for admin-ajax.php
+ */
+function gfwcg_admin_cors_headers() {
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: OPTIONS, GET, POST, PUT, DELETE");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+}
+add_action('admin_init', 'gfwcg_admin_cors_headers');
+    
+
+
+/**
+ * REST API callback to get generators
+ */
+function gfwcg_get_generators_rest($request) {
+    try {
+        if (!class_exists('GFWCG_DB')) {
+            return rest_ensure_response(array());
+        }
+        
+        $db = new GFWCG_DB();
+        $generators = $db->get_generators();
+        
+        $formatted_generators = array();
+        foreach ($generators as $generator) {
+            $formatted_generators[] = array(
+                'id' => $generator->id,
+                'title' => array('rendered' => $generator->title),
+                'slug' => $generator->slug,
+                'status' => $generator->status
+            );
+        }
+        
+        return rest_ensure_response($formatted_generators);
+    } catch (Exception $e) {
+        return rest_ensure_response(array());
+    }
 } 
