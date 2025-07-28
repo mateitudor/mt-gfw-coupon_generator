@@ -34,13 +34,13 @@ msgid "Title"
 msgstr "Titlu"
 
 msgid "Coupon Description"
-msgstr "Descriere cupon"
+msgstr "Descriere cod de reduceri"
 
 msgid "Enter a description for the generated coupons..."
 msgstr "Introduceți o descriere pentru cupoanele generate..."
 
 msgid "This description will be saved to the WooCommerce coupon and can be used to identify the purpose or source of the coupon. It will be visible in the WooCommerce admin area."
-msgstr "Această descriere va fi salvată în cuponul WooCommerce și poate fi folosită pentru a identifica scopul sau sursa cuponului. Va fi vizibilă în zona de administrare WooCommerce."
+msgstr "Această descriere va fi salvată în codul de reduceri WooCommerce și poate fi folosită pentru a identifica scopul sau sursa codului de reduceri. Va fi vizibilă în zona de administrare WooCommerce."
 
 msgid "Gravity Form"
 msgstr "Formular Gravity"
@@ -61,10 +61,10 @@ msgid "Select name field"
 msgstr "Selectează câmpul de nume"
 
 msgid "Coupon Settings"
-msgstr "Setări cupon"
+msgstr "Setări cod de reduceri"
 
 msgid "Coupon Type"
-msgstr "Tip cupon"
+msgstr "Tip cod de reduceri"
 
 msgid "Random"
 msgstr "Aleator"
@@ -73,28 +73,28 @@ msgid "From Form Field"
 msgstr "Din câmpul formularului"
 
 msgid "Coupon Field"
-msgstr "Câmp cupon"
+msgstr "Câmp cod de reduceri"
 
 msgid "Select coupon field"
-msgstr "Selectează câmpul cuponului"
+msgstr "Selectează câmpul codului de reduceri"
 
 msgid "Select any form field that will contain the coupon code."
-msgstr "Selectează orice câmp de formular care va conține codul cuponului."
+msgstr "Selectează orice câmp de formular care va conține codul de reduceri."
 
 msgid "Coupon Length"
-msgstr "Lungime cupon"
+msgstr "Lungime cod de reduceri"
 
 msgid "Coupon Prefix"
-msgstr "Prefix cupon"
+msgstr "Prefix cod de reduceri"
 
 msgid "Coupon Suffix"
-msgstr "Sufix cupon"
+msgstr "Sufix cod de reduceri"
 
 msgid "Coupon Separator"
-msgstr "Separator cupon"
+msgstr "Separator cod de reduceri"
 
 msgid "Character to separate prefix/suffix from the coupon code (e.g., \"-\")"
-msgstr "Caracter pentru a separa prefixul/sufixul de codul cuponului (ex: \"-\")"
+msgstr "Caracter pentru a separa prefixul/sufixul de codul de reduceri (ex: \"-\")"
 
 msgid "Discount Settings"
 msgstr "Setări reducere"
@@ -112,10 +112,10 @@ msgid "Individual Use"
 msgstr "Utilizare individuală"
 
 msgid "Check this box if the coupon cannot be used in conjunction with other coupons."
-msgstr "Bifați această casetă dacă cuponul nu poate fi folosit împreună cu alte cupoane."
+msgstr "Bifați această casetă dacă codul de reduceri nu poate fi folosit împreună cu alte coduri de reduceri."
 
 msgid "Usage Limit Per Coupon"
-msgstr "Limită utilizare per cupon"
+msgstr "Limită utilizare per cod de reduceri"
 
 msgid "Leave empty for unlimited usage. Set to 0 for unlimited usage."
 msgstr "Lăsați gol pentru utilizare nelimitată. Setați la 0 pentru utilizare nelimitată."
@@ -142,19 +142,19 @@ msgid "Exclude Sale Items"
 msgstr "Exclude produse la reducere"
 
 msgid "Check this box if the coupon should not apply to items on sale."
-msgstr "Bifați această casetă dacă cuponul nu ar trebui să se aplice la produsele la reducere."
+msgstr "Bifați această casetă dacă codul de reduceri nu ar trebui să se aplice la produsele la reducere."
 
 msgid "Allow Free Shipping"
 msgstr "Permite transport gratuit"
 
 msgid "Check this box if the coupon grants free shipping."
-msgstr "Bifați această casetă dacă cuponul oferă transport gratuit."
+msgstr "Bifați această casetă dacă codul de reduceri oferă transport gratuit."
 
 msgid "Expiry Days"
 msgstr "Zile expirare"
 
 msgid "Number of days until the coupon expires. Set to 0 for no expiry."
-msgstr "Numărul de zile până la expirarea cuponului. Setați la 0 pentru fără expirare."
+msgstr "Numărul de zile până la expirarea codului de reduceri. Setați la 0 pentru fără expirare."
 
 msgid "Products"
 msgstr "Produse"
@@ -163,13 +163,13 @@ msgid "Search for a product…"
 msgstr "Caută un produs…"
 
 msgid "Products that the coupon will be applied to, or that need to be in the cart in order for the \"Fixed cart discount\" to be applied."
-msgstr "Produsele la care se va aplica cuponul, sau care trebuie să fie în coș pentru ca reducerea \"Fixă pentru coș\" să se aplice."
+msgstr "Produsele la care se va aplica codul de reduceri, sau care trebuie să fie în coș pentru ca reducerea \"Fixă pentru coș\" să se aplice."
 
 msgid "Exclude Products"
 msgstr "Exclude produse"
 
 msgid "Products that the coupon will not be applied to, or that cannot be in the cart in order for the \"Fixed cart discount\" to be applied."
-msgstr "Produsele la care nu se va aplica cuponul, sau care nu pot fi în coș pentru ca reducerea \"Fixă pentru coș\" să se aplice."
+msgstr "Produsele la care nu se va aplica codul de reduceri, sau care nu pot fi în coș pentru ca reducerea \"Fixă pentru coș\" să se aplice."
 
 msgid "Product Categories"
 msgstr "Categorii produse"
@@ -178,7 +178,7 @@ msgid "Any category"
 msgstr "Orice categorie"
 
 msgid "Product categories that the coupon will be applied to, or that need to be in the cart in order for the \"Fixed cart discount\" to be applied."
-msgstr "Categoriile de produse la care se va aplica cuponul, sau care trebuie să fie în coș pentru ca reducerea \"Fixă pentru coș\" să se aplice."
+msgstr "Categoriile de produse la care se va aplica codul de reduceri, sau care trebuie să fie în coș pentru ca reducerea \"Fixă pentru coș\" să se aplice."
 
 msgid "Exclude Categories"
 msgstr "Exclude categorii"
@@ -190,7 +190,7 @@ msgid "Send Email"
 msgstr "Trimite email"
 
 msgid "Send email with coupon code to the user"
-msgstr "Trimite email cu codul cuponului către utilizator"
+msgstr "Trimite email cu codul de reduceri către utilizator"
 
 msgid "Email Subject"
 msgstr "Subiect email"
@@ -250,7 +250,7 @@ msgid "Generators"
 msgstr "Generatoare"
 
 msgid "Coupon Generator"
-msgstr "Generator Cupoane"
+msgstr "Generator Coduri de Reduceri"
 
 msgid "Add New"
 msgstr "Adaugă Nou"
@@ -319,16 +319,16 @@ msgid "Are you sure you want to delete this generator?"
 msgstr "Sigur doriți să ștergeți acest generator?"
 
 msgid "Gravity Forms WooCommerce Coupon"
-msgstr "Cupon Gravity Forms WooCommerce"
+msgstr "Cod de Reduceri Gravity Forms WooCommerce"
 
 msgid "This email is sent when a coupon is generated through a Gravity Form."
-msgstr "Acest email este trimis când un cupon este generat prin intermediul unui formular Gravity."
+msgstr "Acest email este trimis când un cod de reduceri este generat prin intermediul unui formular Gravity."
 
 msgid "Your Coupon Code"
-msgstr "Codul tău de cupon"
+msgstr "Codul tău de reduceri"
 
 msgid "Your coupon code is: {coupon_code}"
-msgstr "Codul tău de cupon este: {coupon_code}"
+msgstr "Codul tău de reduceri este: {coupon_code}"
 
 msgid "No expiry"
 msgstr "Fără expirare"
@@ -364,10 +364,10 @@ msgid "Fixed product discount"
 msgstr "Reducere fixă pentru produs"
 
 msgid "Your Coupon Details"
-msgstr "Detaliile cuponului tău"
+msgstr "Detaliile codului de reduceri tău"
 
 msgid "Coupon Code"
-msgstr "Cod cupon"
+msgstr "Cod de reduceri"
 
 msgid "Discount"
 msgstr "Reducere"
@@ -418,19 +418,19 @@ msgid "Generator deleted successfully"
 msgstr "Generator șters cu succes"
 
 msgid "Coupon Generators"
-msgstr "Generatoare Cupoane"
+msgstr "Generatoare Coduri de Reduceri"
 
 msgid "Form not found"
 msgstr "Formular negăsit"
 
 msgid "Per coupon: Unlimited"
-msgstr "Per cupon: Nelimitat"
+msgstr "Per cod de reduceri: Nelimitat"
 
 msgid "Per user: Unlimited"
 msgstr "Per utilizator: Nelimitat"
 
 msgid "Per coupon: %d"
-msgstr "Per cupon: %d"
+msgstr "Per cod de reduceri: %d"
 
 msgid "Per user: %d"
 msgstr "Per utilizator: %d"
@@ -461,7 +461,7 @@ msgid "Usage Limits"
 msgstr "Limite de utilizare"
 
 msgid "Usage per coupon:"
-msgstr "Utilizări per cupon:"
+msgstr "Utilizări per cod de reduceri:"
 
 msgid "Usage per user:"
 msgstr "Utilizări per utilizator:"
@@ -497,7 +497,7 @@ msgid "Expiry"
 msgstr "Expirare"
 
 msgid "Coupon expires %d days after generation."
-msgstr "Cuponul expiră după %d zile de la generare."
+msgstr "Codul de reduceri expiră după %d zile de la generare."
 
 msgid "Generator not found or inactive."
 msgstr "Generator negăsit sau inactiv."
