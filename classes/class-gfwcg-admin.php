@@ -397,133 +397,116 @@ class GFWCG_Admin {
         wp_send_json_success(array('message' => __('Generator deleted successfully.', 'gravity-forms-woocommerce-coupon-generator')));
     }
 
-    /**
-     * AJAX handler for product search
-     */
-    public function ajax_search_products() {
-        // Check nonce - try both POST and GET
-        $nonce_valid = false;
-        if (isset($_POST['security']) && wp_verify_nonce($_POST['security'], 'gfwcg_admin_nonce')) {
-            $nonce_valid = true;
-        } elseif (isset($_GET['security']) && wp_verify_nonce($_GET['security'], 'gfwcg_admin_nonce')) {
-            $nonce_valid = true;
-        }
+	/**
+	 * Generic AJAX search handler
+	 */
+	private function ajax_search_generic($search_type) {
+		// Check nonce - try both POST and GET
+		$nonce_valid = false;
+		if (isset($_POST['security']) && wp_verify_nonce($_POST['security'], 'gfwcg_admin_nonce')) {
+			$nonce_valid = true;
+		} elseif (isset($_GET['security']) && wp_verify_nonce($_GET['security'], 'gfwcg_admin_nonce')) {
+			$nonce_valid = true;
+		}
 
-        if (!$nonce_valid) {
-            wp_send_json_error('Invalid nonce');
-        }
+		if (!$nonce_valid) {
+			wp_send_json_error('Invalid nonce');
+		}
 
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('Permission denied');
-        }
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error('Permission denied');
+		}
 
-        // Get search term from either POST or GET
-        $term = '';
-        if (isset($_POST['term'])) {
-            $term = sanitize_text_field($_POST['term']);
-        } elseif (isset($_GET['term'])) {
-            $term = sanitize_text_field($_GET['term']);
-        }
+		// Get search term from either POST or GET
+		$term = '';
+		if (isset($_POST['term'])) {
+			$term = sanitize_text_field($_POST['term']);
+		} elseif (isset($_GET['term'])) {
+			$term = sanitize_text_field($_GET['term']);
+		}
 
-        $products = array();
-        
-        // If no term provided, return recent products for preload
-        if (empty($term)) {
-            $args = array(
-                'post_type' => 'product',
-                'post_status' => 'publish',
-                'posts_per_page' => 20,
-                'orderby' => 'date',
-                'order' => 'DESC'
-            );
-        } else {
-            // Search for products
-            $args = array(
-                'post_type' => 'product',
-                'post_status' => 'publish',
-                'posts_per_page' => 20,
-                's' => $term
-            );
-        }
+		$results = array();
+		
+		if ($search_type === 'products') {
+			// If no term provided, return recent products for preload
+			if (empty($term)) {
+				$args = array(
+					'post_type' => 'product',
+					'post_status' => 'publish',
+					'posts_per_page' => 20,
+					'orderby' => 'date',
+					'order' => 'DESC'
+				);
+			} else {
+				// Search for products
+				$args = array(
+					'post_type' => 'product',
+					'post_status' => 'publish',
+					'posts_per_page' => 20,
+					's' => $term
+				);
+			}
 
-        $query = new WP_Query($args);
-        
-        if ($query->have_posts()) {
-            while ($query->have_posts()) {
-                $query->the_post();
-                $product = wc_get_product(get_the_ID());
-                if ($product) {
-                    $products[$product->get_id()] = $product->get_name();
-                }
-            }
-        }
-        
-        wp_reset_postdata();
-        
-        wp_send_json($products);
-    }
+			$query = new WP_Query($args);
+			
+			if ($query->have_posts()) {
+				while ($query->have_posts()) {
+					$query->the_post();
+					$product = wc_get_product(get_the_ID());
+					if ($product) {
+						$results[$product->get_id()] = $product->get_name();
+					}
+				}
+			}
+			
+			wp_reset_postdata();
+		} elseif ($search_type === 'categories') {
+			// If no term provided, return all categories for preload
+			if (empty($term)) {
+				$args = array(
+					'taxonomy' => 'product_cat',
+					'hide_empty' => false,
+					'number' => 50,
+					'orderby' => 'name',
+					'order' => 'ASC'
+				);
+			} else {
+				// Search for categories
+				$args = array(
+					'taxonomy' => 'product_cat',
+					'hide_empty' => false,
+					'number' => 50,
+					'orderby' => 'name',
+					'order' => 'ASC',
+					'name__like' => $term
+				);
+			}
 
-    /**
-     * AJAX handler for searching product categories
-     */
-    public function ajax_search_categories() {
-        // Check nonce - try both POST and GET
-        $nonce_valid = false;
-        if (isset($_POST['security']) && wp_verify_nonce($_POST['security'], 'gfwcg_admin_nonce')) {
-            $nonce_valid = true;
-        } elseif (isset($_GET['security']) && wp_verify_nonce($_GET['security'], 'gfwcg_admin_nonce')) {
-            $nonce_valid = true;
-        }
+			$terms = get_terms($args);
+			
+			if (!is_wp_error($terms) && !empty($terms)) {
+				foreach ($terms as $term_obj) {
+					$results[$term_obj->term_id] = $term_obj->name;
+				}
+			}
+		}
+		
+		wp_send_json($results);
+	}
 
-        if (!$nonce_valid) {
-            wp_send_json_error('Invalid nonce');
-        }
+	/**
+	 * AJAX handler for product search
+	 */
+	public function ajax_search_products() {
+		$this->ajax_search_generic('products');
+	}
 
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('Permission denied');
-        }
-
-        // Get search term from either POST or GET
-        $term = '';
-        if (isset($_POST['term'])) {
-            $term = sanitize_text_field($_POST['term']);
-        } elseif (isset($_GET['term'])) {
-            $term = sanitize_text_field($_GET['term']);
-        }
-
-        $categories = array();
-        
-        // If no term provided, return all categories for preload
-        if (empty($term)) {
-            $args = array(
-                'taxonomy' => 'product_cat',
-                'hide_empty' => false,
-                'number' => 50,
-                'orderby' => 'name',
-                'order' => 'ASC'
-            );
-        } else {
-            // Search for categories
-            $args = array(
-                'taxonomy' => 'product_cat',
-                'hide_empty' => false,
-                'number' => 50,
-                'orderby' => 'name',
-                'order' => 'ASC',
-                'name__like' => $term
-            );
-        }
-
-        $terms = get_terms($args);
-        
-        if (!is_wp_error($terms) && !empty($terms)) {
-            foreach ($terms as $term_obj) {
-                $categories[$term_obj->term_id] = $term_obj->name;
-            }
-        }
-        
-        wp_send_json($categories);
-    }
+	/**
+	 * AJAX handler for searching product categories
+	 */
+	public function ajax_search_categories() {
+		$this->ajax_search_generic('categories');
+	}
 
     private function get_generator($id) {
         return GFWCG_DB::get_generator($id);
