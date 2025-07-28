@@ -141,7 +141,7 @@ function gfwcg_restrictions_shortcode($atts) {
 						<?php if ($atts['usage_per_coupon_value'] === 'true' && $generator->usage_limit_per_coupon > 0): ?>
 							<li>
 								<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_per_coupon_label'] === 'true'): ?>
-									<strong><?php echo gfwcg_get_text('Usage per coupon:'); ?></strong> 
+									        <strong><?php echo gfwcg_get_text('Utilizări per cod de reducere:'); ?></strong> 
 								<?php endif; ?>
 								<?php echo esc_html($generator->usage_limit_per_coupon); ?>
 							</li>
@@ -335,7 +335,7 @@ function gfwcg_restrictions_shortcode($atts) {
 					<?php if ($atts['display_section_titles'] === 'true'): ?>
 						<h4><?php echo gfwcg_get_text('Expiry'); ?></h4>
 					<?php endif; ?>
-					<p><?php printf(gfwcg_get_text('Coupon expires %d days after generation.'), $generator->expiry_days); ?></p>
+					        <p><?php printf(gfwcg_get_text('Codul de reducere expiră după %d zile de la generare.'), $generator->expiry_days); ?></p>
 				</div>
 			<?php endif; ?>
 		</div>

@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Coupon Generator for Gravity Forms & WooCommerce
- * Plugin URI: https://storiabooks.com
- * Description: Generate WooCommerce coupon codes from Gravity Forms submissions
+* Plugin URI: https://storiabooks.com
+* Description: Generate WooCommerce coupon codes from Gravity Forms submissions
  * Version: 1.0.1
  * Author: Storia Books
  * Author URI: https://storiabooks.com
@@ -91,7 +91,7 @@ function gfwcg_check_dependencies() {
 function gfwcg_missing_dependencies_notice() {
     ?>
     <div class="error">
-        <p><?php _e('Gravity Forms WooCommerce Coupon Generator requires both Gravity Forms and WooCommerce to be installed and activated.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+        <p><?php _e('Generator Cod de Reducere Gravity Forms WooCommerce necesită atât Gravity Forms cât și WooCommerce să fie instalate și activate.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
     </div>
     <?php
 }
@@ -136,7 +136,7 @@ register_activation_hook(__FILE__, 'gfwcg_activate');
 function gfwcg_activate() {
     if (!gfwcg_check_dependencies()) {
         deactivate_plugins(plugin_basename(__FILE__));
-        wp_die(__('Gravity Forms WooCommerce Coupon Generator requires both Gravity Forms and WooCommerce to be installed and activated.', 'gravity-forms-woocommerce-coupon-generator'));
+        wp_die(__('Generator Cod de Reducere Gravity Forms WooCommerce necesită atât Gravity Forms cât și WooCommerce să fie instalate și activate.', 'gravity-forms-woocommerce-coupon-generator'));
     }
 
     // Create database tables

@@ -19,7 +19,7 @@ A powerful WordPress plugin that automatically generates WooCommerce coupon code
 
 ## Overview
 
-The Gravity Forms WooCommerce Coupon Generator plugin seamlessly integrates Gravity Forms with WooCommerce to automatically create and send coupon codes when users submit forms. This is ideal for:
+The Gravity Forms WooCommerce Coupon Generator plugin seamlessly integrates Gravity Forms with WooCommerce to automatically create and send coduri de reducere when users submit forms. This is ideal for:
 
 - Newsletter signup incentives
 - Lead generation campaigns
@@ -50,7 +50,7 @@ The Gravity Forms WooCommerce Coupon Generator plugin seamlessly integrates Grav
 ## Shortcodes
 
 #### Display Generator Restrictions
-Use this shortcode to display the restrictions and details of a coupon generator on the frontend.
+Use this shortcode to display the restrictions and details of a generator de cod de reducere on the frontend.
 
 **Basic Usage:**
 ```
@@ -148,7 +148,7 @@ Use this shortcode to display the restrictions and details of a coupon generator
 ```
 
 #### Display Generator Form with Restrictions
-Use this shortcode to display both the restrictions and the Gravity Form for coupon generation. This combines the restrictions display with the actual form submission.
+Use this shortcode to display both the restrictions and the Gravity Form for generarea codului de reducere. This combines the restrictions display with the actual form submission.
 
 **Basic Usage:**
 ```
@@ -186,11 +186,11 @@ Use this shortcode to display both the restrictions and the Gravity Form for cou
 1. Displays generator restrictions (if enabled)
 2. Shows the associated Gravity Form
 3. Automatically injects generator ID as hidden field
-4. Processes form submission for coupon generation
+4. Processes form submission for generarea codului de reducere
 
 ## Shortcode Settings
 
-The plugin extends Gravity Forms shortcodes with additional parameters to enable coupon generation. Here's a comprehensive guide to all available shortcode settings:
+The plugin extends Gravity Forms shortcodes with additional parameters to enable generarea codului de reducere. Here's a comprehensive guide to all available shortcode settings:
 
 ### Basic Shortcode Usage
 
@@ -205,7 +205,7 @@ The plugin extends Gravity Forms shortcodes with additional parameters to enable
 | Parameter | Type | Description | Example |
 |-----------|------|-------------|---------|
 | `id` | integer | The Gravity Form ID | `id="1"` |
-| `gen` | integer | The Coupon Generator ID | `gen="2"` |
+| `gen` | integer | The Cod de Reducere Generator ID | `gen="2"` |
 
 #### Optional Parameters
 
@@ -220,7 +220,7 @@ The plugin extends Gravity Forms shortcodes with additional parameters to enable
 
 ### Complete Shortcode Examples
 
-#### Basic Form with Coupon Generation
+#### Basic Form with Generarea Codului de Reducere
 ```php
 [gravityform id="1" gen="2" title="false" ajax="true"]
 ```
@@ -238,10 +238,10 @@ The plugin extends Gravity Forms shortcodes with additional parameters to enable
 ### How the Shortcode Works
 
 1. **Form Display**: The shortcode displays the specified Gravity Form
-2. **Generator Integration**: The `gen` parameter links the form to a specific coupon generator
+2. **Generator Integration**: The `gen` parameter links the form to a specific generator de cod de reducere
 3. **Hidden Field Injection**: The plugin automatically adds a hidden field containing the generator ID
-4. **Form Submission**: When the form is submitted, the plugin processes the submission and generates a coupon
-5. **Email Delivery**: If configured, the coupon code is automatically emailed to the user
+4. **Form Submission**: When the form is submitted, the plugin processes the submission and generates a cod de reducere
+5. **Email Delivery**: If configured, the cod de reducere is automatically emailed to the user
 
 ### Shortcode Processing Flow
 
@@ -254,9 +254,9 @@ User Submits Form
     ↓
 Plugin Processes Submission
     ↓
-Coupon Code Generated
+Cod de Reducere Generat
     ↓
-WooCommerce Coupon Created
+WooCommerce Cod de Reducere Creat
     ↓
 Email Sent (if enabled)
 ```
@@ -309,7 +309,7 @@ Email Sent (if enabled)
    - Check that the generator ID is valid and active
    - Ensure Gravity Forms is properly installed
 
-2. **Coupon Not Generating**
+2. **Cod de Reducere Nu Se Generează**
    - Confirm the generator is linked to the correct form
    - Check that the email field ID is correctly configured
    - Verify WooCommerce is active and properly configured
@@ -343,31 +343,31 @@ Debug information will be logged to `/wp-content/debug.log`.
 - **Email Field**: Choose the form field containing the email address
 - **Name Field**: (Optional) Choose a field for the customer's name
 
-#### Coupon Settings
-- **Coupon Type**: 
-  - `random` - Generate random coupon codes
-  - `field` - Use a form field value as the coupon code
-- **Coupon Field**: (Required if type is 'field') Select the form field
-- **Prefix**: Text to add before the coupon code
-- **Suffix**: Text to add after the coupon code
-- **Separator**: Character to separate prefix/suffix from the code
-- **Length**: Number of characters for random codes (default: 8)
+#### Cod de Reducere Settings
+- **Tip Cod de Reducere**: 
+  - `random` - Generează coduri de reducere aleatorii
+  - `field` - Folosește o valoare din câmpul formularului ca cod de reducere
+- **Câmp Cod de Reducere**: (Necesar dacă tipul este 'field') Selectează câmpul formularului
+- **Prefix**: Text de adăugat înaintea codului de reducere
+- **Sufix**: Text de adăugat după codul de reducere
+- **Separator**: Caracter pentru separarea prefixului/sufixului de cod
+- **Lungime**: Numărul de caractere pentru codurile aleatorii (implicit: 8)
 
 #### Discount Settings
 - **Discount Type**: 
   - `percentage` - Percentage discount
   - `fixed_cart` - Fixed amount discount
 - **Discount Amount**: The discount value
-- **Individual Use**: Whether the coupon can be used with other coupons
-- **Usage Limits**: Set per-coupon and per-user usage limits
+- **Individual Use**: Whether the cod de reducere can be used with other coduri de reducere
+- **Usage Limits**: Set per-cod de reducere and per-user usage limits
 - **Minimum/Maximum Spend**: Set spending requirements
 
 #### Restrictions
 - **Products**: Specific products the coupon applies to
 - **Categories**: Product categories the coupon applies to
 - **Exclude Sale Items**: Whether to exclude items on sale
-- **Free Shipping**: Whether the coupon provides free shipping
-- **Expiry**: Set coupon expiration in days
+- **Free Shipping**: Whether the cod de reducere provides free shipping
+- **Expiry**: Set cod de reducere expiration in days
 
 #### Email Settings
 - **Send Email**: Enable/disable automatic email sending
@@ -383,7 +383,7 @@ Debug information will be logged to `/wp-content/debug.log`.
 The plugin includes a professional email template that includes:
 - Company branding
 - Personalized greeting
-- Coupon code display
+- Cod de reducere display
 - Usage instructions
 - Terms and conditions
 
@@ -398,16 +398,16 @@ You can customize the email template by:
 
 | Tag | Description | Example |
 |-----|-------------|---------|
-| `{coupon_code}` | The generated coupon code | `SUMMER2024` |
+| `{coupon_code}` | The generated cod de reducere | `SUMMER2024` |
 | `{customer_name}` | Customer's name (if provided) | `John Doe` |
 | `{discount_amount}` | The discount amount | `20%` or `$10` |
-| `{expiry_date}` | Coupon expiration date | `December 31, 2024` |
+| `{expiry_date}` | Cod de reducere expiration date | `December 31, 2024` |
 | `{site_name}` | Your website name | `My Store` |
 
 ## Advanced Features
 
 ### Conditional Logic
-- Set different coupon values based on form field values
+- Set different cod de reducere values based on form field values
 - Create tiered discount systems
 - Implement dynamic pricing strategies
 
@@ -417,7 +417,7 @@ You can customize the email template by:
 - Custom webhook support
 
 ### Analytics and Reporting
-- Track coupon usage and conversion rates
+- Track cod de reducere usage and conversion rates
 - Monitor form submission analytics
 - Generate detailed reports
 
@@ -430,7 +430,7 @@ You can customize the email template by:
    - Check for plugin conflicts
    - Review error logs
 
-2. **Coupons Not Creating**
+2. **Coduri de Reducere Nu Se Creează**
    - Check WooCommerce settings
    - Verify generator configuration
    - Test with a simple form
