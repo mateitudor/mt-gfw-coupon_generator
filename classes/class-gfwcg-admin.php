@@ -292,29 +292,12 @@ class GFWCG_Admin {
             wp_send_json_error(array('message' => __('You do not have permission to perform this action.', 'gravity-forms-woocommerce-coupon-generator')));
         }
 
-        // Handle product IDs
-        $product_ids = array();
-        if (isset($_POST['product_ids']) && is_array($_POST['product_ids'])) {
-            $product_ids = array_map('intval', array_filter($_POST['product_ids']));
-        }
-
-        // Handle exclude product IDs
-        $exclude_product_ids = array();
-        if (isset($_POST['exclude_product_ids']) && is_array($_POST['exclude_product_ids'])) {
-            $exclude_product_ids = array_map('intval', array_filter($_POST['exclude_product_ids']));
-        }
-
-        // Handle product categories
-        $product_categories = array();
-        if (isset($_POST['product_categories']) && is_array($_POST['product_categories'])) {
-            $product_categories = array_map('intval', array_filter($_POST['product_categories']));
-        }
-
-        // Handle exclude product categories
-        $exclude_product_categories = array();
-        if (isset($_POST['exclude_product_categories']) && is_array($_POST['exclude_product_categories'])) {
-            $exclude_product_categories = array_map('intval', array_filter($_POST['exclude_product_categories']));
-        }
+        // Process product and category arrays
+        $processed_arrays = gfwcg_process_product_category_arrays($_POST);
+        $product_ids = $processed_arrays['product_ids'];
+        $exclude_product_ids = $processed_arrays['exclude_product_ids'];
+        $product_categories = $processed_arrays['product_categories'];
+        $exclude_product_categories = $processed_arrays['exclude_product_categories'];
 
         $data = array(
             'title' => isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '',
@@ -585,29 +568,12 @@ class GFWCG_Admin {
         $description = isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '';
         $is_debug = isset($_POST['is_debug']) ? 1 : 0;
 
-        // Handle product IDs
-        $product_ids = array();
-        if (isset($_POST['product_ids']) && is_array($_POST['product_ids'])) {
-            $product_ids = array_map('intval', array_filter($_POST['product_ids']));
-        }
-
-        // Handle exclude product IDs
-        $exclude_product_ids = array();
-        if (isset($_POST['exclude_product_ids']) && is_array($_POST['exclude_product_ids'])) {
-            $exclude_product_ids = array_map('intval', array_filter($_POST['exclude_product_ids']));
-        }
-
-        // Handle product categories
-        $product_categories = array();
-        if (isset($_POST['product_categories']) && is_array($_POST['product_categories'])) {
-            $product_categories = array_map('intval', array_filter($_POST['product_categories']));
-        }
-
-        // Handle exclude product categories
-        $exclude_product_categories = array();
-        if (isset($_POST['exclude_product_categories']) && is_array($_POST['exclude_product_categories'])) {
-            $exclude_product_categories = array_map('intval', array_filter($_POST['exclude_product_categories']));
-        }
+        // Process product and category arrays
+        $processed_arrays = gfwcg_process_product_category_arrays($_POST);
+        $product_ids = $processed_arrays['product_ids'];
+        $exclude_product_ids = $processed_arrays['exclude_product_ids'];
+        $product_categories = $processed_arrays['product_categories'];
+        $exclude_product_categories = $processed_arrays['exclude_product_categories'];
 
         // Validate required fields
         if (empty($title) || empty($form_id) || empty($email_field_id) || empty($coupon_type) || empty($discount_type) || empty($discount_amount)) {

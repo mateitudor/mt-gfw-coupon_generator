@@ -70,6 +70,43 @@ function gfwcg_e($text, $context = '') {
 }
 
 /**
+ * Process product and category arrays from POST data
+ *
+ * @param array $post_data The POST data array
+ * @return array Array with processed product and category data
+ */
+function gfwcg_process_product_category_arrays($post_data) {
+	$processed = array(
+		'product_ids' => array(),
+		'exclude_product_ids' => array(),
+		'product_categories' => array(),
+		'exclude_product_categories' => array()
+	);
+
+	// Handle product IDs
+	if (isset($post_data['product_ids']) && is_array($post_data['product_ids'])) {
+		$processed['product_ids'] = array_map('intval', array_filter($post_data['product_ids']));
+	}
+
+	// Handle exclude product IDs
+	if (isset($post_data['exclude_product_ids']) && is_array($post_data['exclude_product_ids'])) {
+		$processed['exclude_product_ids'] = array_map('intval', array_filter($post_data['exclude_product_ids']));
+	}
+
+	// Handle product categories
+	if (isset($post_data['product_categories']) && is_array($post_data['product_categories'])) {
+		$processed['product_categories'] = array_map('intval', array_filter($post_data['product_categories']));
+	}
+
+	// Handle exclude product categories
+	if (isset($post_data['exclude_product_categories']) && is_array($post_data['exclude_product_categories'])) {
+		$processed['exclude_product_categories'] = array_map('intval', array_filter($post_data['exclude_product_categories']));
+	}
+
+	return $processed;
+}
+
+/**
  * Safely unserialize and validate array data
  *
  * @param string $serialized_data The serialized data
