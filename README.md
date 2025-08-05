@@ -370,7 +370,9 @@ Email Sent (if enabled)
 
 #### Debug Mode
 
-Enable debug logging by adding this to your `wp-config.php`:
+Debug mode can be enabled in the plugin settings under **Coupon Generator > Settings**. When enabled, detailed information about coupon generation, form processing, and email sending will be logged to help troubleshoot issues.
+
+To view debug logs, add these lines to your `wp-config.php`:
 ```php
 define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true);

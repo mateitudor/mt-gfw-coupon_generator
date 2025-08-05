@@ -46,7 +46,6 @@ class GFWCG_DB {
             updated_at datetime NOT NULL,
             email_subject varchar(255) DEFAULT NULL,
             description text DEFAULT NULL,
-            is_debug tinyint(1) DEFAULT 0,
             email_message longtext DEFAULT NULL,
             email_from_name varchar(255) DEFAULT NULL,
             email_from_email varchar(255) DEFAULT NULL,
@@ -309,8 +308,7 @@ class GFWCG_DB {
             'allowed_emails' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN allowed_emails text DEFAULT NULL',
             'email_template' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN email_template text DEFAULT NULL',
             'use_wc_email_template' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN use_wc_email_template tinyint(1) DEFAULT 1',
-            'description' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN description text DEFAULT NULL',
-            'is_debug' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN is_debug tinyint(1) DEFAULT 0'
+            'description' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN description text DEFAULT NULL'
         );
         
         // Check each required column

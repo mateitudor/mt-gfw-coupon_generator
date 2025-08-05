@@ -73,11 +73,21 @@ class GFWCG_Admin {
             'gfwcg-add-generator',
             array($this, 'display_add_page')
         );
+        
+        // Settings page
+        add_submenu_page(
+            $main_slug,
+            __('Settings', 'gravity-forms-woocommerce-coupon-generator'),
+            __('Settings', 'gravity-forms-woocommerce-coupon-generator'),
+            'manage_options',
+            'gfwcg-settings',
+            array($this, 'display_settings_page')
+        );
     }
 
     public function enqueue_styles($hook) {
         // Only load on our plugin pages
-        if (strpos($hook, 'gfwcg-generators') === false && strpos($hook, 'gfwcg-add-generator') === false) {
+        if (strpos($hook, 'gfwcg-generators') === false && strpos($hook, 'gfwcg-add-generator') === false && strpos($hook, 'gfwcg-settings') === false) {
             return;
         }
 
@@ -102,7 +112,7 @@ class GFWCG_Admin {
 
     public function enqueue_scripts($hook) {
         // Only load on our plugin pages
-        if (strpos($hook, 'gfwcg-generators') === false && strpos($hook, 'gfwcg-add-generator') === false) {
+        if (strpos($hook, 'gfwcg-generators') === false && strpos($hook, 'gfwcg-add-generator') === false && strpos($hook, 'gfwcg-settings') === false) {
             return;
         }
 
@@ -190,6 +200,18 @@ class GFWCG_Admin {
 
         // Display the add form
         $this->display_generator_form();
+    }
+    
+    public function display_settings_page() {
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.', 'gravity-forms-woocommerce-coupon-generator'));
+        }
+
+        // Set the current submenu
+        gfwcg_set_current_submenu('settings');
+
+        // Display the settings page
+        require_once plugin_dir_path(dirname(__FILE__)) . 'views/admin-settings.php';
     }
 
     private function display_generator_form($id = 0) {
@@ -327,7 +349,6 @@ class GFWCG_Admin {
             'email_from_name' => isset($_POST['email_from_name']) ? sanitize_text_field($_POST['email_from_name']) : '',
             'email_from_email' => isset($_POST['email_from_email']) ? sanitize_email($_POST['email_from_email']) : '',
             'description' => isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '',
-            'is_debug' => isset($_POST['is_debug']) ? 1 : 0,
             'product_ids' => !empty($product_ids) ? serialize($product_ids) : null,
             'exclude_products' => !empty($exclude_product_ids) ? serialize($exclude_product_ids) : null,
             'product_categories' => !empty($product_categories) ? serialize($product_categories) : null,
@@ -529,7 +550,7 @@ class GFWCG_Admin {
         GFWCG_DB::verify_table_structure();
         
         // Register settings
-        register_setting('gfwcg_options', 'gfwcg_settings');
+        register_setting('gfwcg_settings', 'gfwcg_debug_mode');
     }
 
     /**
@@ -566,7 +587,6 @@ class GFWCG_Admin {
         $email_from_name = isset($_POST['email_from_name']) ? sanitize_text_field($_POST['email_from_name']) : '';
         $email_from_email = isset($_POST['email_from_email']) ? sanitize_email($_POST['email_from_email']) : '';
         $description = isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '';
-        $is_debug = isset($_POST['is_debug']) ? 1 : 0;
 
         // Process product and category arrays
         $processed_arrays = gfwcg_process_product_category_arrays($_POST);
@@ -609,7 +629,6 @@ class GFWCG_Admin {
             'email_from_name' => $email_from_name,
             'email_from_email' => $email_from_email,
             'description' => $description,
-            'is_debug' => $is_debug,
             'product_ids' => !empty($product_ids) ? serialize($product_ids) : null,
             'exclude_products' => !empty($exclude_product_ids) ? serialize($exclude_product_ids) : null,
             'product_categories' => !empty($product_categories) ? serialize($product_categories) : null,

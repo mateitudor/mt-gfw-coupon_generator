@@ -538,21 +538,7 @@ function gfwcg_display_generator_form($generator = null) {
                 </table>
             </div>
 
-            <div class="gfwcg-form-section">
-                <h2><?php _e('Advanced Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
-                <table class="form-table">
-                    <tr>
-                        <th scope="row">
-                            <label for="is_debug"><?php _e('Debug Mode', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
-                        </th>
-                        <td>
-                            <input type="checkbox" name="is_debug" id="is_debug" value="1" 
-                                   <?php checked($generator ? $generator->is_debug : 0, 1); ?>>
-                            <label for="is_debug"><?php _e('Enable debug mode for troubleshooting', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+
 
             <p class="submit">
                 <input type="submit" name="submit" id="submit" class="button button-primary" 

@@ -33,6 +33,9 @@ define('GFWCG_PLUGIN_NAME', 'gravity-forms-woocommerce-coupon-generator');
 // Load autoloader first
 require_once GFWCG_PLUGIN_DIR . 'classes/class-gfwcg-autoloader.php';
 
+// Load helper functions
+require_once GFWCG_PLUGIN_DIR . 'includes/gfwcg-functions.php';
+
 /**
  * Load plugin textdomain
  */

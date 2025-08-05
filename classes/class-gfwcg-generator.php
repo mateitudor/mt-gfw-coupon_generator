@@ -9,52 +9,52 @@ class GFWCG_Generator {
 	}
 
 	public function process_form_submission($entry, $form) {
-		error_log('GFWCG: Processing form submission');
-		error_log('GFWCG: Form ID: ' . $form['id']);
-		error_log('GFWCG: Entry data: ' . print_r($entry, true));
+		gfwcg_debug_log('Starting form submission processing');
+		gfwcg_debug_log('Processing form ID: ' . $form['id']);
+		gfwcg_debug_log('Form entry data: ' . print_r($entry, true));
 
 		// Get the generator for this form
 		$generator = $this->get_generator_by_form_id($form['id']);
 		if (!$generator) {
-			error_log('GFWCG: No generator found for form ID: ' . $form['id']);
-			return;
-		}
+					gfwcg_debug_log('No active generator found for form ID: ' . $form['id']);
+		return;
+	}
 
-		error_log('GFWCG: Found generator: ' . print_r($generator, true));
+	gfwcg_debug_log('Generator found successfully: ' . print_r($generator, true));
 
 		// Get email address from the specified field
 		$to = rgar($entry, $generator->email_field_id);
 		if (!$to) {
-			error_log('GFWCG: No email address found for recipient in field ' . $generator->email_field_id);
+			gfwcg_debug_log('No valid email address found in field ID: ' . $generator->email_field_id);
 			return;
 		}
 
 		// Generate and create coupon
 		$coupon_code = $this->coupon->generate_coupon_code($generator, $entry);
-		error_log('GFWCG: Generated coupon code: ' . $coupon_code);
+		gfwcg_debug_log('Coupon code generated successfully: ' . $coupon_code);
 
 		$coupon_id = $this->coupon->create_woocommerce_coupon($coupon_code, $generator);
-		error_log('GFWCG: Created WooCommerce coupon with ID: ' . $coupon_id);
+		gfwcg_debug_log('WooCommerce coupon created with ID: ' . $coupon_id);
 
 		// Send email using WooCommerce's mailer system
 		if ($generator->send_email) {
 			$emails = WC()->mailer()->get_emails();
 			if (isset($emails['GFWCG_Email'])) {
 				$emails['GFWCG_Email']->send_coupon_email($generator, $to, $coupon_code);
-				error_log('GFWCG: Email sending process completed');
+				gfwcg_debug_log('Email sent successfully to: ' . $to);
 			} else {
-				error_log('GFWCG: Email class not found in WooCommerce mailer');
+				gfwcg_debug_log('Email class not found in WooCommerce mailer - email not sent');
 			}
 		}
 	}
 
 	private function get_generator_by_form_id($form_id) {
 		global $wpdb;
-		error_log('GFWCG: Getting generator for form ID: ' . $form_id);
+		gfwcg_debug_log('Looking up generator for form ID: ' . $form_id);
 		
 		// Get the generator ID from the form submission
 		$generator_id = isset($_POST['gfwcg_generator_id']) ? intval($_POST['gfwcg_generator_id']) : 0;
-		error_log('GFWCG: Generator ID from form: ' . $generator_id);
+		gfwcg_debug_log('Generator ID from form submission: ' . $generator_id);
 		
 		if ($generator_id > 0) {
 			// If we have a specific generator ID, use that
@@ -66,7 +66,7 @@ class GFWCG_Generator {
 			));
 			
 			if ($generator) {
-				error_log('GFWCG: Found generator by ID: ' . $generator_id);
+				gfwcg_debug_log('Found specific generator by ID: ' . $generator_id);
 				return $generator;
 			}
 		}
@@ -80,12 +80,12 @@ class GFWCG_Generator {
 		));
 		
 		if (!$generator) {
-			error_log('GFWCG: No active generator found for form ID: ' . $form_id);
+			gfwcg_debug_log('No active generator found for form ID: ' . $form_id);
 			return null;
 		}
 		
-		error_log('GFWCG: Found generator ID: ' . $generator->id);
-		error_log('GFWCG: Generator details: ' . print_r($generator, true));
+		gfwcg_debug_log('Using fallback generator ID: ' . $generator->id);
+		gfwcg_debug_log('Generator configuration: ' . print_r($generator, true));
 		
 		return $generator;
 	}

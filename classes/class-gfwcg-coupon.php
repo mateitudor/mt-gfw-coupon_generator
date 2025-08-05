@@ -24,13 +24,14 @@ class GFWCG_Coupon {
 								$field_value = rgar($entry, (string)$generator->coupon_field_id);
 						}
 						
-						error_log('GFWCG: Field ID: ' . (string)$generator->coupon_field_id);
-						error_log('GFWCG: Field type: ' . ($field ? $field->type : 'unknown'));
-						error_log('GFWCG: Entry data: ' . print_r($entry, true));
-						error_log('GFWCG: Field value: ' . $field_value);
+						gfwcg_debug_log('Processing field-based coupon generation');
+						gfwcg_debug_log('Target field ID: ' . (string)$generator->coupon_field_id);
+						gfwcg_debug_log('Field type: ' . ($field ? $field->type : 'unknown'));
+						gfwcg_debug_log('Form entry data: ' . print_r($entry, true));
+						gfwcg_debug_log('Extracted field value: ' . $field_value);
 						
 						if ($field_value) {
-								error_log('GFWCG: Using field value for coupon code: ' . $field_value);
+								gfwcg_debug_log('Using field value for coupon code generation: ' . $field_value);
 								// Remove spaces from the field value
 								$field_value = str_replace(' ', '', $field_value);
 								// Apply prefix and suffix to the field value
@@ -39,9 +40,9 @@ class GFWCG_Coupon {
 								$separator = $generator->coupon_separator ?: '';
 								return $prefix . $separator . $field_value . $separator . $suffix;
 						}
-						error_log('GFWCG: No field value found for coupon code, falling back to random generation');
+						gfwcg_debug_log('No valid field value found, falling back to random generation');
 				} else {
-						error_log('GFWCG: Using random generation for coupon code');
+						gfwcg_debug_log('Using random coupon code generation');
 				}
 
 				$prefix = $generator->coupon_prefix ?: '';
@@ -52,7 +53,7 @@ class GFWCG_Coupon {
 				$random = strtolower(wp_generate_password($length, false));
 				$code = $prefix . $separator . $random . $separator . $suffix;
 				
-				error_log('GFWCG: Generated random coupon code: ' . $code);
+				gfwcg_debug_log('Random coupon code generated successfully: ' . $code);
 				return $code;
 		}
 
