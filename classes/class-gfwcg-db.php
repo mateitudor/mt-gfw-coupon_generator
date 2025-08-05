@@ -5,6 +5,10 @@ class GFWCG_DB {
 
     public static function create_tables() {
         global $wpdb;
+        
+        // Ensure WordPress upgrade functions are loaded
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        
         $charset_collate = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}gfwcg_generators (
@@ -256,13 +260,17 @@ class GFWCG_DB {
         
         // Get the current table structure
         $table_name = $wpdb->prefix . 'gfwcg_generators';
-        $columns = $wpdb->get_results("SHOW COLUMNS FROM $table_name");
         
-        if (!$columns) {
+        // Check if table exists first
+        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name;
+        
+        if (!$table_exists) {
             // Table doesn't exist, create it
             self::create_tables();
             return;
         }
+        
+        $columns = $wpdb->get_results("SHOW COLUMNS FROM $table_name");
         
         // List of required columns and their definitions
         $required_columns = array(

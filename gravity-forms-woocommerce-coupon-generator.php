@@ -70,6 +70,110 @@ function gfwcg_e($text, $context = '') {
 }
 
 /**
+ * Safely unserialize and validate array data
+ *
+ * @param string $serialized_data The serialized data
+ * @param string $type The type of data ('product_ids', 'category_ids', etc.)
+ * @return array|false The unserialized array or false if invalid
+ */
+function gfwcg_safe_unserialize($serialized_data, $type = '') {
+	if (empty($serialized_data)) {
+		return false;
+	}
+
+	$unserialized = maybe_unserialize($serialized_data);
+	
+	if (!is_array($unserialized) || empty($unserialized)) {
+		return false;
+	}
+
+	// Validate array contents based on type
+	switch ($type) {
+		case 'product_ids':
+		case 'exclude_products':
+			// Ensure all values are integers
+			$validated = array();
+			foreach ($unserialized as $id) {
+				if (is_numeric($id) && intval($id) > 0) {
+					$validated[] = intval($id);
+				}
+			}
+			return !empty($validated) ? $validated : false;
+			
+		case 'category_ids':
+		case 'product_categories':
+		case 'exclude_categories':
+			// Ensure all values are integers
+			$validated = array();
+			foreach ($unserialized as $id) {
+				if (is_numeric($id) && intval($id) > 0) {
+					$validated[] = intval($id);
+				}
+			}
+			return !empty($validated) ? $validated : false;
+			
+		default:
+			// For unknown types, just return the array if it's not empty
+			return $unserialized;
+	}
+}
+
+/**
+ * Get product data from serialized product IDs
+ *
+ * @param string $serialized_product_ids Serialized product IDs
+ * @return array Array of product data with name, url, and id
+ */
+function gfwcg_get_products_from_ids($serialized_product_ids) {
+	$product_ids = gfwcg_safe_unserialize($serialized_product_ids, 'product_ids');
+	if (!$product_ids) {
+		return array();
+	}
+
+	$products = array();
+	foreach ($product_ids as $product_id) {
+		$product = wc_get_product($product_id);
+		if ($product) {
+			$products[] = array(
+				'name' => $product->get_name(),
+				'url' => get_permalink($product->get_id()),
+				'id' => $product->get_id()
+			);
+		}
+	}
+
+	return $products;
+}
+
+/**
+ * Get category data from serialized category IDs
+ *
+ * @param string $serialized_category_ids Serialized category IDs
+ * @return array Array of category data with name, url, and id
+ */
+function gfwcg_get_categories_from_ids($serialized_category_ids) {
+	$category_ids = gfwcg_safe_unserialize($serialized_category_ids, 'category_ids');
+	if (!$category_ids) {
+		return array();
+	}
+
+	$categories = array();
+	foreach ($category_ids as $category_id) {
+		$category = get_term($category_id, 'product_cat');
+		if ($category && !is_wp_error($category)) {
+			$category_url = get_term_link($category, 'product_cat');
+			$categories[] = array(
+				'name' => $category->name,
+				'url' => is_wp_error($category_url) ? '' : $category_url,
+				'id' => $category->term_id
+			);
+		}
+	}
+
+	return $categories;
+}
+
+/**
  * Get the current view from the URL parameters
  *
  * @return string The current view (list, grid, or edit)
@@ -122,14 +226,21 @@ function gfwcg_init() {
         });
     }
 
-    // Initialize components
-    new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);
-    new GFWCG_Generator();
-    new GFWCG_Coupon();
-    
-
+    // Initialize components after WordPress is fully loaded
+    add_action('init', function() {
+        new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);
+        new GFWCG_Generator();
+        new GFWCG_Coupon();
+    });
 }
 add_action('plugins_loaded', 'gfwcg_init');
+
+// Deactivation hook
+register_deactivation_hook(__FILE__, 'gfwcg_deactivate');
+function gfwcg_deactivate() {
+    // Clean up any temporary data if needed
+    // Note: We don't delete tables on deactivation to preserve data
+}
 
 // Activation hook
 register_activation_hook(__FILE__, 'gfwcg_activate');
@@ -139,6 +250,9 @@ function gfwcg_activate() {
         wp_die(__('Generator Cod de Reducere Gravity Forms WooCommerce necesită atât Gravity Forms cât și WooCommerce să fie instalate și activate.', 'gravity-forms-woocommerce-coupon-generator'));
     }
 
+    // Ensure WordPress upgrade functions are loaded
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    
     // Create database tables
     global $gfwcg_autoloader;
     if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_class')) {
