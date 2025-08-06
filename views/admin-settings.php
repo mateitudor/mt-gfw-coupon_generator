@@ -11,6 +11,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 
+<?php settings_errors(); ?>
 <div class="wrap">
 	<h1><?php _e('Coupon Generator Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></h1>
 	

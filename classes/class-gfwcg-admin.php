@@ -376,7 +376,8 @@ class GFWCG_Admin {
 
         wp_send_json_success(array(
             'message' => __('Generator saved successfully.', 'gravity-forms-woocommerce-coupon-generator'),
-            'redirect_url' => admin_url('admin.php?page=gfwcg-generators')
+            'redirect_url' => admin_url('admin.php?page=gfwcg-generators'),
+            'generator_id' => $result
         ));
     }
 

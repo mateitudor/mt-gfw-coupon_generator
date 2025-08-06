@@ -17,14 +17,20 @@ if (!defined('ABSPATH')) {
  * @param array $generators The generators to display
  */
 function gfwcg_display_grid_view($generators) {
-    // Display the header
-    gfwcg_display_admin_header(
-        __('Coupon Generators', 'gravity-forms-woocommerce-coupon-generator'),
-        'grid',
-        admin_url('admin.php?page=gfwcg-add-generator')
-    );
-    ?>
-    <div class="gfwcg-grid">
+	?>
+	<div class="wrap">
+		<?php
+		// Display WordPress notifications above the header
+		settings_errors();
+		// Display the header
+		gfwcg_display_admin_header(
+			__('Coupon Generators', 'gravity-forms-woocommerce-coupon-generator'),
+			'grid',
+			admin_url('admin.php?page=gfwcg-add-generator')
+		);
+		?>
+		<hr class="wp-header-end">
+		<div class="gfwcg-grid">
         <?php if (empty($generators)) : ?>
             <div class="gfwcg-grid-empty">
                 <?php _e('No generators found.', 'gravity-forms-woocommerce-coupon-generator'); ?>
@@ -98,7 +104,8 @@ function gfwcg_display_grid_view($generators) {
                     </div>
                 </div>
             <?php endforeach; ?>
-        <?php endif; ?>
-    </div>
-    <?php
+        		<?php endif; ?>
+		</div>
+	</div>
+	<?php
 }

@@ -32,14 +32,15 @@ function gfwcg_display_generator_form($generator = null) {
     // Get default email template
     $default_email_template = GFWCG_Email::get_default_template();
     ?>
-    <div class="wrap">
-        <h1 class="wp-heading-inline">
-            <?php echo $generator ? __('Edit Generator', 'gravity-forms-woocommerce-coupon-generator') : __('Add New Generator', 'gravity-forms-woocommerce-coupon-generator'); ?>
-        </h1>
-        <a href="<?php echo esc_url(admin_url('admin.php?page=gfwcg-generators')); ?>" class="page-title-action">
-            <?php _e('Back to List', 'gravity-forms-woocommerce-coupon-generator'); ?>
-        </a>
-        <hr class="wp-header-end">
+	<?php settings_errors(); ?>
+	<div class="wrap">
+		<h1 class="wp-heading-inline">
+			<?php echo $generator ? __('Edit Generator', 'gravity-forms-woocommerce-coupon-generator') : __('Add New Generator', 'gravity-forms-woocommerce-coupon-generator'); ?>
+		</h1>
+		<a href="<?php echo esc_url(admin_url('admin.php?page=gfwcg-generators')); ?>" class="page-title-action">
+			<?php _e('Back to List', 'gravity-forms-woocommerce-coupon-generator'); ?>
+		</a>
+		<hr class="wp-header-end">
         <form method="post" action="" class="gfwcg-generator-form">
             <?php wp_nonce_field('gfwcg_admin_nonce', 'nonce'); ?>
             <input type="hidden" name="id" value="<?php echo $generator ? esc_attr($generator->id) : ''; ?>">
@@ -542,7 +543,7 @@ function gfwcg_display_generator_form($generator = null) {
 
             <p class="submit">
                 <input type="submit" name="submit" id="submit" class="button button-primary" 
-                       value="<?php echo $generator ? __('Update Generator', 'gravity-forms-woocommerce-coupon-generator') : __('Add Generator', 'gravity-forms-woocommerce-coupon-generator'); ?>">
+                       value="<?php echo $generator ? __('Save Generator', 'gravity-forms-woocommerce-coupon-generator') : __('Add Generator', 'gravity-forms-woocommerce-coupon-generator'); ?>">
                 <?php if ($generator) : ?>
                     <?php gfwcg_display_delete_button($generator->id, 'button-link-delete'); ?>
                 <?php endif; ?>
