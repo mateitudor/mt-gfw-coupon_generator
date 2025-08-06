@@ -541,6 +541,77 @@ function gfwcg_display_generator_form($generator = null) {
 
 
 
+            <?php if ($generator) : ?>
+                <div class="gfwcg-form-section">
+                    <h2><?php _e('Shortcode', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label><?php _e('Form Shortcode', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+                            </th>
+                            <td>
+                                <div class="gfwcg-shortcode-container">
+                                    <input type="text" id="gfwcg-shortcode" class="regular-text" 
+                                           value='[gfwcg_form id="<?php echo esc_attr($generator->id); ?>" show_restrictions="true"]' 
+                                           readonly>
+                                    <button type="button" id="gfwcg-copy-shortcode" class="button gfwcg-copy-btn">
+                                        <span class="gfwcg-copy-text"><?php _e('Copy', 'gravity-forms-woocommerce-coupon-generator'); ?></span>
+                                        <span class="gfwcg-copy-icon">📋</span>
+                                        <span class="gfwcg-copy-loading" style="display: none;">⏳</span>
+                                        <span class="gfwcg-copy-success" style="display: none;">✓</span>
+                                    </button>
+                                </div>
+                                <p class="description">
+                                    <?php _e('Use this shortcode to display the form with restrictions on your pages or posts.', 'gravity-forms-woocommerce-coupon-generator'); ?>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label><?php _e('Restrictions Only', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+                            </th>
+                            <td>
+                                <div class="gfwcg-shortcode-container">
+                                    <input type="text" id="gfwcg-restrictions-shortcode" class="regular-text" 
+                                           value='[gfwcg_restrictions id="<?php echo esc_attr($generator->id); ?>"]' 
+                                           readonly>
+                                    <button type="button" id="gfwcg-copy-restrictions-shortcode" class="button gfwcg-copy-btn">
+                                        <span class="gfwcg-copy-text"><?php _e('Copy', 'gravity-forms-woocommerce-coupon-generator'); ?></span>
+                                        <span class="gfwcg-copy-icon">📋</span>
+                                        <span class="gfwcg-copy-loading" style="display: none;">⏳</span>
+                                        <span class="gfwcg-copy-success" style="display: none;">✓</span>
+                                    </button>
+                                </div>
+                                <p class="description">
+                                    <?php _e('Use this shortcode to display only the restrictions information.', 'gravity-forms-woocommerce-coupon-generator'); ?>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label><?php _e('Discount Amount', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+                            </th>
+                            <td>
+                                <div class="gfwcg-shortcode-container">
+                                    <input type="text" id="gfwcg-discount-shortcode" class="regular-text" 
+                                           value='[gfwcg_discount id="<?php echo esc_attr($generator->id); ?>"]' 
+                                           readonly>
+                                    <button type="button" id="gfwcg-copy-discount-shortcode" class="button gfwcg-copy-btn">
+                                        <span class="gfwcg-copy-text"><?php _e('Copy', 'gravity-forms-woocommerce-coupon-generator'); ?></span>
+                                        <span class="gfwcg-copy-icon">📋</span>
+                                        <span class="gfwcg-copy-loading" style="display: none;">⏳</span>
+                                        <span class="gfwcg-copy-success" style="display: none;">✓</span>
+                                    </button>
+                                </div>
+                                <p class="description">
+                                    <?php _e('Use this shortcode to display only the discount amount.', 'gravity-forms-woocommerce-coupon-generator'); ?>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            <?php endif; ?>
+
             <p class="submit">
                 <input type="submit" name="submit" id="submit" class="button button-primary" 
                        value="<?php echo $generator ? __('Save Generator', 'gravity-forms-woocommerce-coupon-generator') : __('Add Generator', 'gravity-forms-woocommerce-coupon-generator'); ?>">
@@ -579,6 +650,107 @@ function gfwcg_display_generator_form($generator = null) {
                 e.preventDefault();
                 alert('Please select a coupon field when using field type.');
                 couponField.focus();
+            }
+        });
+
+        // Copy to clipboard functionality with button states
+        function copyToClipboard(text, button) {
+            const textElement = button.querySelector('.gfwcg-copy-text');
+            const iconElement = button.querySelector('.gfwcg-copy-icon');
+            const loadingElement = button.querySelector('.gfwcg-copy-loading');
+            const successElement = button.querySelector('.gfwcg-copy-success');
+            
+            // Set loading state
+            button.disabled = true;
+            button.classList.add('copying');
+            textElement.style.display = 'none';
+            iconElement.style.display = 'none';
+            loadingElement.style.display = 'inline';
+            
+            const copyPromise = navigator.clipboard && window.isSecureContext 
+                ? navigator.clipboard.writeText(text)
+                : fallbackCopyToClipboard(text);
+            
+            copyPromise.then(function() {
+                // Set success state
+                loadingElement.style.display = 'none';
+                successElement.style.display = 'inline';
+                textElement.textContent = 'Copied!';
+                textElement.style.display = 'inline';
+                button.classList.remove('copying');
+                button.classList.add('copied');
+                
+                // Reset after delay
+                setTimeout(function() {
+                    button.disabled = false;
+                    button.classList.remove('copied');
+                    textElement.textContent = 'Copy';
+                    textElement.style.display = 'inline';
+                    successElement.style.display = 'none';
+                    iconElement.style.display = 'inline';
+                }, 2000);
+            }).catch(function(err) {
+                // Set error state
+                loadingElement.style.display = 'none';
+                iconElement.style.display = 'inline';
+                textElement.textContent = 'Error';
+                textElement.style.display = 'inline';
+                button.classList.remove('copying');
+                button.classList.add('error');
+                
+                console.error('Copy failed:', err);
+                
+                // Reset after delay
+                setTimeout(function() {
+                    button.disabled = false;
+                    button.classList.remove('error');
+                    textElement.textContent = 'Copy';
+                    textElement.style.display = 'inline';
+                }, 2000);
+            });
+        }
+
+        function fallbackCopyToClipboard(text) {
+            return new Promise(function(resolve, reject) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    if (successful) {
+                        resolve();
+                    } else {
+                        reject(new Error('Copy command failed'));
+                    }
+                } catch (err) {
+                    document.body.removeChild(textArea);
+                    reject(err);
+                }
+            });
+        }
+
+        // Add click handlers for copy buttons
+        const copyButtons = [
+            { button: 'gfwcg-copy-shortcode', input: 'gfwcg-shortcode' },
+            { button: 'gfwcg-copy-restrictions-shortcode', input: 'gfwcg-restrictions-shortcode' },
+            { button: 'gfwcg-copy-discount-shortcode', input: 'gfwcg-discount-shortcode' }
+        ];
+
+        copyButtons.forEach(function(item) {
+            const button = document.getElementById(item.button);
+            const input = document.getElementById(item.input);
+            
+            if (button && input) {
+                button.addEventListener('click', function() {
+                    copyToClipboard(input.value, button);
+                });
             }
         });
     });
