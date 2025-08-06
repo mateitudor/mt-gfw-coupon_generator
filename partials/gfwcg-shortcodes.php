@@ -139,201 +139,263 @@ function gfwcg_restrictions_shortcode($atts) {
 			<?php endif; ?>
 
 			<?php if ($atts['show_usage'] === 'true'): ?>
-				<div class="gfwcg-usage-info">
-					<?php if ($atts['display_section_titles'] === 'true'): ?>
-						<h4><?php echo gfwcg_get_text('Usage Limits'); ?></h4>
-					<?php endif; ?>
-					<ul>
-						<?php if ($atts['usage_per_coupon_value'] === 'true' && $generator->usage_limit_per_coupon > 0): ?>
-							<li>
-								<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_per_coupon_label'] === 'true'): ?>
+				<?php
+				// Check if there's any usage content to display
+				$has_usage_content = false;
+				if ($atts['usage_per_coupon_value'] === 'true' && $generator->usage_limit_per_coupon > 0) {
+					$has_usage_content = true;
+				}
+				if ($atts['usage_per_user_value'] === 'true' && $generator->usage_limit_per_user > 0) {
+					$has_usage_content = true;
+				}
+				if ($atts['usage_individual_value'] === 'true' && $generator->individual_use) {
+					$has_usage_content = true;
+				}
+				?>
+				<?php if ($has_usage_content): ?>
+					<div class="gfwcg-usage-info">
+						<?php if ($atts['display_section_titles'] === 'true'): ?>
+							<h4><?php echo gfwcg_get_text('Usage Limits'); ?></h4>
+						<?php endif; ?>
+						<ul>
+							<?php if ($atts['usage_per_coupon_value'] === 'true' && $generator->usage_limit_per_coupon > 0): ?>
+								<li>
+									<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_per_coupon_label'] === 'true'): ?>
 									        <strong><?php echo gfwcg_get_text('Utilizări per cod de reducere:'); ?></strong> 
-								<?php endif; ?>
-								<?php echo esc_html($generator->usage_limit_per_coupon); ?>
-							</li>
-						<?php endif; ?>
-						<?php if ($atts['usage_per_user_value'] === 'true' && $generator->usage_limit_per_user > 0): ?>
-							<li>
-								<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_per_user_label'] === 'true'): ?>
-									<strong><?php echo gfwcg_get_text('Usage per user:'); ?></strong> 
-								<?php endif; ?>
-								<?php echo esc_html($generator->usage_limit_per_user); ?>
-							</li>
-						<?php endif; ?>
-						<?php if ($atts['usage_individual_value'] === 'true' && $generator->individual_use): ?>
-							<li>
-								<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_individual_label'] === 'true'): ?>
-									<strong><?php echo gfwcg_get_text('Individual use only:'); ?></strong> 
-								<?php endif; ?>
-								<?php echo gfwcg_get_text('Yes'); ?>
-							</li>
-						<?php endif; ?>
-					</ul>
-				</div>
+									<?php endif; ?>
+									<?php echo esc_html($generator->usage_limit_per_coupon); ?>
+								</li>
+							<?php endif; ?>
+							<?php if ($atts['usage_per_user_value'] === 'true' && $generator->usage_limit_per_user > 0): ?>
+								<li>
+									<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_per_user_label'] === 'true'): ?>
+										<strong><?php echo gfwcg_get_text('Usage per user:'); ?></strong> 
+									<?php endif; ?>
+									<?php echo esc_html($generator->usage_limit_per_user); ?>
+								</li>
+							<?php endif; ?>
+							<?php if ($atts['usage_individual_value'] === 'true' && $generator->individual_use): ?>
+								<li>
+									<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_individual_label'] === 'true'): ?>
+										<strong><?php echo gfwcg_get_text('Individual use only:'); ?></strong> 
+									<?php endif; ?>
+									<?php echo gfwcg_get_text('Yes'); ?>
+								</li>
+							<?php endif; ?>
+						</ul>
+					</div>
+				<?php endif; ?>
 			<?php endif; ?>
 
 			<?php if ($atts['show_restrictions'] === 'true'): ?>
-				<div class="gfwcg-restrictions-info">
-					<?php if ($atts['display_section_titles'] === 'true'): ?>
-						<h4><?php echo gfwcg_get_text('Restrictions'); ?></h4>
-					<?php endif; ?>
-					<ul>
-						<?php if ($atts['restrictions_minimum_value'] === 'true' && $generator->minimum_amount > 0): ?>
-							<li>
-								<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_minimum_label'] === 'true'): ?>
-									<strong><?php echo gfwcg_get_text('Minimum spend:'); ?></strong> 
-								<?php endif; ?>
-								<?php echo wc_price($generator->minimum_amount); ?>
-							</li>
+				<?php
+				// Check if there's any restrictions content to display
+				$has_restrictions_content = false;
+				if ($atts['restrictions_minimum_value'] === 'true' && $generator->minimum_amount > 0) {
+					$has_restrictions_content = true;
+				}
+				if ($atts['restrictions_maximum_value'] === 'true' && $generator->maximum_amount > 0) {
+					$has_restrictions_content = true;
+				}
+				if ($atts['restrictions_exclude_sale_value'] === 'true' && $generator->exclude_sale_items) {
+					$has_restrictions_content = true;
+				}
+				
+				// Check product restrictions
+				if ($atts['restrictions_products_value'] === 'true') {
+					$product_ids = maybe_unserialize($generator->product_ids);
+					if (!empty($product_ids) && is_array($product_ids)) {
+						$has_restrictions_content = true;
+					}
+				}
+				
+				// Check exclude products
+				if ($atts['restrictions_exclude_products_value'] === 'true') {
+					$exclude_products = maybe_unserialize($generator->exclude_products);
+					if (!empty($exclude_products) && is_array($exclude_products)) {
+						$has_restrictions_content = true;
+					}
+				}
+				
+				// Check category restrictions
+				if ($atts['restrictions_categories_value'] === 'true') {
+					$product_categories = maybe_unserialize($generator->product_categories);
+					if (!empty($product_categories) && is_array($product_categories)) {
+						$has_restrictions_content = true;
+					}
+				}
+				
+				// Check exclude categories
+				if ($atts['restrictions_exclude_categories_value'] === 'true') {
+					$exclude_categories = maybe_unserialize($generator->exclude_categories);
+					if (!empty($exclude_categories) && is_array($exclude_categories)) {
+						$has_restrictions_content = true;
+					}
+				}
+				?>
+				<?php if ($has_restrictions_content): ?>
+					<div class="gfwcg-restrictions-info">
+						<?php if ($atts['display_section_titles'] === 'true'): ?>
+							<h4><?php echo gfwcg_get_text('Restrictions'); ?></h4>
 						<?php endif; ?>
-						<?php if ($atts['restrictions_maximum_value'] === 'true' && $generator->maximum_amount > 0): ?>
-							<li>
-								<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_maximum_label'] === 'true'): ?>
-									<strong><?php echo gfwcg_get_text('Maximum spend:'); ?></strong> 
-								<?php endif; ?>
-								<?php echo wc_price($generator->maximum_amount); ?>
-							</li>
-						<?php endif; ?>
-						<?php if ($atts['restrictions_exclude_sale_value'] === 'true' && $generator->exclude_sale_items): ?>
-							<li>
-								<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_exclude_sale_label'] === 'true'): ?>
-									<strong><?php echo gfwcg_get_text('Exclude sale items:'); ?></strong> 
-								<?php endif; ?>
-								<?php echo gfwcg_get_text('Yes'); ?>
-							</li>
-						<?php endif; ?>
-					</ul>
+						<ul>
+							<?php if ($atts['restrictions_minimum_value'] === 'true' && $generator->minimum_amount > 0): ?>
+								<li>
+									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_minimum_label'] === 'true'): ?>
+										<strong><?php echo gfwcg_get_text('Minimum spend:'); ?></strong> 
+									<?php endif; ?>
+									<?php echo wc_price($generator->minimum_amount); ?>
+								</li>
+							<?php endif; ?>
+							<?php if ($atts['restrictions_maximum_value'] === 'true' && $generator->maximum_amount > 0): ?>
+								<li>
+									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_maximum_label'] === 'true'): ?>
+										<strong><?php echo gfwcg_get_text('Maximum spend:'); ?></strong> 
+									<?php endif; ?>
+									<?php echo wc_price($generator->maximum_amount); ?>
+								</li>
+							<?php endif; ?>
+							<?php if ($atts['restrictions_exclude_sale_value'] === 'true' && $generator->exclude_sale_items): ?>
+								<li>
+									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_exclude_sale_label'] === 'true'): ?>
+										<strong><?php echo gfwcg_get_text('Exclude sale items:'); ?></strong> 
+									<?php endif; ?>
+									<?php echo gfwcg_get_text('Yes'); ?>
+								</li>
+							<?php endif; ?>
+						</ul>
 
-					<?php
-					// Product restrictions
-					if ($atts['restrictions_products_value'] === 'true'):
-						$product_ids = maybe_unserialize($generator->product_ids);
-						if (!empty($product_ids) && is_array($product_ids)):
-							$products = array();
-							foreach ($product_ids as $product_id) {
-								$product = wc_get_product($product_id);
-								if ($product) {
-									$products[] = array(
-										'name' => $product->get_name(),
-										'url' => get_permalink($product->get_id()),
-										'id' => $product->get_id()
-									);
+						<?php
+						// Product restrictions
+						if ($atts['restrictions_products_value'] === 'true'):
+							$product_ids = maybe_unserialize($generator->product_ids);
+							if (!empty($product_ids) && is_array($product_ids)):
+								$products = array();
+								foreach ($product_ids as $product_id) {
+									$product = wc_get_product($product_id);
+									if ($product) {
+										$products[] = array(
+											'name' => $product->get_name(),
+											'url' => get_permalink($product->get_id()),
+											'id' => $product->get_id()
+										);
+									}
 								}
-							}
-							if (!empty($products)):
-					?>
-							<div class="gfwcg-product-restrictions">
-								<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_products_label'] === 'true'): ?>
-									<h5><?php echo gfwcg_get_text('Valid for products:'); ?></h5>
-								<?php endif; ?>
-								<ul>
-									<?php foreach ($products as $product): ?>
-										<li><a href="<?php echo esc_url($product['url']); ?>" class="gfwcg-product-link"><?php echo esc_html($product['name']); ?></a></li>
-									<?php endforeach; ?>
-								</ul>
-							</div>
-						<?php 
+								if (!empty($products)):
+						?>
+								<div class="gfwcg-product-restrictions">
+									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_products_label'] === 'true'): ?>
+										<h5><?php echo gfwcg_get_text('Valid for products:'); ?></h5>
+									<?php endif; ?>
+									<ul>
+										<?php foreach ($products as $product): ?>
+											<li><a href="<?php echo esc_url($product['url']); ?>" class="gfwcg-product-link"><?php echo esc_html($product['name']); ?></a></li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+							<?php 
+								endif;
 							endif;
 						endif;
-					endif;
 
-					// Exclude products
-					if ($atts['restrictions_exclude_products_value'] === 'true'):
-						$exclude_products = maybe_unserialize($generator->exclude_products);
-						if (!empty($exclude_products) && is_array($exclude_products)):
-							$excluded_products = array();
-							foreach ($exclude_products as $product_id) {
-								$product = wc_get_product($product_id);
-								if ($product) {
-									$excluded_products[] = array(
-										'name' => $product->get_name(),
-										'url' => get_permalink($product->get_id()),
-										'id' => $product->get_id()
-									);
+						// Exclude products
+						if ($atts['restrictions_exclude_products_value'] === 'true'):
+							$exclude_products = maybe_unserialize($generator->exclude_products);
+							if (!empty($exclude_products) && is_array($exclude_products)):
+								$excluded_products = array();
+								foreach ($exclude_products as $product_id) {
+									$product = wc_get_product($product_id);
+									if ($product) {
+										$excluded_products[] = array(
+											'name' => $product->get_name(),
+											'url' => get_permalink($product->get_id()),
+											'id' => $product->get_id()
+										);
+									}
 								}
-							}
-							if (!empty($excluded_products)):
-					?>
-							<div class="gfwcg-exclude-products">
-								<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_exclude_products_label'] === 'true'): ?>
-									<h5><?php echo gfwcg_get_text('Excluded products:'); ?></h5>
-								<?php endif; ?>
-								<ul>
-									<?php foreach ($excluded_products as $product): ?>
-										<li><a href="<?php echo esc_url($product['url']); ?>" class="gfwcg-product-link"><?php echo esc_html($product['name']); ?></a></li>
-									<?php endforeach; ?>
-								</ul>
-							</div>
-						<?php 
+								if (!empty($excluded_products)):
+						?>
+								<div class="gfwcg-exclude-products">
+									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_exclude_products_label'] === 'true'): ?>
+										<h5><?php echo gfwcg_get_text('Excluded products:'); ?></h5>
+									<?php endif; ?>
+									<ul>
+										<?php foreach ($excluded_products as $product): ?>
+											<li><a href="<?php echo esc_url($product['url']); ?>" class="gfwcg-product-link"><?php echo esc_html($product['name']); ?></a></li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+							<?php 
+								endif;
 							endif;
 						endif;
-					endif;
 
-					// Category restrictions
-					if ($atts['restrictions_categories_value'] === 'true'):
-						$product_categories = maybe_unserialize($generator->product_categories);
-						if (!empty($product_categories) && is_array($product_categories)):
-							$categories = array();
-							foreach ($product_categories as $cat_id) {
-								$cat = get_term($cat_id, 'product_cat');
-								if ($cat && !is_wp_error($cat)) {
-									$categories[] = array(
-										'name' => $cat->name,
-										'url' => get_term_link($cat),
-										'id' => $cat->term_id
-									);
+						// Category restrictions
+						if ($atts['restrictions_categories_value'] === 'true'):
+							$product_categories = maybe_unserialize($generator->product_categories);
+							if (!empty($product_categories) && is_array($product_categories)):
+								$categories = array();
+								foreach ($product_categories as $cat_id) {
+									$cat = get_term($cat_id, 'product_cat');
+									if ($cat && !is_wp_error($cat)) {
+										$categories[] = array(
+											'name' => $cat->name,
+											'url' => get_term_link($cat),
+											'id' => $cat->term_id
+										);
+									}
 								}
-							}
-							if (!empty($categories)):
-					?>
-							<div class="gfwcg-category-restrictions">
-								<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_categories_label'] === 'true'): ?>
-									<h5><?php echo gfwcg_get_text('Valid for categories:'); ?></h5>
-								<?php endif; ?>
-								<ul>
-									<?php foreach ($categories as $category): ?>
-										<li><a href="<?php echo esc_url($category['url']); ?>" class="gfwcg-category-link"><?php echo esc_html($category['name']); ?></a></li>
-									<?php endforeach; ?>
-								</ul>
-							</div>
-						<?php 
+								if (!empty($categories)):
+						?>
+								<div class="gfwcg-category-restrictions">
+									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_categories_label'] === 'true'): ?>
+										<h5><?php echo gfwcg_get_text('Valid for categories:'); ?></h5>
+									<?php endif; ?>
+									<ul>
+										<?php foreach ($categories as $category): ?>
+											<li><a href="<?php echo esc_url($category['url']); ?>" class="gfwcg-category-link"><?php echo esc_html($category['name']); ?></a></li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+							<?php 
+								endif;
 							endif;
 						endif;
-					endif;
 
-					// Exclude categories
-					if ($atts['restrictions_exclude_categories_value'] === 'true'):
-						$exclude_categories = maybe_unserialize($generator->exclude_categories);
-						if (!empty($exclude_categories) && is_array($exclude_categories)):
-							$excluded_categories = array();
-							foreach ($exclude_categories as $cat_id) {
-								$cat = get_term($cat_id, 'product_cat');
-								if ($cat && !is_wp_error($cat)) {
-									$excluded_categories[] = array(
-										'name' => $cat->name,
-										'url' => get_term_link($cat),
-										'id' => $cat->term_id
-									);
+						// Exclude categories
+						if ($atts['restrictions_exclude_categories_value'] === 'true'):
+							$exclude_categories = maybe_unserialize($generator->exclude_categories);
+							if (!empty($exclude_categories) && is_array($exclude_categories)):
+								$excluded_categories = array();
+								foreach ($exclude_categories as $cat_id) {
+									$cat = get_term($cat_id, 'product_cat');
+									if ($cat && !is_wp_error($cat)) {
+										$excluded_categories[] = array(
+											'name' => $cat->name,
+											'url' => get_term_link($cat),
+											'id' => $cat->term_id
+										);
+									}
 								}
-							}
-							if (!empty($excluded_categories)):
-					?>
-							<div class="gfwcg-exclude-categories">
-								<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_exclude_categories_label'] === 'true'): ?>
-									<h5><?php echo gfwcg_get_text('Excluded categories:'); ?></h5>
-								<?php endif; ?>
-								<ul>
-									<?php foreach ($excluded_categories as $category): ?>
-										<li><a href="<?php echo esc_url($category['url']); ?>" class="gfwcg-category-link"><?php echo esc_html($category['name']); ?></a></li>
-									<?php endforeach; ?>
-								</ul>
-							</div>
-						<?php 
+								if (!empty($excluded_categories)):
+						?>
+								<div class="gfwcg-exclude-categories">
+									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_exclude_categories_label'] === 'true'): ?>
+										<h5><?php echo gfwcg_get_text('Excluded categories:'); ?></h5>
+									<?php endif; ?>
+									<ul>
+										<?php foreach ($excluded_categories as $category): ?>
+											<li><a href="<?php echo esc_url($category['url']); ?>" class="gfwcg-category-link"><?php echo esc_html($category['name']); ?></a></li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+							<?php 
+								endif;
 							endif;
 						endif;
-					endif;
-					?>
-				</div>
+						?>
+					</div>
+				<?php endif; ?>
 			<?php endif; ?>
 
 			<?php if ($atts['show_expiry'] === 'true' && $atts['expiry_days_value'] === 'true' && $generator->expiry_days > 0): ?>
@@ -361,7 +423,10 @@ function gfwcg_form_shortcode($atts) {
 		'id' => 0,
 		'slug' => '',
 		'show_restrictions' => 'true',
-		'css_class' => 'gfwcg-form'
+		'css_class' => 'gfwcg-form',
+		'title' => 'true',
+		'description' => 'true',
+		'ajax' => 'false'
 	), $atts, 'gfwcg_form');
 
 	// Get generator by ID or slug
@@ -383,7 +448,7 @@ function gfwcg_form_shortcode($atts) {
 			<?php echo do_shortcode('[gfwcg_restrictions id="' . $generator->id . '" show_title="false"]'); ?>
 		<?php endif; ?>
 		
-		<?php echo do_shortcode('[gravityform id="' . $generator->form_id . '" gen="' . $generator->id . '"]'); ?>
+		<?php echo do_shortcode('[gravityform id="' . $generator->form_id . '" gen="' . $generator->id . '" title="' . $atts['title'] . '" description="' . $atts['description'] . '" ajax="' . $atts['ajax'] . '"]'); ?>
 	</div>
 	<?php
 	return ob_get_clean();
