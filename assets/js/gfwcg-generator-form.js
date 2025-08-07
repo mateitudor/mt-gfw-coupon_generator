@@ -88,6 +88,9 @@ jQuery(document).ready(function($) {
 			},
 			allowClear: true
 		});
+
+		// Override Gravity Forms validation messages
+		overrideGravityFormsValidationMessages();
 	}, 100);
 
     function formatFieldOption(field) {
@@ -233,7 +236,7 @@ jQuery(document).ready(function($) {
         var $emailField = $('#email_field_id');
         
         if (!$formId.val() || !$emailField.val()) {
-            alert(gfwcgAdmin.requiredFieldsText);
+            alert(gfwcgAdmin.requiredFieldsText || 'Please fill in all required fields.');
             return false;
         }
 
@@ -246,16 +249,39 @@ jQuery(document).ready(function($) {
             .val('Saving...')
             .addClass('loading');
 
+        // Debug logging
+        console.log('Submitting form with data:', {
+            action: 'gfwcg_save_generator',
+            nonce: gfwcgAdmin.nonce,
+            formId: $formId.val(),
+            emailField: $emailField.val()
+        });
+
+        // Set a timeout to prevent infinite loading
+        var loadingTimeout = setTimeout(function() {
+            console.error('Form submission timed out');
+            $submitButton.removeClass('loading')
+                .val(originalButtonText)
+                .prop('disabled', false);
+            $form.removeClass('loading');
+            showNotification('Request timed out. Please try again.', 'error');
+        }, 35000); // 35 seconds timeout
+
         $.ajax({
             url: gfwcgAdmin.ajaxUrl,
             type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
+            timeout: 30000, // 30 second timeout
             beforeSend: function() {
                 $form.addClass('loading');
+                console.log('AJAX request started');
             },
             success: function(response) {
+                clearTimeout(loadingTimeout);
+                console.log('AJAX response received:', response);
+                
                 if (response.success) {
                     // Set success state
                     $submitButton.removeClass('loading')
@@ -293,11 +319,12 @@ jQuery(document).ready(function($) {
                         .val(originalButtonText)
                         .prop('disabled', false);
                     
-                    showNotification(response.data.message || gfwcgAdmin.errorText, 'error');
+                    showNotification(response.data.message || (gfwcgAdmin.errorText || 'An error occurred. Please try again.'), 'error');
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Error:', error);
+                clearTimeout(loadingTimeout);
+                console.error('AJAX Error:', error);
                 console.error('Status:', status);
                 console.error('Response:', xhr.responseText);
                 
@@ -306,9 +333,11 @@ jQuery(document).ready(function($) {
                     .val(originalButtonText)
                     .prop('disabled', false);
                 
-                showNotification(gfwcgAdmin.errorText, 'error');
+                showNotification(gfwcgAdmin.errorText || 'An error occurred. Please try again.', 'error');
             },
             complete: function() {
+                clearTimeout(loadingTimeout);
+                console.log('AJAX request completed');
                 $form.removeClass('loading');
             }
         });
@@ -425,3 +454,81 @@ jQuery(document).ready(function($) {
     // Initialize coupon type toggle on page load
     $('#coupon_type').trigger('change');
 }); 
+
+/**
+ * Override Gravity Forms validation messages
+ */
+function overrideGravityFormsValidationMessages() {
+	// Check if Gravity Forms is loaded
+	if (typeof window.gform === 'undefined') {
+		return;
+	}
+
+	// Override the validation message function
+	if (window.gform && window.gform.addFilter) {
+		window.gform.addFilter('gform_field_validation_message', function(message, field, value, form) {
+			// Check if this is a form with our generator
+			var generatorId = getGeneratorIdFromForm(form);
+			if (!generatorId) {
+				return message;
+			}
+
+			// Get validation messages from data attributes or AJAX
+			var validationMessages = getValidationMessages(generatorId);
+			if (!validationMessages) {
+				return message;
+			}
+
+			// Check for duplicate/unique validation
+			if (message.indexOf('unique entry') !== -1 || 
+				message.indexOf('already been used') !== -1 ||
+				message.indexOf('already used') !== -1) {
+				if (validationMessages.duplicate) {
+					return validationMessages.duplicate;
+				}
+			}
+
+			// Check for required validation
+			if (message.indexOf('required') !== -1) {
+				if (validationMessages.required) {
+					return validationMessages.required;
+				}
+			}
+
+			// Check for email validation
+			if (message.indexOf('valid email') !== -1 || 
+				message.indexOf('email address') !== -1) {
+				if (validationMessages.email) {
+					return validationMessages.email;
+				}
+			}
+
+			return message;
+		});
+	}
+}
+
+/**
+ * Get generator ID from form
+ */
+function getGeneratorIdFromForm(form) {
+	// Look for generator ID in form attributes or hidden fields
+	var generatorField = form.find('input[name="gen"]');
+	if (generatorField.length > 0) {
+		return generatorField.val();
+	}
+	return null;
+}
+
+/**
+ * Get validation messages for generator
+ */
+function getValidationMessages(generatorId) {
+	// This could be enhanced to fetch messages via AJAX
+	// For now, we'll use a simple approach
+	return {
+		required: 'This field is required.',
+		email: 'Please enter a valid email address.',
+		duplicate: 'This email address has already been used.'
+	};
+} 
