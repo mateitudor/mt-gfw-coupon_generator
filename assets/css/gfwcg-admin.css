@@ -1273,3 +1273,32 @@
 		text-align: center;
 	}
 } 
+
+/* Validation fields styling */
+.gfwcg-form-validation-info {
+	margin-top: 5px;
+	padding: 5px 10px;
+	background-color: #f0f8ff;
+	border-left: 3px solid #0073aa;
+	border-radius: 3px;
+}
+
+.gfwcg-form-validation-info small {
+	color: #0073aa;
+	font-weight: 500;
+}
+
+/* Smooth transition for validation fields */
+#validation_required_message,
+#validation_email_message,
+#validation_duplicate_message {
+	transition: all 0.3s ease;
+}
+
+/* Highlight validation fields when they appear */
+#validation_required_message:focus,
+#validation_email_message:focus,
+#validation_duplicate_message:focus {
+	border-color: #0073aa;
+	box-shadow: 0 0 0 1px #0073aa;
+} 

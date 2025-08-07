@@ -126,6 +126,62 @@ function gfwcg_display_generator_form($generator = null) {
                                 </select>
                             </td>
                         </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="validation_required_message"><?php _e('Required Field Message', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+                            </th>
+                            <td>
+                                <input type="text" name="validation_required_message" id="validation_required_message" class="regular-text" 
+                                       value="<?php echo $generator ? esc_attr($generator->validation_required_message ?? '') : ''; ?>" 
+                                       placeholder="<?php esc_attr_e('This field is required.', 'gravity-forms-woocommerce-coupon-generator'); ?>">
+                                <p class="description"><?php _e('Custom message for required field validation.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+                                <p class="gfwcg-form-validation-info" style="display: none; color: #666; font-style: italic;">
+                                    <small><?php _e('Form has existing validation settings that will be used as defaults.', 'gravity-forms-woocommerce-coupon-generator'); ?></small>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="validation_email_message"><?php _e('Email Validation Message', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+                            </th>
+                            <td>
+                                <input type="text" name="validation_email_message" id="validation_email_message" class="regular-text" 
+                                       value="<?php echo $generator ? esc_attr($generator->validation_email_message ?? '') : ''; ?>" 
+                                       placeholder="<?php esc_attr_e('Please enter a valid email address.', 'gravity-forms-woocommerce-coupon-generator'); ?>">
+                                <p class="description"><?php _e('Custom message for email validation.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+                                <p class="gfwcg-form-validation-info" style="display: none; color: #666; font-style: italic;">
+                                    <small><?php _e('Form has existing validation settings that will be used as defaults.', 'gravity-forms-woocommerce-coupon-generator'); ?></small>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="validation_duplicate_message"><?php _e('Duplicate Entry Message', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+                            </th>
+                            <td>
+                                <input type="text" name="validation_duplicate_message" id="validation_duplicate_message" class="regular-text" 
+                                       value="<?php echo $generator ? esc_attr($generator->validation_duplicate_message ?? '') : ''; ?>" 
+                                       placeholder="<?php esc_attr_e('This email address has already been used.', 'gravity-forms-woocommerce-coupon-generator'); ?>">
+                                <p class="description"><?php _e('Custom message for duplicate entry validation.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+                                <p class="gfwcg-form-validation-info" style="display: none; color: #666; font-style: italic;">
+                                    <small><?php _e('Form has existing validation settings that will be used as defaults.', 'gravity-forms-woocommerce-coupon-generator'); ?></small>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="validation_error_header"><?php _e('Validation Error Header', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+                            </th>
+                            <td>
+                                <input type="text" name="validation_error_header" id="validation_error_header" class="regular-text" 
+                                       value="<?php echo $generator ? esc_attr($generator->validation_error_header ?? '') : ''; ?>" 
+                                       placeholder="<?php esc_attr_e('There was a problem with your submission. Please review the fields below.', 'gravity-forms-woocommerce-coupon-generator'); ?>">
+                                <p class="description"><?php _e('Custom message for the validation error header that appears above the error list.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+                                <p class="gfwcg-form-validation-info" style="display: none; color: #666; font-style: italic;">
+                                    <small><?php _e('Form has existing validation settings that will be used as defaults.', 'gravity-forms-woocommerce-coupon-generator'); ?></small>
+                                </p>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -651,6 +707,82 @@ function gfwcg_display_generator_form($generator = null) {
                 alert('Please select a coupon field when using field type.');
                 couponField.focus();
             }
+        });
+
+        // Validation fields functionality
+        const formIdSelect = document.getElementById('form_id');
+        const validationFields = document.querySelectorAll('#validation_required_message, #validation_email_message, #validation_duplicate_message, #validation_error_header');
+        const validationInfo = document.querySelectorAll('.gfwcg-form-validation-info');
+
+        function toggleValidationFields() {
+            const hasForm = formIdSelect.value && formIdSelect.value !== '';
+            
+            validationFields.forEach(field => {
+                const row = field.closest('tr');
+                if (hasForm) {
+                    row.style.display = 'table-row';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function fetchFormValidationSettings(formId) {
+            if (!formId) return;
+
+            fetch(ajaxurl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: 'gfwcg_get_form_validation_settings',
+                    nonce: gfwcgAdmin.nonce,
+                    form_id: formId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    const settings = data.data;
+                    
+                    // Show info messages
+                    validationInfo.forEach(info => {
+                        info.style.display = 'block';
+                    });
+
+                    // Pre-fill fields with form settings if they're empty
+                    if (settings.required_message && !document.getElementById('validation_required_message').value) {
+                        document.getElementById('validation_required_message').value = settings.required_message;
+                    }
+                    if (settings.email_message && !document.getElementById('validation_email_message').value) {
+                        document.getElementById('validation_email_message').value = settings.email_message;
+                    }
+                    if (settings.duplicate_message && !document.getElementById('validation_duplicate_message').value) {
+                        document.getElementById('validation_duplicate_message').value = settings.duplicate_message;
+                    }
+                    if (settings.error_header && !document.getElementById('validation_error_header').value) {
+                        document.getElementById('validation_error_header').value = settings.error_header;
+                    }
+                } else {
+                    // Hide info messages if no settings found
+                    validationInfo.forEach(info => {
+                        info.style.display = 'none';
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching form validation settings:', error);
+            });
+        }
+
+        // Initialize validation fields visibility
+        toggleValidationFields();
+
+        // Handle form selection change
+        formIdSelect.addEventListener('change', function() {
+            toggleValidationFields();
+            fetchFormValidationSettings(this.value);
         });
 
         // Copy to clipboard functionality with button states
