@@ -37,6 +37,7 @@ class GFWCG_Admin {
         add_action('wp_ajax_gfwcg_delete_generator', array($this, 'ajax_delete_generator'));
         add_action('wp_ajax_gfwcg_search_products', array($this, 'ajax_search_products'));
         add_action('wp_ajax_gfwcg_search_categories', array($this, 'ajax_search_categories'));
+        add_action('wp_ajax_gfwcg_get_form_validation_settings', array($this, 'ajax_get_form_validation_settings'));
         add_action('admin_init', array($this, 'admin_init'));
     }
 
@@ -308,77 +309,107 @@ class GFWCG_Admin {
     }
 
     public function ajax_save_generator() {
-        check_ajax_referer('gfwcg_admin_nonce', 'nonce');
+        try {
+            check_ajax_referer('gfwcg_admin_nonce', 'nonce');
 
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => __('You do not have permission to perform this action.', 'gravity-forms-woocommerce-coupon-generator')));
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(array('message' => __('You do not have permission to perform this action.', 'gravity-forms-woocommerce-coupon-generator')));
+            }
+
+            // Debug: Log the incoming data
+            gfwcg_debug_log('AJAX save generator called with POST data: ' . print_r($_POST, true));
+
+            // Process product and category arrays
+            $processed_arrays = gfwcg_process_product_category_arrays($_POST);
+            $product_ids = $processed_arrays['product_ids'];
+            $exclude_product_ids = $processed_arrays['exclude_product_ids'];
+            $product_categories = $processed_arrays['product_categories'];
+            $exclude_product_categories = $processed_arrays['exclude_product_categories'];
+
+            $data = array(
+                'title' => isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '',
+                'form_id' => isset($_POST['form_id']) ? intval($_POST['form_id']) : 0,
+                'email_field_id' => isset($_POST['email_field_id']) ? intval($_POST['email_field_id']) : 0,
+                'name_field_id' => isset($_POST['name_field_id']) ? intval($_POST['name_field_id']) : 0,
+                'coupon_type' => isset($_POST['coupon_type']) ? sanitize_text_field($_POST['coupon_type']) : 'random',
+                'coupon_field_id' => isset($_POST['coupon_field_id']) ? intval($_POST['coupon_field_id']) : 0,
+                'coupon_length' => isset($_POST['coupon_length']) ? intval($_POST['coupon_length']) : 8,
+                'coupon_prefix' => isset($_POST['coupon_prefix']) ? sanitize_text_field($_POST['coupon_prefix']) : '',
+                'coupon_suffix' => isset($_POST['coupon_suffix']) ? sanitize_text_field($_POST['coupon_suffix']) : '',
+                'coupon_separator' => isset($_POST['coupon_separator']) ? sanitize_text_field($_POST['coupon_separator']) : '',
+                'discount_type' => isset($_POST['discount_type']) ? sanitize_text_field($_POST['discount_type']) : 'percentage',
+                'discount_amount' => isset($_POST['discount_amount']) ? floatval($_POST['discount_amount']) : 0,
+                'individual_use' => isset($_POST['individual_use']) ? 1 : 0,
+                'usage_limit_per_coupon' => isset($_POST['usage_limit_per_coupon']) && $_POST['usage_limit_per_coupon'] !== '' ? intval($_POST['usage_limit_per_coupon']) : 0,
+                'usage_limit_per_user' => isset($_POST['usage_limit_per_user']) && $_POST['usage_limit_per_user'] !== '' ? intval($_POST['usage_limit_per_user']) : 0,
+                'minimum_amount' => isset($_POST['minimum_amount']) && $_POST['minimum_amount'] !== '' ? floatval($_POST['minimum_amount']) : 0,
+                'maximum_amount' => isset($_POST['maximum_amount']) && $_POST['maximum_amount'] !== '' ? floatval($_POST['maximum_amount']) : 0,
+                'exclude_sale_items' => isset($_POST['exclude_sale_items']) ? 1 : 0,
+                'allow_free_shipping' => isset($_POST['allow_free_shipping']) ? 1 : 0,
+                'expiry_days' => isset($_POST['expiry_days']) ? intval($_POST['expiry_days']) : 0,
+                'send_email' => isset($_POST['send_email']) ? 1 : 0,
+                'use_wc_email_template' => isset($_POST['use_wc_email_template']) ? 1 : 0,
+                'email_subject' => isset($_POST['email_subject']) ? sanitize_text_field($_POST['email_subject']) : '',
+                'email_message' => isset($_POST['email_message']) ? wp_kses_post($_POST['email_message']) : '',
+                'email_from_name' => isset($_POST['email_from_name']) ? sanitize_text_field($_POST['email_from_name']) : '',
+                'email_from_email' => isset($_POST['email_from_email']) ? sanitize_email($_POST['email_from_email']) : '',
+                'description' => isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '',
+                'validation_required_message' => isset($_POST['validation_required_message']) ? sanitize_text_field($_POST['validation_required_message']) : '',
+                'validation_email_message' => isset($_POST['validation_email_message']) ? sanitize_text_field($_POST['validation_email_message']) : '',
+                'validation_duplicate_message' => isset($_POST['validation_duplicate_message']) ? sanitize_text_field($_POST['validation_duplicate_message']) : '',
+                'validation_error_header' => isset($_POST['validation_error_header']) ? sanitize_text_field($_POST['validation_error_header']) : '',
+                'product_ids' => !empty($product_ids) ? serialize($product_ids) : null,
+                'exclude_products' => !empty($exclude_product_ids) ? serialize($exclude_product_ids) : null,
+                'product_categories' => !empty($product_categories) ? serialize($product_categories) : null,
+                'exclude_categories' => !empty($exclude_product_categories) ? serialize($exclude_product_categories) : null,
+                'status' => 'active'
+            );
+
+            // Debug: Log the processed data
+            gfwcg_debug_log('Processed data for saving: ' . print_r($data, true));
+
+            if (empty($data['title'])) {
+                wp_send_json_error(array('message' => __('Title is required.', 'gravity-forms-woocommerce-coupon-generator')));
+            }
+
+            if (!$data['form_id'] || !$data['email_field_id']) {
+                wp_send_json_error(array('message' => __('Form ID and Email Field are required.', 'gravity-forms-woocommerce-coupon-generator')));
+            }
+
+            if (isset($_POST['id']) && $_POST['id']) {
+                $data['id'] = intval($_POST['id']);
+            }
+
+            // Ensure database is migrated to include validation message columns
+            GFWCG_DB::migrate_database();
+
+            $result = GFWCG_DB::save_generator($data);
+
+            if ($result === false) {
+                wp_send_json_error(array('message' => __('Error saving generator.', 'gravity-forms-woocommerce-coupon-generator')));
+            }
+
+            // Debug: Log the saved data
+            gfwcg_debug_log('Generator saved with validation messages:');
+            gfwcg_debug_log('Required: ' . ($data['validation_required_message'] ?? 'not set'));
+            gfwcg_debug_log('Email: ' . ($data['validation_email_message'] ?? 'not set'));
+            gfwcg_debug_log('Duplicate: ' . ($data['validation_duplicate_message'] ?? 'not set'));
+
+            wp_send_json_success(array(
+                'message' => __('Generator saved successfully.', 'gravity-forms-woocommerce-coupon-generator'),
+                'redirect_url' => admin_url('admin.php?page=gfwcg-generators'),
+                'generator_id' => $result
+            ));
+
+        } catch (Exception $e) {
+            gfwcg_debug_log('Error in ajax_save_generator: ' . $e->getMessage());
+            gfwcg_debug_log('Stack trace: ' . $e->getTraceAsString());
+            wp_send_json_error(array('message' => 'Error: ' . $e->getMessage()));
+        } catch (Error $e) {
+            gfwcg_debug_log('Fatal error in ajax_save_generator: ' . $e->getMessage());
+            gfwcg_debug_log('Stack trace: ' . $e->getTraceAsString());
+            wp_send_json_error(array('message' => 'Fatal error: ' . $e->getMessage()));
         }
-
-        // Process product and category arrays
-        $processed_arrays = gfwcg_process_product_category_arrays($_POST);
-        $product_ids = $processed_arrays['product_ids'];
-        $exclude_product_ids = $processed_arrays['exclude_product_ids'];
-        $product_categories = $processed_arrays['product_categories'];
-        $exclude_product_categories = $processed_arrays['exclude_product_categories'];
-
-        $data = array(
-            'title' => isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '',
-            'form_id' => isset($_POST['form_id']) ? intval($_POST['form_id']) : 0,
-            'email_field_id' => isset($_POST['email_field_id']) ? intval($_POST['email_field_id']) : 0,
-            'name_field_id' => isset($_POST['name_field_id']) ? intval($_POST['name_field_id']) : 0,
-            'coupon_type' => isset($_POST['coupon_type']) ? sanitize_text_field($_POST['coupon_type']) : 'random',
-            'coupon_field_id' => isset($_POST['coupon_field_id']) ? intval($_POST['coupon_field_id']) : 0,
-            'coupon_length' => isset($_POST['coupon_length']) ? intval($_POST['coupon_length']) : 8,
-            'coupon_prefix' => isset($_POST['coupon_prefix']) ? sanitize_text_field($_POST['coupon_prefix']) : '',
-            'coupon_suffix' => isset($_POST['coupon_suffix']) ? sanitize_text_field($_POST['coupon_suffix']) : '',
-            'coupon_separator' => isset($_POST['coupon_separator']) ? sanitize_text_field($_POST['coupon_separator']) : '',
-            'discount_type' => isset($_POST['discount_type']) ? sanitize_text_field($_POST['discount_type']) : 'percentage',
-            'discount_amount' => isset($_POST['discount_amount']) ? floatval($_POST['discount_amount']) : 0,
-            'individual_use' => isset($_POST['individual_use']) ? 1 : 0,
-            'usage_limit_per_coupon' => isset($_POST['usage_limit_per_coupon']) && $_POST['usage_limit_per_coupon'] !== '' ? intval($_POST['usage_limit_per_coupon']) : 0,
-            'usage_limit_per_user' => isset($_POST['usage_limit_per_user']) && $_POST['usage_limit_per_user'] !== '' ? intval($_POST['usage_limit_per_user']) : 0,
-            'minimum_amount' => isset($_POST['minimum_amount']) && $_POST['minimum_amount'] !== '' ? floatval($_POST['minimum_amount']) : 0,
-            'maximum_amount' => isset($_POST['maximum_amount']) && $_POST['maximum_amount'] !== '' ? floatval($_POST['maximum_amount']) : 0,
-            'exclude_sale_items' => isset($_POST['exclude_sale_items']) ? 1 : 0,
-            'allow_free_shipping' => isset($_POST['allow_free_shipping']) ? 1 : 0,
-            'expiry_days' => isset($_POST['expiry_days']) ? intval($_POST['expiry_days']) : 0,
-            'send_email' => isset($_POST['send_email']) ? 1 : 0,
-            'use_wc_email_template' => isset($_POST['use_wc_email_template']) ? 1 : 0,
-            'email_subject' => isset($_POST['email_subject']) ? sanitize_text_field($_POST['email_subject']) : '',
-            'email_message' => isset($_POST['email_message']) ? wp_kses_post($_POST['email_message']) : '',
-            'email_from_name' => isset($_POST['email_from_name']) ? sanitize_text_field($_POST['email_from_name']) : '',
-            'email_from_email' => isset($_POST['email_from_email']) ? sanitize_email($_POST['email_from_email']) : '',
-            'description' => isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '',
-            'product_ids' => !empty($product_ids) ? serialize($product_ids) : null,
-            'exclude_products' => !empty($exclude_product_ids) ? serialize($exclude_product_ids) : null,
-            'product_categories' => !empty($product_categories) ? serialize($product_categories) : null,
-            'exclude_categories' => !empty($exclude_product_categories) ? serialize($exclude_product_categories) : null,
-            'status' => 'active'
-        );
-
-        if (empty($data['title'])) {
-            wp_send_json_error(array('message' => __('Title is required.', 'gravity-forms-woocommerce-coupon-generator')));
-        }
-
-        if (!$data['form_id'] || !$data['email_field_id']) {
-            wp_send_json_error(array('message' => __('Form ID and Email Field are required.', 'gravity-forms-woocommerce-coupon-generator')));
-        }
-
-        if (isset($_POST['id']) && $_POST['id']) {
-            $data['id'] = intval($_POST['id']);
-        }
-
-        $result = GFWCG_DB::save_generator($data);
-
-        if ($result === false) {
-            wp_send_json_error(array('message' => __('Error saving generator.', 'gravity-forms-woocommerce-coupon-generator')));
-        }
-
-        wp_send_json_success(array(
-            'message' => __('Generator saved successfully.', 'gravity-forms-woocommerce-coupon-generator'),
-            'redirect_url' => admin_url('admin.php?page=gfwcg-generators'),
-            'generator_id' => $result
-        ));
     }
 
     public function ajax_delete_generator() {
@@ -512,6 +543,72 @@ class GFWCG_Admin {
 	 */
 	public function ajax_search_categories() {
 		$this->ajax_search_generic('categories');
+	}
+
+	/**
+	 * AJAX handler for getting form validation settings
+	 */
+	public function ajax_get_form_validation_settings() {
+		check_ajax_referer('gfwcg_admin_nonce', 'nonce');
+
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => __('You do not have permission to perform this action.', 'gravity-forms-woocommerce-coupon-generator')));
+		}
+
+		$form_id = isset($_POST['form_id']) ? intval($_POST['form_id']) : 0;
+		
+		if (!$form_id) {
+			wp_send_json_error(array('message' => __('Invalid form ID.', 'gravity-forms-woocommerce-coupon-generator')));
+		}
+
+		// Get the form
+		$form = GFAPI::get_form($form_id);
+		if (!$form) {
+			wp_send_json_error(array('message' => __('Form not found.', 'gravity-forms-woocommerce-coupon-generator')));
+		}
+
+		$validation_settings = array(
+			'required_message' => '',
+			'email_message' => '',
+			'duplicate_message' => '',
+			'error_header' => ''
+		);
+
+		// Check for email fields and their validation settings
+		foreach ($form['fields'] as $field) {
+			if ($field['type'] === 'email') {
+				// Check for required message
+				if (!empty($field['requiredMessage'])) {
+					$validation_settings['required_message'] = $field['requiredMessage'];
+				}
+				
+				// Check for email validation message
+				if (!empty($field['emailMessage'])) {
+					$validation_settings['email_message'] = $field['emailMessage'];
+				}
+				
+				// Check for duplicate message
+				if (!empty($field['errorMessage'])) {
+					$validation_settings['duplicate_message'] = $field['errorMessage'];
+				}
+				
+				// Also check for noDuplicates setting
+				if (isset($field['noDuplicates']) && $field['noDuplicates'] && !empty($field['errorMessage'])) {
+					$validation_settings['duplicate_message'] = $field['errorMessage'];
+				}
+			}
+		}
+
+		// Check if we found any validation settings
+		$has_settings = !empty($validation_settings['required_message']) || 
+					   !empty($validation_settings['email_message']) || 
+					   !empty($validation_settings['duplicate_message']);
+
+		if ($has_settings) {
+			wp_send_json_success($validation_settings);
+		} else {
+			wp_send_json_error(array('message' => __('No validation settings found for this form.', 'gravity-forms-woocommerce-coupon-generator')));
+		}
 	}
 
 	/**
