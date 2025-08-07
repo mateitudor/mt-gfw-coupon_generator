@@ -75,38 +75,56 @@ function gfwcg_e($text, $context = '') {
 /**
  * Process product and category arrays from POST data
  *
- * @param array $post_data The POST data array
- * @return array Array with processed product and category data
+ * @param array $post_data The POST data
+ * @return array Processed arrays
  */
 function gfwcg_process_product_category_arrays($post_data) {
-	$processed = array(
-		'product_ids' => array(),
-		'exclude_product_ids' => array(),
-		'product_categories' => array(),
-		'exclude_product_categories' => array()
-	);
+	try {
+		$processed = array(
+			'product_ids' => array(),
+			'exclude_product_ids' => array(),
+			'product_categories' => array(),
+			'exclude_product_categories' => array()
+		);
 
-	// Handle product IDs
-	if (isset($post_data['product_ids']) && is_array($post_data['product_ids'])) {
-		$processed['product_ids'] = array_map('intval', array_filter($post_data['product_ids']));
+		// Handle product IDs
+		if (isset($post_data['product_ids']) && is_array($post_data['product_ids'])) {
+			$processed['product_ids'] = array_map('intval', array_filter($post_data['product_ids']));
+		}
+
+		// Handle exclude product IDs
+		if (isset($post_data['exclude_product_ids']) && is_array($post_data['exclude_product_ids'])) {
+			$processed['exclude_product_ids'] = array_map('intval', array_filter($post_data['exclude_product_ids']));
+		}
+
+		// Handle product categories
+		if (isset($post_data['product_categories']) && is_array($post_data['product_categories'])) {
+			$processed['product_categories'] = array_map('intval', array_filter($post_data['product_categories']));
+		}
+
+		// Handle exclude product categories
+		if (isset($post_data['exclude_product_categories']) && is_array($post_data['exclude_product_categories'])) {
+			$processed['exclude_product_categories'] = array_map('intval', array_filter($post_data['exclude_product_categories']));
+		}
+
+		return $processed;
+	} catch (Exception $e) {
+		gfwcg_debug_log('Error in gfwcg_process_product_category_arrays: ' . $e->getMessage());
+		return array(
+			'product_ids' => array(),
+			'exclude_product_ids' => array(),
+			'product_categories' => array(),
+			'exclude_product_categories' => array()
+		);
+	} catch (Error $e) {
+		gfwcg_debug_log('Fatal error in gfwcg_process_product_category_arrays: ' . $e->getMessage());
+		return array(
+			'product_ids' => array(),
+			'exclude_product_ids' => array(),
+			'product_categories' => array(),
+			'exclude_product_categories' => array()
+		);
 	}
-
-	// Handle exclude product IDs
-	if (isset($post_data['exclude_product_ids']) && is_array($post_data['exclude_product_ids'])) {
-		$processed['exclude_product_ids'] = array_map('intval', array_filter($post_data['exclude_product_ids']));
-	}
-
-	// Handle product categories
-	if (isset($post_data['product_categories']) && is_array($post_data['product_categories'])) {
-		$processed['product_categories'] = array_map('intval', array_filter($post_data['product_categories']));
-	}
-
-	// Handle exclude product categories
-	if (isset($post_data['exclude_product_categories']) && is_array($post_data['exclude_product_categories'])) {
-		$processed['exclude_product_categories'] = array_map('intval', array_filter($post_data['exclude_product_categories']));
-	}
-
-	return $processed;
 }
 
 /**
@@ -249,29 +267,48 @@ add_action('before_woocommerce_init', function() {
 
 // Initialize the plugin
 function gfwcg_init() {
-    if (!gfwcg_check_dependencies()) {
-        return;
-    }
+	if (!gfwcg_check_dependencies()) {
+		return;
+	}
 
-    // Load all required files using autoloader
-    global $gfwcg_autoloader;
-    if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_admin_files')) {
-        $gfwcg_autoloader->load_admin_files();
-        
-        // Load email class after WooCommerce is fully loaded
-        add_action('woocommerce_init', function() use ($gfwcg_autoloader) {
-            if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_email_class')) {
-                $gfwcg_autoloader->load_email_class();
-            }
-        });
-    }
+	// Load all required files using autoloader
+	global $gfwcg_autoloader;
+	if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_admin_files')) {
+		$gfwcg_autoloader->load_admin_files();
+		
+		// Load email class after WooCommerce is fully loaded
+		add_action('woocommerce_init', function() use ($gfwcg_autoloader) {
+			if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_email_class')) {
+				$gfwcg_autoloader->load_email_class();
+			}
+		});
+	}
 
-    // Initialize components after WordPress is fully loaded
-    add_action('init', function() {
-        new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);
-        new GFWCG_Generator();
-        new GFWCG_Coupon();
-    });
+	// Initialize components after WordPress is fully loaded
+	add_action('init', function() {
+		new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);
+		new GFWCG_Coupon();
+	});
+	
+	// Initialize generator after Gravity Forms is loaded
+	add_action('gform_loaded', function() {
+		GFWCG_Generator::get_instance();
+	});
+	
+	// Fallback initialization if gform_loaded doesn't fire
+	add_action('wp_loaded', function() {
+		if (!class_exists('GFWCG_Generator')) {
+			// Try to load the class manually
+			global $gfwcg_autoloader;
+			if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_class')) {
+				$gfwcg_autoloader->load_class('GFWCG_Generator');
+			}
+		}
+		
+		if (class_exists('GFWCG_Generator')) {
+			GFWCG_Generator::get_instance();
+		}
+	});
 }
 add_action('plugins_loaded', 'gfwcg_init');
 
