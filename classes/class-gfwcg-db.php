@@ -49,6 +49,10 @@ class GFWCG_DB {
             email_message longtext DEFAULT NULL,
             email_from_name varchar(255) DEFAULT NULL,
             email_from_email varchar(255) DEFAULT NULL,
+            validation_required_message varchar(255) DEFAULT NULL,
+            validation_email_message varchar(255) DEFAULT NULL,
+            validation_duplicate_message varchar(255) DEFAULT NULL,
+            validation_error_header varchar(255) DEFAULT NULL,
             PRIMARY KEY  (id),
             KEY form_id (form_id),
             KEY status (status)
@@ -207,45 +211,33 @@ class GFWCG_DB {
             $migrations[] = "UPDATE $table_name SET product_ids = products WHERE product_ids IS NULL AND products IS NOT NULL";
         }
         
-        if (in_array('category_ids', $column_names) && in_array('product_categories', $column_names)) {
-            $migrations[] = "UPDATE $table_name SET product_categories = category_ids WHERE product_categories IS NULL AND category_ids IS NOT NULL";
+        if (in_array('exclude_products', $column_names) && in_array('exclude_product_ids', $column_names)) {
+            $migrations[] = "UPDATE $table_name SET exclude_product_ids = exclude_products WHERE exclude_product_ids IS NULL AND exclude_products IS NOT NULL";
         }
         
-        if (in_array('prefix', $column_names) && in_array('coupon_prefix', $column_names)) {
-            $migrations[] = "UPDATE $table_name SET coupon_prefix = prefix WHERE coupon_prefix IS NULL AND prefix IS NOT NULL";
+        if (in_array('categories', $column_names) && in_array('product_categories', $column_names)) {
+            $migrations[] = "UPDATE $table_name SET product_categories = categories WHERE product_categories IS NULL AND categories IS NOT NULL";
         }
         
-        if (in_array('length', $column_names) && in_array('coupon_length', $column_names)) {
-            $migrations[] = "UPDATE $table_name SET coupon_length = length WHERE coupon_length = 8 AND length != 8";
+        if (in_array('exclude_categories', $column_names) && in_array('exclude_product_categories', $column_names)) {
+            $migrations[] = "UPDATE $table_name SET exclude_product_categories = exclude_categories WHERE exclude_product_categories IS NULL AND exclude_categories IS NOT NULL";
         }
         
-        if (in_array('free_shipping', $column_names) && in_array('allow_free_shipping', $column_names)) {
-            $migrations[] = "UPDATE $table_name SET allow_free_shipping = free_shipping WHERE allow_free_shipping = 0 AND free_shipping = 1";
+        // Step 2: Add validation message columns if they don't exist
+        if (!in_array('validation_required_message', $column_names)) {
+            $migrations[] = "ALTER TABLE $table_name ADD COLUMN validation_required_message varchar(255) DEFAULT NULL";
         }
         
-        if (in_array('usage_limit', $column_names) && in_array('usage_limit_per_coupon', $column_names)) {
-            $migrations[] = "UPDATE $table_name SET usage_limit_per_coupon = usage_limit WHERE usage_limit_per_coupon = 0 AND usage_limit > 0";
+        if (!in_array('validation_email_message', $column_names)) {
+            $migrations[] = "ALTER TABLE $table_name ADD COLUMN validation_email_message varchar(255) DEFAULT NULL";
         }
         
-        // Step 2: Drop old duplicate columns
-        $columns_to_drop = array(
-            'minimum_spend',
-            'maximum_spend', 
-            'products',
-            'category_ids',
-            'prefix',
-            'length',
-            'free_shipping',
-            'usage_limit',
-            'expiry_date',
-            'product_brands',
-            'exclude_brands'
-        );
+        if (!in_array('validation_duplicate_message', $column_names)) {
+            $migrations[] = "ALTER TABLE $table_name ADD COLUMN validation_duplicate_message varchar(255) DEFAULT NULL";
+        }
         
-        foreach ($columns_to_drop as $column) {
-            if (in_array($column, $column_names)) {
-                $migrations[] = "ALTER TABLE $table_name DROP COLUMN $column";
-            }
+        if (!in_array('validation_error_header', $column_names)) {
+            $migrations[] = "ALTER TABLE $table_name ADD COLUMN validation_error_header varchar(255) DEFAULT NULL";
         }
         
         // Execute migrations
