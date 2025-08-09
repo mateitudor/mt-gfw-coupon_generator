@@ -3,7 +3,7 @@
  * Plugin Name: Coupon Generator for Gravity Forms & WooCommerce
  * Plugin URI: https://mateitudor.com
  * Description: Generate WooCommerce coupon codes from Gravity Forms submissions
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Matei Tudor
  * Author URI: https://mateitudor.com
  * Text Domain: gravity-forms-woocommerce-coupon-generator
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('GFWCG_VERSION', '1.0.1');
+define('GFWCG_VERSION', '1.0.2');
 define('GFWCG_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GFWCG_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('GFWCG_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -357,38 +357,22 @@ function register_gfwcg_email_class($email_classes) {
  * Register REST API endpoints for blocks
  */
 function gfwcg_register_rest_api() {
-	register_rest_route('gfwcg/v1', '/generators', array(
-		'methods' => 'GET',
-		'callback' => 'gfwcg_get_generators_rest',
-		'permission_callback' => '__return_true'
-	));
+    register_rest_route('gfwcg/v1', '/generators', array(
+        'methods' => 'GET',
+        'callback' => 'gfwcg_get_generators_rest',
+        'permission_callback' => function () {
+            // Allow authenticated users; make public only if explicitly opted in later
+            return is_user_logged_in() && current_user_can('read');
+        }
+    ));
 }
 
 add_action('rest_api_init', 'gfwcg_register_rest_api');
-add_action('rest_api_init', 'gfwcg_cors_headers', 15);
-
-function gfwcg_cors_headers() {
-    // Remove default CORS headers sent by WordPress REST API
-    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
-    
-    add_filter('rest_pre_serve_request', function($value) {
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
-        header('Access-Control-Allow-Credentials: true');
-        header('Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce');
-        return $value;
-    });
-}
 
 /**
  * Add CORS headers for admin-ajax.php
  */
-function gfwcg_admin_cors_headers() {
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: OPTIONS, GET, POST, PUT, DELETE");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-}
-add_action('admin_init', 'gfwcg_admin_cors_headers');
+// Removed broad CORS overrides to avoid security risks; rely on WP defaults
     
 
 
