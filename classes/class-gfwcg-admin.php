@@ -649,6 +649,8 @@ class GFWCG_Admin {
         
         // Register settings
         register_setting('gfwcg_settings', 'gfwcg_debug_mode');
+        register_setting('gfwcg_settings', 'gfwcg_delete_options_on_uninstall');
+        register_setting('gfwcg_settings', 'gfwcg_drop_tables_on_uninstall');
     }
 
     /**

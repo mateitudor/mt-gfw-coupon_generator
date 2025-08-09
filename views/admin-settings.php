@@ -38,6 +38,33 @@ if (!defined('ABSPATH')) {
 				</tr>
 			</table>
 		</div>
+
+		<div class="gfwcg-settings-section">
+			<h2><?php _e('Uninstall Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
+			<table class="form-table">
+				<tr>
+					<th scope="row">
+						<label for="gfwcg_delete_options_on_uninstall"><?php _e('Delete Options on Uninstall', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+					</th>
+					<td>
+						<input type="checkbox" name="gfwcg_delete_options_on_uninstall" id="gfwcg_delete_options_on_uninstall" value="1" 
+							   <?php checked(get_option('gfwcg_delete_options_on_uninstall', 0), 1); ?>>
+						<label for="gfwcg_delete_options_on_uninstall"><?php _e('Remove plugin options (e.g., debug setting) when the plugin is uninstalled.', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="gfwcg_drop_tables_on_uninstall"><?php _e('Drop Database Tables on Uninstall', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+					</th>
+					<td>
+						<input type="checkbox" name="gfwcg_drop_tables_on_uninstall" id="gfwcg_drop_tables_on_uninstall" value="1" 
+							   <?php checked(get_option('gfwcg_drop_tables_on_uninstall', 0), 1); ?>>
+						<label for="gfwcg_drop_tables_on_uninstall"><?php _e('Permanently delete the plugin\'s database tables on uninstall (cannot be undone).', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+						<p class="description"><?php _e('Warning: This will remove all generator configurations stored by this plugin.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+					</td>
+				</tr>
+			</table>
+		</div>
 		
 		<?php submit_button(); ?>
 	</form>
