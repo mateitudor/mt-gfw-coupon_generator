@@ -1,14 +1,14 @@
 // Helper to destroy GFWCGSelect for a select (removes custom UI)
 function destroyGFWCGSelect(selector) {
-    document.querySelectorAll(selector).forEach(select => {
-        // Remove custom container if present
-        const next = select.nextElementSibling;
-        if (next && next.classList.contains('gfwcg-select-container')) {
-            next.remove();
-        }
-        select.style.display = '';
-        delete select.dataset.gfwcgSelect;
-    });
+	document.querySelectorAll(selector).forEach(select => {
+		// Remove custom container if present
+		const next = select.nextElementSibling;
+		if (next && next.classList.contains('gfwcg-select-container')) {
+			next.remove();
+		}
+		select.style.display = '';
+		delete select.dataset.gfwcgSelect;
+	});
 }
 
 jQuery(document).ready(function($) {
@@ -93,366 +93,366 @@ jQuery(document).ready(function($) {
 		overrideGravityFormsValidationMessages();
 	}, 100);
 
-    function formatFieldOption(field) {
-        if (!field.id) {
-            return field.text;
-        }
+	function formatFieldOption(field) {
+		if (!field.id) {
+			return field.text;
+		}
 
-        var $option = $(field.element);
-        var type = $option.data('type');
-        var isRequired = $option.find('.required').length > 0;
-        var $wrapper = $('<span></span>');
+		var $option = $(field.element);
+		var type = $option.data('type');
+		var isRequired = $option.find('.required').length > 0;
+		var $wrapper = $('<span></span>');
 
-        $wrapper.text(field.text);
+		$wrapper.text(field.text);
 
-        if (isRequired) {
-            $wrapper.append(' <span class="required">*</span>');
-        }
+		if (isRequired) {
+			$wrapper.append(' <span class="required">*</span>');
+		}
 
-        if (type) {
-            $wrapper.append(' <span class="field-type">(' + type + ')</span>');
-        }
+		if (type) {
+			$wrapper.append(' <span class="field-type">(' + type + ')</span>');
+		}
 
-        return $wrapper;
-    }
+		return $wrapper;
+	}
 
-    function formatFieldSelection(field) {
-        if (!field.id) {
-            return field.text;
-        }
+	function formatFieldSelection(field) {
+		if (!field.id) {
+			return field.text;
+		}
 
-        var $option = $(field.element);
-        return $option.text();
-    }
+		var $option = $(field.element);
+		return $option.text();
+	}
 
-    // Handle form field updates
-    $('#form_id').on('change', function() {
-        var formId = $(this).val();
-        var $emailField = $('#email_field_id');
-        var $nameField = $('#name_field_id');
-        var $couponField = $('#coupon_field_id');
+	// Handle form field updates
+	$('#form_id').on('change', function() {
+		var formId = $(this).val();
+		var $emailField = $('#email_field_id');
+		var $nameField = $('#name_field_id');
+		var $couponField = $('#coupon_field_id');
 
-        // Clear and disable fields
-        $emailField.val('').trigger('change').prop('disabled', true);
-        $nameField.val('').trigger('change').prop('disabled', true);
-        $couponField.val('').trigger('change').prop('disabled', true);
+		// Clear and disable fields
+		$emailField.val('').trigger('change').prop('disabled', true);
+		$nameField.val('').trigger('change').prop('disabled', true);
+		$couponField.val('').trigger('change').prop('disabled', true);
 
-        if (!formId) {
-            return;
-        }
+		if (!formId) {
+			return;
+		}
 
-        $.ajax({
-            url: gfwcgAdmin.ajaxUrl,
-            type: 'POST',
-            data: {
-                action: 'gfwcg_get_form_fields',
-                nonce: gfwcgAdmin.nonce,
-                form_id: formId
-            },
-            beforeSend: function() {
-                $emailField.addClass('loading');
-                $nameField.addClass('loading');
-                $couponField.addClass('loading');
-            },
-            success: function(response) {
-                if (response.success) {
-                    updateFieldSelects(response.data.fields);
-                } else {
-                    alert(response.data.message || gfwcgAdmin.errorText);
-                }
-            },
-            error: function() {
-                alert(gfwcgAdmin.errorText);
-            },
-            complete: function() {
-                $emailField.removeClass('loading').prop('disabled', false);
-                $nameField.removeClass('loading').prop('disabled', false);
-                $couponField.removeClass('loading').prop('disabled', false);
-            }
-        });
-    });
+		$.ajax({
+			url: gfwcgAdmin.ajaxUrl,
+			type: 'POST',
+			data: {
+				action: 'gfwcg_get_form_fields',
+				nonce: gfwcgAdmin.nonce,
+				form_id: formId
+			},
+			beforeSend: function() {
+				$emailField.addClass('loading');
+				$nameField.addClass('loading');
+				$couponField.addClass('loading');
+			},
+			success: function(response) {
+				if (response.success) {
+					updateFieldSelects(response.data.fields);
+				} else {
+					alert(response.data.message || gfwcgAdmin.errorText);
+				}
+			},
+			error: function() {
+				alert(gfwcgAdmin.errorText);
+			},
+			complete: function() {
+				$emailField.removeClass('loading').prop('disabled', false);
+				$nameField.removeClass('loading').prop('disabled', false);
+				$couponField.removeClass('loading').prop('disabled', false);
+			}
+		});
+	});
 
-    function updateFieldSelects(fields) {
-        var $emailField = $('#email_field_id');
-        var $nameField = $('#name_field_id');
-        var $couponField = $('#coupon_field_id');
+	function updateFieldSelects(fields) {
+		var $emailField = $('#email_field_id');
+		var $nameField = $('#name_field_id');
+		var $couponField = $('#coupon_field_id');
 
-        // Destroy previous custom selects
-        destroyGFWCGSelect('#email_field_id, #name_field_id, #coupon_field_id');
+		// Destroy previous custom selects
+		destroyGFWCGSelect('#email_field_id, #name_field_id, #coupon_field_id');
 
-        // Clear existing options
-        $emailField.empty();
-        $nameField.empty();
-        $couponField.empty();
+		// Clear existing options
+		$emailField.empty();
+		$nameField.empty();
+		$couponField.empty();
 
-        // Add default option
-        var defaultOption = new Option(gfwcgAdmin.selectFieldText, '', true, true);
-        $emailField.append(defaultOption);
-        $nameField.append(new Option(gfwcgAdmin.selectFieldText, '', true, true));
-        $couponField.append(new Option(gfwcgAdmin.selectFieldText, '', true, true));
+		// Add default option
+		var defaultOption = new Option(gfwcgAdmin.selectFieldText, '', true, true);
+		$emailField.append(defaultOption);
+		$nameField.append(new Option(gfwcgAdmin.selectFieldText, '', true, true));
+		$couponField.append(new Option(gfwcgAdmin.selectFieldText, '', true, true));
 
-        // Add field options
-        fields.forEach(function(field) {
-            var $option = $('<option></option>')
-                .val(field.id)
-                .text(field.label)
-                .data('type', field.type);
+		// Add field options
+		fields.forEach(function(field) {
+			var $option = $('<option></option>')
+				.val(field.id)
+				.text(field.label)
+				.data('type', field.type);
 
-            if (field.required) {
-                $option.append('<span class="required">*</span>');
-            }
+			if (field.required) {
+				$option.append('<span class="required">*</span>');
+			}
 
-            $emailField.append($option.clone());
-            $nameField.append($option.clone());
-            $couponField.append($option.clone());
-        });
+			$emailField.append($option.clone());
+			$nameField.append($option.clone());
+			$couponField.append($option.clone());
+		});
 
-        // Re-initialize custom selects
-        setTimeout(function() {
-            window.GFWCGSelect.init('#email_field_id, #name_field_id, #coupon_field_id', {
-                placeholder: gfwcgAdmin.selectFieldText,
-                allowClear: true
-            });
-        }, 50);
-    }
+		// Re-initialize custom selects
+		setTimeout(function() {
+			window.GFWCGSelect.init('#email_field_id, #name_field_id, #coupon_field_id', {
+				placeholder: gfwcgAdmin.selectFieldText,
+				allowClear: true
+			});
+		}, 50);
+	}
 
-    // Handle form submission
-    $('.gfwcg-generator-form').on('submit', function(e) {
-        e.preventDefault();
-        
-        var $form = $(this);
-        var $submitButton = $form.find('input[type="submit"]');
-        var $generatorId = $form.find('input[name="id"]');
-        var originalButtonText = $submitButton.val();
-        var formData = new FormData(this);
+	// Handle form submission
+	$('.gfwcg-generator-form').on('submit', function(e) {
+		e.preventDefault();
+		
+		var $form = $(this);
+		var $submitButton = $form.find('input[type="submit"]');
+		var $generatorId = $form.find('input[name="id"]');
+		var originalButtonText = $submitButton.val();
+		var formData = new FormData(this);
 
-        // Prevent multiple submissions
-        if ($submitButton.prop('disabled')) {
-            return false;
-        }
+		// Prevent multiple submissions
+		if ($submitButton.prop('disabled')) {
+			return false;
+		}
 
-        // Validate required fields
-        var $formId = $('#form_id');
-        var $emailField = $('#email_field_id');
-        
-        if (!$formId.val() || !$emailField.val()) {
-            alert(gfwcgAdmin.requiredFieldsText || 'Please fill in all required fields.');
-            return false;
-        }
+		// Validate required fields
+		var $formId = $('#form_id');
+		var $emailField = $('#email_field_id');
+		
+		if (!$formId.val() || !$emailField.val()) {
+			alert(gfwcgAdmin.requiredFieldsText || 'Please fill in all required fields.');
+			return false;
+		}
 
-        // Add nonce to form data
-        formData.append('action', 'gfwcg_save_generator');
-        formData.append('nonce', gfwcgAdmin.nonce);
+		// Add nonce to form data
+		formData.append('action', 'gfwcg_save_generator');
+		formData.append('nonce', gfwcgAdmin.nonce);
 
-        // Set loading state and disable button
-        $submitButton.prop('disabled', true)
-            .val('Saving...')
-            .addClass('loading');
+		// Set loading state and disable button
+		$submitButton.prop('disabled', true)
+			.val('Saving...')
+			.addClass('loading');
 
-        // Debug logging
-        console.log('Submitting form with data:', {
-            action: 'gfwcg_save_generator',
-            nonce: gfwcgAdmin.nonce,
-            formId: $formId.val(),
-            emailField: $emailField.val()
-        });
+		// Debug logging
+		console.log('Submitting form with data:', {
+			action: 'gfwcg_save_generator',
+			nonce: gfwcgAdmin.nonce,
+			formId: $formId.val(),
+			emailField: $emailField.val()
+		});
 
-        // Set a timeout to prevent infinite loading
-        var loadingTimeout = setTimeout(function() {
-            console.error('Form submission timed out');
-            $submitButton.removeClass('loading')
-                .val(originalButtonText)
-                .prop('disabled', false);
-            $form.removeClass('loading');
-            showNotification('Request timed out. Please try again.', 'error');
-        }, 35000); // 35 seconds timeout
+		// Set a timeout to prevent infinite loading
+		var loadingTimeout = setTimeout(function() {
+			console.error('Form submission timed out');
+			$submitButton.removeClass('loading')
+				.val(originalButtonText)
+				.prop('disabled', false);
+			$form.removeClass('loading');
+			showNotification('Request timed out. Please try again.', 'error');
+		}, 35000); // 35 seconds timeout
 
-        $.ajax({
-            url: gfwcgAdmin.ajaxUrl,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            timeout: 30000, // 30 second timeout
-            beforeSend: function() {
-                $form.addClass('loading');
-                console.log('AJAX request started');
-            },
-            success: function(response) {
-                clearTimeout(loadingTimeout);
-                console.log('AJAX response received:', response);
-                
-                if (response.success) {
-                    // Set success state
-                    $submitButton.removeClass('loading')
-                        .addClass('success')
-                        .val('Saved!');
-                    
-                    // Show success message
-                    showNotification(response.data.message || 'Generator saved successfully.', 'success');
-                    
-                    // Update generator ID if this was a new generator
-                    if (!$generatorId.val() && response.data.generator_id) {
-                        $generatorId.val(response.data.generator_id);
-                    }
-                    
-                    // Reset button after 2 seconds with updated text
-                    setTimeout(function() {
-                        $submitButton.removeClass('success')
-                            .prop('disabled', false);
-                        
-                        // Update button text based on whether we have an ID
-                        if ($generatorId.val()) {
-                            $submitButton.val('Save Generator');
-                        } else {
-                            $submitButton.val('Add Generator');
-                        }
-                    }, 2000);
-                    
-                    // Update page URL if it's a new generator
-                    if (response.data.redirect_url && !window.location.href.includes('action=edit')) {
-                        window.history.pushState({}, '', response.data.redirect_url);
-                    }
-                } else {
-                    // Reset button on error
-                    $submitButton.removeClass('loading')
-                        .val(originalButtonText)
-                        .prop('disabled', false);
-                    
-                    showNotification(response.data.message || (gfwcgAdmin.errorText || 'An error occurred. Please try again.'), 'error');
-                }
-            },
-            error: function(xhr, status, error) {
-                clearTimeout(loadingTimeout);
-                console.error('AJAX Error:', error);
-                console.error('Status:', status);
-                console.error('Response:', xhr.responseText);
-                
-                // Reset button on error
-                $submitButton.removeClass('loading')
-                    .val(originalButtonText)
-                    .prop('disabled', false);
-                
-                showNotification(gfwcgAdmin.errorText || 'An error occurred. Please try again.', 'error');
-            },
-            complete: function() {
-                clearTimeout(loadingTimeout);
-                console.log('AJAX request completed');
-                $form.removeClass('loading');
-            }
-        });
-    });
+		$.ajax({
+			url: gfwcgAdmin.ajaxUrl,
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			timeout: 30000, // 30 second timeout
+			beforeSend: function() {
+				$form.addClass('loading');
+				console.log('AJAX request started');
+			},
+			success: function(response) {
+				clearTimeout(loadingTimeout);
+				console.log('AJAX response received:', response);
+				
+				if (response.success) {
+					// Set success state
+					$submitButton.removeClass('loading')
+						.addClass('success')
+						.val('Saved!');
+					
+					// Show success message
+					showNotification(response.data.message || 'Generator saved successfully.', 'success');
+					
+					// Update generator ID if this was a new generator
+					if (!$generatorId.val() && response.data.generator_id) {
+						$generatorId.val(response.data.generator_id);
+					}
+					
+					// Reset button after 2 seconds with updated text
+					setTimeout(function() {
+						$submitButton.removeClass('success')
+							.prop('disabled', false);
+						
+						// Update button text based on whether we have an ID
+						if ($generatorId.val()) {
+							$submitButton.val('Save Generator');
+						} else {
+							$submitButton.val('Add Generator');
+						}
+					}, 2000);
+					
+					// Update page URL if it's a new generator
+					if (response.data.redirect_url && !window.location.href.includes('action=edit')) {
+						window.history.pushState({}, '', response.data.redirect_url);
+					}
+				} else {
+					// Reset button on error
+					$submitButton.removeClass('loading')
+						.val(originalButtonText)
+						.prop('disabled', false);
+					
+					showNotification(response.data.message || (gfwcgAdmin.errorText || 'An error occurred. Please try again.'), 'error');
+				}
+			},
+			error: function(xhr, status, error) {
+				clearTimeout(loadingTimeout);
+				console.error('AJAX Error:', error);
+				console.error('Status:', status);
+				console.error('Response:', xhr.responseText);
+				
+				// Reset button on error
+				$submitButton.removeClass('loading')
+					.val(originalButtonText)
+					.prop('disabled', false);
+				
+				showNotification(gfwcgAdmin.errorText || 'An error occurred. Please try again.', 'error');
+			},
+			complete: function() {
+				clearTimeout(loadingTimeout);
+				console.log('AJAX request completed');
+				$form.removeClass('loading');
+			}
+		});
+	});
 
-    // Notification function
-    function showNotification(message, type) {
-        // Remove existing notifications
-        $('.gfwcg-notification').remove();
-        
-        var $notification = $('<div class="gfwcg-notification gfwcg-notification-' + type + '">' + message + '</div>');
-        $('body').append($notification);
-        
-        // Auto remove after 5 seconds
-        setTimeout(function() {
-            $notification.fadeOut(function() {
-                $(this).remove();
-            });
-        }, 5000);
-    }
+	// Notification function
+	function showNotification(message, type) {
+		// Remove existing notifications
+		$('.gfwcg-notification').remove();
+		
+		var $notification = $('<div class="gfwcg-notification gfwcg-notification-' + type + '">' + message + '</div>');
+		$('body').append($notification);
+		
+		// Auto remove after 5 seconds
+		setTimeout(function() {
+			$notification.fadeOut(function() {
+				$(this).remove();
+			});
+		}, 5000);
+	}
 
-    // Handle delete generator button
-    const deleteButtons = document.querySelectorAll('.delete-generator');
-    deleteButtons.forEach(button => {
-        let isConfirming = false;
-        const originalText = button.textContent;
-        const confirmText = button.dataset.confirmText;
-        const deleteText = button.dataset.deleteText;
+	// Handle delete generator button
+	const deleteButtons = document.querySelectorAll('.delete-generator');
+	deleteButtons.forEach(button => {
+		let isConfirming = false;
+		const originalText = button.textContent;
+		const confirmText = button.dataset.confirmText;
+		const deleteText = button.dataset.deleteText;
 
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            if (!isConfirming) {
-                // First click - show confirmation
-                isConfirming = true;
-                button.textContent = confirmText || 'Click again to confirm';
-                button.classList.add('confirming');
-                
-                // Reset after 3 seconds
-                setTimeout(() => {
-                    isConfirming = false;
-                    button.textContent = originalText;
-                    button.classList.remove('confirming');
-                }, 3000);
-            } else {
-                // Second click - proceed with deletion
-                const generatorId = button.dataset.id;
-                
-                if (!generatorId) {
-                    alert('Missing required data for deletion.');
-                    return;
-                }
-                
-                // Show loading state
-                button.textContent = deleteText || 'Deleting...';
-                button.disabled = true;
-                
-                // Send delete request
-                $.ajax({
-                    url: gfwcgAdmin.ajaxUrl,
-                    type: 'POST',
-                    data: {
-                        action: 'gfwcg_delete_generator',
-                        id: generatorId,
-                        nonce: gfwcgAdmin.nonce
-                    },
-                                    success: function(response) {
-                    if (response.success) {
-                        // Remove the generator element from the page
-                        const generatorElement = button.closest('.gfwcg-grid-item, tr');
-                        if (generatorElement) {
-                            generatorElement.remove();
-                        }
-                        
-                        // Show success message
-                        showNotification(response.data.message || 'Generator deleted successfully.', 'success');
-                        
-                        // Reload page if no generators left
-                        const remainingGenerators = document.querySelectorAll('.gfwcg-grid-item, .gfwcg-list-item');
-                        if (remainingGenerators.length === 0) {
-                            window.location.reload();
-                        }
-                    } else {
-                        showNotification(response.data.message || 'Error deleting generator.', 'error');
-                        button.disabled = false;
-                        button.textContent = originalText;
-                    }
-                },
-                error: function() {
-                    showNotification('Error deleting generator.', 'error');
-                    button.disabled = false;
-                    button.textContent = originalText;
-                }
-                });
-            }
-        });
-    });
+		button.addEventListener('click', function(e) {
+			e.preventDefault();
+			
+			if (!isConfirming) {
+				// First click - show confirmation
+				isConfirming = true;
+				button.textContent = confirmText || 'Click again to confirm';
+				button.classList.add('confirming');
+				
+				// Reset after 3 seconds
+				setTimeout(() => {
+					isConfirming = false;
+					button.textContent = originalText;
+					button.classList.remove('confirming');
+				}, 3000);
+			} else {
+				// Second click - proceed with deletion
+				const generatorId = button.dataset.id;
+				
+				if (!generatorId) {
+					alert('Missing required data for deletion.');
+					return;
+				}
+				
+				// Show loading state
+				button.textContent = deleteText || 'Deleting...';
+				button.disabled = true;
+				
+				// Send delete request
+				$.ajax({
+					url: gfwcgAdmin.ajaxUrl,
+					type: 'POST',
+					data: {
+						action: 'gfwcg_delete_generator',
+						id: generatorId,
+						nonce: gfwcgAdmin.nonce
+					},
+									success: function(response) {
+					if (response.success) {
+						// Remove the generator element from the page
+						const generatorElement = button.closest('.gfwcg-grid-item, tr');
+						if (generatorElement) {
+							generatorElement.remove();
+						}
+						
+						// Show success message
+						showNotification(response.data.message || 'Generator deleted successfully.', 'success');
+						
+						// Reload page if no generators left
+						const remainingGenerators = document.querySelectorAll('.gfwcg-grid-item, .gfwcg-list-item');
+						if (remainingGenerators.length === 0) {
+							window.location.reload();
+						}
+					} else {
+						showNotification(response.data.message || 'Error deleting generator.', 'error');
+						button.disabled = false;
+						button.textContent = originalText;
+					}
+				},
+				error: function() {
+					showNotification('Error deleting generator.', 'error');
+					button.disabled = false;
+					button.textContent = originalText;
+				}
+				});
+			}
+		});
+	});
 
-    // Handle coupon type toggle
-    $('#coupon_type').on('change', function() {
-        var couponType = $(this).val();
-        var $couponFieldRow = $('#coupon_field_id_row');
-        var $couponField = $('#coupon_field_id');
-        
-        if (couponType === 'field') {
-            $couponFieldRow.show();
-            $couponField.prop('required', true);
-        } else {
-            $couponFieldRow.hide();
-            $couponField.prop('required', false);
-        }
-    });
+	// Handle coupon type toggle
+	$('#coupon_type').on('change', function() {
+		var couponType = $(this).val();
+		var $couponFieldRow = $('#coupon_field_id_row');
+		var $couponField = $('#coupon_field_id');
+		
+		if (couponType === 'field') {
+			$couponFieldRow.show();
+			$couponField.prop('required', true);
+		} else {
+			$couponFieldRow.hide();
+			$couponField.prop('required', false);
+		}
+	});
 
-    // Initialize coupon type toggle on page load
-    $('#coupon_type').trigger('change');
+	// Initialize coupon type toggle on page load
+	$('#coupon_type').trigger('change');
 }); 
 
 /**
@@ -531,4 +531,4 @@ function getValidationMessages(generatorId) {
 		email: 'Please enter a valid email address.',
 		duplicate: 'This email address has already been used.'
 	};
-} 
+}

@@ -324,4 +324,4 @@ class GFWCG_Email extends WC_Email {
 			__('Happy shopping!', 'gravity-forms-woocommerce-coupon-generator')
 		);
 	}
-} 
+}

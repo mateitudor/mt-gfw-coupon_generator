@@ -94,4 +94,4 @@ if (!defined('ABSPATH')) {
 			<?php _e('Logs will be written to:', 'gravity-forms-woocommerce-coupon-generator'); ?> <code>/wp-content/debug.log</code>
 		</p>
 	</div>
-</div> 
+</div>

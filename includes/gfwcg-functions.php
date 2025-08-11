@@ -22,4 +22,4 @@ function gfwcg_debug_log($message) {
 	if (gfwcg_is_debug_enabled()) {
 		error_log('GFWCG: ' . $message);
 	}
-} 
+}

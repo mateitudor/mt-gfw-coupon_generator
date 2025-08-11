@@ -20,7 +20,7 @@
  */
 
 if (!defined('ABSPATH')) {
-    exit;
+	exit;
 }
 
 // Define plugin constants
@@ -237,32 +237,32 @@ function gfwcg_get_categories_from_ids($serialized_category_ids) {
  * @return string The current view (list, grid, or edit)
  */
 function gfwcg_get_current_view() {
-    $view = isset($_GET['view']) ? sanitize_text_field($_GET['view']) : 'list';
-    return in_array($view, array('list', 'grid', 'edit')) ? $view : 'list';
+	$view = isset($_GET['view']) ? sanitize_text_field($_GET['view']) : 'list';
+	return in_array($view, array('list', 'grid', 'edit')) ? $view : 'list';
 }
 
 // Check if Gravity Forms and WooCommerce are active
 function gfwcg_check_dependencies() {
-    if (!class_exists('GFForms') || !class_exists('WooCommerce')) {
-        add_action('admin_notices', 'gfwcg_missing_dependencies_notice');
-        return false;
-    }
-    return true;
+	if (!class_exists('GFForms') || !class_exists('WooCommerce')) {
+		add_action('admin_notices', 'gfwcg_missing_dependencies_notice');
+		return false;
+	}
+	return true;
 }
 
 function gfwcg_missing_dependencies_notice() {
-    ?>
-    <div class="error">
-        <p><?php _e('Generator Cod de Reducere Gravity Forms WooCommerce necesită atât Gravity Forms cât și WooCommerce să fie instalate și activate.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
-    </div>
-    <?php
+	?>
+	<div class="error">
+		<p><?php _e('Generator Cod de Reducere Gravity Forms WooCommerce necesită atât Gravity Forms cât și WooCommerce să fie instalate și activate.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+	</div>
+	<?php
 }
 
 // Declare HPOS compatibility
 add_action('before_woocommerce_init', function() {
-    if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
-    }
+	if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+	}
 });
 
 // Initialize the plugin
@@ -315,40 +315,40 @@ add_action('plugins_loaded', 'gfwcg_init');
 // Deactivation hook
 register_deactivation_hook(__FILE__, 'gfwcg_deactivate');
 function gfwcg_deactivate() {
-    // Clean up any temporary data if needed
-    // Note: We don't delete tables on deactivation to preserve data
+	// Clean up any temporary data if needed
+	// Note: We don't delete tables on deactivation to preserve data
 }
 
 // Activation hook
 register_activation_hook(__FILE__, 'gfwcg_activate');
 function gfwcg_activate() {
-    if (!gfwcg_check_dependencies()) {
-        deactivate_plugins(plugin_basename(__FILE__));
-        wp_die(__('Generator Cod de Reducere Gravity Forms WooCommerce necesită atât Gravity Forms cât și WooCommerce să fie instalate și activate.', 'gravity-forms-woocommerce-coupon-generator'));
-    }
+	if (!gfwcg_check_dependencies()) {
+		deactivate_plugins(plugin_basename(__FILE__));
+		wp_die(__('Generator Cod de Reducere Gravity Forms WooCommerce necesită atât Gravity Forms cât și WooCommerce să fie instalate și activate.', 'gravity-forms-woocommerce-coupon-generator'));
+	}
 
-    // Ensure WordPress upgrade functions are loaded
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    
-    // Create database tables
-    global $gfwcg_autoloader;
-    if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_class')) {
-        $gfwcg_autoloader->load_class('GFWCG_DB');
-        if (class_exists('GFWCG_DB')) {
-            GFWCG_DB::create_tables();
-        }
-    }
+	// Ensure WordPress upgrade functions are loaded
+	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+	
+	// Create database tables
+	global $gfwcg_autoloader;
+	if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_class')) {
+		$gfwcg_autoloader->load_class('GFWCG_DB');
+		if (class_exists('GFWCG_DB')) {
+			GFWCG_DB::create_tables();
+		}
+	}
 }
 
 // Register the custom email class
 add_filter('woocommerce_email_classes', 'register_gfwcg_email_class');
 function register_gfwcg_email_class($email_classes) {
-    // Load our custom email class using autoloader
-    global $gfwcg_autoloader;
-    if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_email_class') && $gfwcg_autoloader->load_email_class()) {
-        $email_classes['GFWCG_Email'] = new GFWCG_Email();
-    }
-    return $email_classes;
+	// Load our custom email class using autoloader
+	global $gfwcg_autoloader;
+	if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_email_class') && $gfwcg_autoloader->load_email_class()) {
+		$email_classes['GFWCG_Email'] = new GFWCG_Email();
+	}
+	return $email_classes;
 }
 
 
@@ -357,14 +357,14 @@ function register_gfwcg_email_class($email_classes) {
  * Register REST API endpoints for blocks
  */
 function gfwcg_register_rest_api() {
-    register_rest_route('gfwcg/v1', '/generators', array(
-        'methods' => 'GET',
-        'callback' => 'gfwcg_get_generators_rest',
-        'permission_callback' => function () {
-            // Allow authenticated users; make public only if explicitly opted in later
-            return is_user_logged_in() && current_user_can('read');
-        }
-    ));
+	register_rest_route('gfwcg/v1', '/generators', array(
+		'methods' => 'GET',
+		'callback' => 'gfwcg_get_generators_rest',
+		'permission_callback' => function () {
+			// Allow authenticated users; make public only if explicitly opted in later
+			return is_user_logged_in() && current_user_can('read');
+		}
+	));
 }
 
 add_action('rest_api_init', 'gfwcg_register_rest_api');
@@ -373,33 +373,33 @@ add_action('rest_api_init', 'gfwcg_register_rest_api');
  * Add CORS headers for admin-ajax.php
  */
 // Removed broad CORS overrides to avoid security risks; rely on WP defaults
-    
+	
 
 
 /**
  * REST API callback to get generators
  */
 function gfwcg_get_generators_rest($request) {
-    try {
-        if (!class_exists('GFWCG_DB')) {
-            return rest_ensure_response(array());
-        }
-        
-        $db = new GFWCG_DB();
-        $generators = $db->get_generators();
-        
-        $formatted_generators = array();
-        foreach ($generators as $generator) {
-            $formatted_generators[] = array(
-                'id' => $generator->id,
-                'title' => array('rendered' => $generator->title),
-                'slug' => $generator->slug,
-                'status' => $generator->status
-            );
-        }
-        
-        return rest_ensure_response($formatted_generators);
-    } catch (Exception $e) {
-        return rest_ensure_response(array());
-    }
-} 
+	try {
+		if (!class_exists('GFWCG_DB')) {
+			return rest_ensure_response(array());
+		}
+		
+		$db = new GFWCG_DB();
+		$generators = $db->get_generators();
+		
+		$formatted_generators = array();
+		foreach ($generators as $generator) {
+			$formatted_generators[] = array(
+				'id' => $generator->id,
+				'title' => array('rendered' => $generator->title),
+				'slug' => $generator->slug,
+				'status' => $generator->status
+			);
+		}
+		
+		return rest_ensure_response($formatted_generators);
+	} catch (Exception $e) {
+		return rest_ensure_response(array());
+	}
+}

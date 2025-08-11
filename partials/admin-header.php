@@ -6,7 +6,7 @@
  */
 
 if (!defined('ABSPATH')) {
-    exit;
+	exit;
 }
 
 // View switcher functions are available through autoloader
@@ -32,4 +32,4 @@ function gfwcg_display_admin_header($title, $current_view = 'list', $add_new_url
 		<?php gfwcg_display_view_switcher($current_view); ?>
 	</div>
 	<?php
-} 
+}

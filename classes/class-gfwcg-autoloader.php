@@ -352,4 +352,4 @@ function gfwcg_load_files($files, $type = 'custom') {
 function gfwcg_load_email_class() {
 	global $gfwcg_autoloader;
 	return $gfwcg_autoloader->load_email_class();
-} 
+}

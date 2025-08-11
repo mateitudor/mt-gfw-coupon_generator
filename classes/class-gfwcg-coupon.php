@@ -6,7 +6,7 @@ class GFWCG_Coupon {
 						// Get the form and field to understand its structure
 						$form = GFAPI::get_form($entry['form_id']);
 						$field = GFAPI::get_field($form, $generator->coupon_field_id);
-						
+
 						// Get the field value from the entry
 						$field_value = '';
 						if ($field && isset($field->inputs)) {
@@ -23,13 +23,13 @@ class GFWCG_Coupon {
 								// For simple fields, just get the value directly
 								$field_value = rgar($entry, (string)$generator->coupon_field_id);
 						}
-						
+
 						gfwcg_debug_log('Processing field-based coupon generation');
 						gfwcg_debug_log('Target field ID: ' . (string)$generator->coupon_field_id);
 						gfwcg_debug_log('Field type: ' . ($field ? $field->type : 'unknown'));
 						gfwcg_debug_log('Form entry data: ' . print_r($entry, true));
 						gfwcg_debug_log('Extracted field value: ' . $field_value);
-						
+
 						if ($field_value) {
 								gfwcg_debug_log('Using field value for coupon code generation: ' . $field_value);
 								// Remove spaces from the field value
@@ -52,7 +52,7 @@ class GFWCG_Coupon {
 
 				$random = strtolower(wp_generate_password($length, false));
 				$code = $prefix . $separator . $random . $separator . $suffix;
-				
+
 				gfwcg_debug_log('Random coupon code generated successfully: ' . $code);
 				return $code;
 		}
@@ -60,7 +60,7 @@ class GFWCG_Coupon {
 		public function create_woocommerce_coupon($code, $generator) {
 				$coupon = new WC_Coupon();
 				$coupon->set_code(strtolower($code));
-				
+
 				$discount_type = $generator->discount_type;
 				if ($discount_type === 'percentage') {
 						$discount_type = 'percent';
@@ -69,7 +69,7 @@ class GFWCG_Coupon {
 				} else {
 						$discount_type = 'fixed_cart';
 				}
-				
+
 				$coupon->set_discount_type($discount_type);
 				$coupon->set_amount($generator->discount_amount);
 				$coupon->set_individual_use($generator->individual_use);
@@ -78,17 +78,17 @@ class GFWCG_Coupon {
 				$coupon->set_minimum_amount($generator->minimum_amount);
 				$coupon->set_maximum_amount($generator->maximum_amount);
 				$coupon->set_exclude_sale_items($generator->exclude_sale_items);
-				
+
 				// Set coupon description if provided
 				if (!empty($generator->description)) {
 						$coupon->set_description($generator->description);
 				}
-				
+
 				if ($generator->expiry_days) {
 						$expiry_date = date('Y-m-d', strtotime('+' . $generator->expiry_days . ' days'));
 						$coupon->set_date_expires($expiry_date);
 				}
-				
+
 				if ($generator->allow_free_shipping) {
 						$coupon->set_free_shipping(true);
 				}
@@ -124,7 +124,7 @@ class GFWCG_Coupon {
 						$coupon->set_excluded_product_categories($exclude_categories);
 					}
 				}
-				
+
 				return $coupon->save();
 		}
-} 
+}

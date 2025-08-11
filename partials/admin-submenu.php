@@ -7,7 +7,7 @@
  */
 
 if (!defined('ABSPATH')) {
-    exit;
+	exit;
 }
 
 /**
@@ -17,25 +17,25 @@ if (!defined('ABSPATH')) {
  * @param callable $callback The callback function for the pages
  */
 function gfwcg_register_admin_submenu($main_slug, $callback) {
-    // List page
-    add_submenu_page(
-        $main_slug,
-        __('Generators', 'gravity-forms-woocommerce-coupon-generator'),
-        __('Generators', 'gravity-forms-woocommerce-coupon-generator'),
-        'manage_options',
-        $main_slug,
-        $callback
-    );
+	// List page
+	add_submenu_page(
+		$main_slug,
+		__('Generators', 'gravity-forms-woocommerce-coupon-generator'),
+		__('Generators', 'gravity-forms-woocommerce-coupon-generator'),
+		'manage_options',
+		$main_slug,
+		$callback
+	);
 
-    // Add New page
-    add_submenu_page(
-        $main_slug,
-        __('Add New Generator', 'gravity-forms-woocommerce-coupon-generator'),
-        __('Add New', 'gravity-forms-woocommerce-coupon-generator'),
-        'manage_options',
-        'gfwcg-add-generator',
-        $callback
-    );
+	// Add New page
+	add_submenu_page(
+		$main_slug,
+		__('Add New Generator', 'gravity-forms-woocommerce-coupon-generator'),
+		__('Add New', 'gravity-forms-woocommerce-coupon-generator'),
+		'manage_options',
+		'gfwcg-add-generator',
+		$callback
+	);
 }
 
 /**
@@ -44,11 +44,11 @@ function gfwcg_register_admin_submenu($main_slug, $callback) {
  * @param string $action The current action
  */
 function gfwcg_set_current_submenu($action) {
-    global $plugin_page;
-    
-    if ($action === 'add') {
-        $plugin_page = 'gfwcg-add-generator';
-    } else {
-        $plugin_page = 'gfwcg-generators';
-    }
+	global $plugin_page;
+	
+	if ($action === 'add') {
+		$plugin_page = 'gfwcg-add-generator';
+	} else {
+		$plugin_page = 'gfwcg-generators';
+	}
 }

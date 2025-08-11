@@ -1,0 +1,19 @@
+# EditorConfig is awesome: https://editorconfig.org
+# Source of truth for formatting in this plugin
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = tab
+max_line_length = 120
+
+[*.md]
+# Allow trailing spaces in Markdown for soft line breaks
+trim_trailing_whitespace = false
+
+

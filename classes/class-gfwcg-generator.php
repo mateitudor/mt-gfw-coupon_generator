@@ -243,4 +243,4 @@ class GFWCG_Generator {
 		
 		return $generator;
 	}
-} 
+}

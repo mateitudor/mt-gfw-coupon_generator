@@ -295,18 +295,18 @@ The plugin extends Gravity Forms shortcodes with additional parameters to enable
 ### Shortcode Processing Flow
 
 ```
-[gravityform id="1" gen="2"] 
-    ↓
+[gravityform id="1" gen="2"]
+	↓
 Form Displayed with Generator ID Hidden Field
-    ↓
+	↓
 User Submits Form
-    ↓
+	↓
 Plugin Processes Submission
-    ↓
+	↓
 Cod de Reducere Generat
-    ↓
+	↓
 WooCommerce Cod de Reducere Creat
-    ↓
+	↓
 Email Sent (if enabled)
 ```
 
@@ -315,9 +315,9 @@ Email Sent (if enabled)
 #### Conditional Display
 ```php
 <?php if (is_user_logged_in()): ?>
-    [gravityform id="1" gen="2" title="false"]
+	[gravityform id="1" gen="2" title="false"]
 <?php else: ?>
-    [gravityform id="3" gen="4" title="false"]
+	[gravityform id="3" gen="4" title="false"]
 <?php endif; ?>
 ```
 
@@ -395,7 +395,7 @@ Debug information will be logged to `/wp-content/debug.log`.
 - **Name Field**: (Optional) Choose a field for the customer's name
 
 #### Cod de Reducere Settings
-- **Tip Cod de Reducere**: 
+- **Tip Cod de Reducere**:
   - `random` - Generează coduri de reducere aleatorii
   - `field` - Folosește o valoare din câmpul formularului ca cod de reducere
 - **Câmp Cod de Reducere**: (Necesar dacă tipul este 'field') Selectează câmpul formularului
@@ -405,7 +405,7 @@ Debug information will be logged to `/wp-content/debug.log`.
 - **Lungime**: Numărul de caractere pentru codurile aleatorii (implicit: 8)
 
 #### Discount Settings
-- **Discount Type**: 
+- **Discount Type**:
   - `percentage` - Percentage discount
   - `fixed_cart` - Fixed amount discount
 - **Discount Amount**: The discount value
@@ -506,6 +506,6 @@ For support and documentation:
 
 ---
 
-**Version**: 1.0.2  
-**Last Updated**: December 2024  
-**Compatibility**: WordPress 6.8.2+, WooCommerce 10.0+, Gravity Forms 
+**Version**: 1.0.2
+**Last Updated**: December 2024
+**Compatibility**: WordPress 6.8.2+, WooCommerce 10.0+, Gravity Forms
