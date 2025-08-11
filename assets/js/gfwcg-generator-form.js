@@ -13,22 +13,22 @@ function destroyGFWCGSelect(selector) {
 
 jQuery(document).ready(function($) {
 	console.log('GFWCG Generator Form: Document ready');
-	
+
 	// Initialize button text based on generator ID
 	function initializeButtonText() {
 		var $submitButton = $('.gfwcg-generator-form input[type="submit"]');
 		var $generatorId = $('.gfwcg-generator-form input[name="id"]');
-		
+
 		if ($generatorId.val()) {
 			$submitButton.val('Save Generator');
 		} else {
 			$submitButton.val('Add Generator');
 		}
 	}
-	
+
 	// Initialize button text on page load
 	initializeButtonText();
-	
+
 	// Small delay to ensure everything is loaded
 	setTimeout(function() {
 		// Wait for GFWCGSelect to be available
@@ -36,9 +36,9 @@ jQuery(document).ready(function($) {
 			console.error('GFWCGSelect not loaded');
 			return;
 		}
-		
+
 		console.log('GFWCG Generator Form: GFWCGSelect is available');
-		
+
 		// Debug: Check if select elements exist
 		console.log('GFWCG Generator Form: Checking for select elements...');
 		const formSelects = document.querySelectorAll('#form_id, #email_field_id, #name_field_id, #coupon_field_id');
@@ -219,7 +219,7 @@ jQuery(document).ready(function($) {
 	// Handle form submission
 	$('.gfwcg-generator-form').on('submit', function(e) {
 		e.preventDefault();
-		
+
 		var $form = $(this);
 		var $submitButton = $form.find('input[type="submit"]');
 		var $generatorId = $form.find('input[name="id"]');
@@ -234,7 +234,7 @@ jQuery(document).ready(function($) {
 		// Validate required fields
 		var $formId = $('#form_id');
 		var $emailField = $('#email_field_id');
-		
+
 		if (!$formId.val() || !$emailField.val()) {
 			alert(gfwcgAdmin.requiredFieldsText || 'Please fill in all required fields.');
 			return false;
@@ -281,26 +281,26 @@ jQuery(document).ready(function($) {
 			success: function(response) {
 				clearTimeout(loadingTimeout);
 				console.log('AJAX response received:', response);
-				
+
 				if (response.success) {
 					// Set success state
 					$submitButton.removeClass('loading')
 						.addClass('success')
 						.val('Saved!');
-					
+
 					// Show success message
 					showNotification(response.data.message || 'Generator saved successfully.', 'success');
-					
+
 					// Update generator ID if this was a new generator
 					if (!$generatorId.val() && response.data.generator_id) {
 						$generatorId.val(response.data.generator_id);
 					}
-					
+
 					// Reset button after 2 seconds with updated text
 					setTimeout(function() {
 						$submitButton.removeClass('success')
 							.prop('disabled', false);
-						
+
 						// Update button text based on whether we have an ID
 						if ($generatorId.val()) {
 							$submitButton.val('Save Generator');
@@ -308,7 +308,7 @@ jQuery(document).ready(function($) {
 							$submitButton.val('Add Generator');
 						}
 					}, 2000);
-					
+
 					// Update page URL if it's a new generator
 					if (response.data.redirect_url && !window.location.href.includes('action=edit')) {
 						window.history.pushState({}, '', response.data.redirect_url);
@@ -318,7 +318,7 @@ jQuery(document).ready(function($) {
 					$submitButton.removeClass('loading')
 						.val(originalButtonText)
 						.prop('disabled', false);
-					
+
 					showNotification(response.data.message || (gfwcgAdmin.errorText || 'An error occurred. Please try again.'), 'error');
 				}
 			},
@@ -327,12 +327,12 @@ jQuery(document).ready(function($) {
 				console.error('AJAX Error:', error);
 				console.error('Status:', status);
 				console.error('Response:', xhr.responseText);
-				
+
 				// Reset button on error
 				$submitButton.removeClass('loading')
 					.val(originalButtonText)
 					.prop('disabled', false);
-				
+
 				showNotification(gfwcgAdmin.errorText || 'An error occurred. Please try again.', 'error');
 			},
 			complete: function() {
@@ -347,10 +347,10 @@ jQuery(document).ready(function($) {
 	function showNotification(message, type) {
 		// Remove existing notifications
 		$('.gfwcg-notification').remove();
-		
+
 		var $notification = $('<div class="gfwcg-notification gfwcg-notification-' + type + '">' + message + '</div>');
 		$('body').append($notification);
-		
+
 		// Auto remove after 5 seconds
 		setTimeout(function() {
 			$notification.fadeOut(function() {
@@ -369,13 +369,13 @@ jQuery(document).ready(function($) {
 
 		button.addEventListener('click', function(e) {
 			e.preventDefault();
-			
+
 			if (!isConfirming) {
 				// First click - show confirmation
 				isConfirming = true;
 				button.textContent = confirmText || 'Click again to confirm';
 				button.classList.add('confirming');
-				
+
 				// Reset after 3 seconds
 				setTimeout(() => {
 					isConfirming = false;
@@ -385,16 +385,16 @@ jQuery(document).ready(function($) {
 			} else {
 				// Second click - proceed with deletion
 				const generatorId = button.dataset.id;
-				
+
 				if (!generatorId) {
 					alert('Missing required data for deletion.');
 					return;
 				}
-				
+
 				// Show loading state
 				button.textContent = deleteText || 'Deleting...';
 				button.disabled = true;
-				
+
 				// Send delete request
 				$.ajax({
 					url: gfwcgAdmin.ajaxUrl,
@@ -411,10 +411,10 @@ jQuery(document).ready(function($) {
 						if (generatorElement) {
 							generatorElement.remove();
 						}
-						
+
 						// Show success message
 						showNotification(response.data.message || 'Generator deleted successfully.', 'success');
-						
+
 						// Reload page if no generators left
 						const remainingGenerators = document.querySelectorAll('.gfwcg-grid-item, .gfwcg-list-item');
 						if (remainingGenerators.length === 0) {
@@ -443,7 +443,7 @@ jQuery(document).ready(function($) {
 		var $couponField = $('#coupon_field_id');
 		var $couponLengthRow = $('#coupon_length_row');
 		var $couponLength = $('#coupon_length');
-		
+
 		if (couponType === 'field') {
 			$couponFieldRow.show();
 			$couponField.prop('required', true);
@@ -465,7 +465,7 @@ jQuery(document).ready(function($) {
 
 	// Initialize coupon type toggle on page load
 	$('#coupon_type').trigger('change');
-}); 
+});
 
 /**
  * Override Gravity Forms validation messages
@@ -492,7 +492,7 @@ function overrideGravityFormsValidationMessages() {
 			}
 
 			// Check for duplicate/unique validation
-			if (message.indexOf('unique entry') !== -1 || 
+			if (message.indexOf('unique entry') !== -1 ||
 				message.indexOf('already been used') !== -1 ||
 				message.indexOf('already used') !== -1) {
 				if (validationMessages.duplicate) {
@@ -508,7 +508,7 @@ function overrideGravityFormsValidationMessages() {
 			}
 
 			// Check for email validation
-			if (message.indexOf('valid email') !== -1 || 
+			if (message.indexOf('valid email') !== -1 ||
 				message.indexOf('email address') !== -1) {
 				if (validationMessages.email) {
 					return validationMessages.email;

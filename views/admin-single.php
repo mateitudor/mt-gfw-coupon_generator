@@ -229,8 +229,8 @@ function gfwcg_display_generator_form($generator = null) {
 							<label for="coupon_length"><?php _e('Coupon Length', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
 						</th>
 						<td>
-							<input type="number" name="coupon_length" id="coupon_length" 
-								   value="<?php echo $generator ? esc_attr($generator->coupon_length) : '8'; ?>" 
+							<input type="number" name="coupon_length" id="coupon_length"
+								   value="<?php echo $generator ? esc_attr($generator->coupon_length) : '8'; ?>"
 								   min="4" max="32" required>
 						</td>
 					</tr>

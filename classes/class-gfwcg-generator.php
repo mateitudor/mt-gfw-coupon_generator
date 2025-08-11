@@ -190,10 +190,11 @@ class GFWCG_Generator {
 		// Get generator for this form
 		$generator = $this->get_generator_by_form_id($form['id']);
 		if (!$generator || empty($generator->validation_error_header)) {
-			return $header;
+			return ''; // Return empty string to remove the header element entirely
 		}
 
-		return $generator->validation_error_header;
+		// Return the header wrapped in an h3 element for semantic HTML
+		return '<h3>' . esc_html($generator->validation_error_header) . '</h3>';
 	}
 
 	private function get_generator_by_form_id($form_id) {
