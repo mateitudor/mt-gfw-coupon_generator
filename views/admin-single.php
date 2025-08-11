@@ -201,7 +201,11 @@ function gfwcg_display_generator_form($generator = null) {
 								<option value="field" <?php selected($generator ? $generator->coupon_type : '', 'field'); ?>>
 									<?php _e('From Form Field', 'gravity-forms-woocommerce-coupon-generator'); ?>
 								</option>
+								<option value="email" <?php selected($generator ? $generator->coupon_type : '', 'email'); ?>>
+									<?php _e('From Email Address', 'gravity-forms-woocommerce-coupon-generator'); ?>
+								</option>
 							</select>
+							<p class="description"><?php _e('Email option will use the email address as the coupon code, formatting as prefix-username-domain-suffix.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
 						</td>
 					</tr>
 					<tr id="coupon_field_id_row" style="display: <?php echo ($generator && $generator->coupon_type === 'field') ? 'table-row' : 'none'; ?>;">

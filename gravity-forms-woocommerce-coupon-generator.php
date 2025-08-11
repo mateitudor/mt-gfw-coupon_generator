@@ -3,7 +3,7 @@
  * Plugin Name: Coupon Generator for Gravity Forms & WooCommerce
  * Plugin URI: https://mateitudor.com
  * Description: Generate WooCommerce coupon codes from Gravity Forms submissions
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Matei Tudor
  * Author URI: https://mateitudor.com
  * Text Domain: gravity-forms-woocommerce-coupon-generator
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('GFWCG_VERSION', '1.0.2');
+define('GFWCG_VERSION', '1.0.3');
 define('GFWCG_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GFWCG_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('GFWCG_PLUGIN_BASENAME', plugin_basename(__FILE__));

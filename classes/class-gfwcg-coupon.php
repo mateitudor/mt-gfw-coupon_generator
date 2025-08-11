@@ -41,6 +41,45 @@ class GFWCG_Coupon {
 								return $prefix . $separator . $field_value . $separator . $suffix;
 						}
 						gfwcg_debug_log('No valid field value found, falling back to random generation');
+				} elseif ($generator->coupon_type === 'email' && $entry) {
+						// Get the email address from the specified email field
+						$email_value = rgar($entry, (string)$generator->email_field_id);
+
+						gfwcg_debug_log('Processing email-based coupon generation');
+						gfwcg_debug_log('Email field ID: ' . (string)$generator->email_field_id);
+						gfwcg_debug_log('Email value: ' . $email_value);
+
+						if ($email_value) {
+								gfwcg_debug_log('Using email value for coupon code generation: ' . $email_value);
+								// Remove spaces from the email value
+								$email_value = str_replace(' ', '', $email_value);
+
+								// Split email into parts: username@domain.extension
+								$email_parts = explode('@', $email_value);
+								if (count($email_parts) === 2) {
+										$username = $email_parts[0];
+										$domain_with_extension = $email_parts[1];
+
+										// Remove domain extension (everything after the first dot)
+										$domain_parts = explode('.', $domain_with_extension);
+										$domain = $domain_parts[0]; // Get just the domain name without extension
+
+										// Apply prefix and suffix with separator
+										$prefix = $generator->coupon_prefix ?: '';
+										$suffix = $generator->coupon_suffix ?: '';
+										$separator = $generator->coupon_separator ?: '-';
+
+										// Format: prefix-username-domain-suffix
+										$coupon_code = $prefix;
+										if ($prefix) $coupon_code .= $separator;
+										$coupon_code .= $username . $separator . $domain;
+										if ($suffix) $coupon_code .= $separator . $suffix;
+
+										gfwcg_debug_log('Generated email-based coupon code: ' . $coupon_code);
+										return $coupon_code;
+								}
+						}
+						gfwcg_debug_log('No valid email value found or invalid email format, falling back to random generation');
 				} else {
 						gfwcg_debug_log('Using random coupon code generation');
 				}

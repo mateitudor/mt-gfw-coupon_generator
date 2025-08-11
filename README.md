@@ -2,7 +2,7 @@
 
 A WordPress plugin that generates WooCommerce coupon codes from Gravity Forms submissions. Perfect for creating lead magnets, newsletter signups, and promotional campaigns.
 
-**Version: 1.0.2**
+**Version: 1.0.3**
 
 ## Table of Contents
 
@@ -398,11 +398,22 @@ Debug information will be logged to `/wp-content/debug.log`.
 - **Tip Cod de Reducere**:
   - `random` - Generează coduri de reducere aleatorii
   - `field` - Folosește o valoare din câmpul formularului ca cod de reducere
+  - `email` - Folosește adresa de email ca cod de reducere, formatând ca prefix-username-domain-suffix
 - **Câmp Cod de Reducere**: (Necesar dacă tipul este 'field') Selectează câmpul formularului
 - **Prefix**: Text de adăugat înaintea codului de reducere
 - **Sufix**: Text de adăugat după codul de reducere
-- **Separator**: Caracter pentru separarea prefixului/sufixului de cod
+- **Separator**: Caracter pentru separarea prefixului/sufixului de cod (pentru email, separă username-ul de domain)
 - **Lungime**: Numărul de caractere pentru codurile aleatorii (implicit: 8)
+
+**Email-based Coupon Generation:**
+When using the `email` coupon type, the plugin automatically:
+- Extracts the email address from the specified email field
+- Splits the email into username and domain parts
+- Removes the domain extension (e.g., .com, .org, .net)
+- Formats the coupon code as: `prefix-username-domain-suffix`
+- Example: Email `john.doe@example.com` with separator `-` becomes `john.doe-example`
+- Example: With prefix `WELCOME` and suffix `2024`, it becomes `WELCOME-john.doe-example-2024`
+- Example: Email `user@company.org` with separator `_` becomes `user_company`
 
 #### Discount Settings
 - **Discount Type**:
@@ -506,6 +517,6 @@ For support and documentation:
 
 ---
 
-**Version**: 1.0.2
+**Version**: 1.0.3
 **Last Updated**: December 2024
 **Compatibility**: WordPress 6.8.2+, WooCommerce 10.0+, Gravity Forms
