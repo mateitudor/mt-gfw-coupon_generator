@@ -441,13 +441,25 @@ jQuery(document).ready(function($) {
 		var couponType = $(this).val();
 		var $couponFieldRow = $('#coupon_field_id_row');
 		var $couponField = $('#coupon_field_id');
+		var $couponLengthRow = $('#coupon_length_row');
+		var $couponLength = $('#coupon_length');
 		
 		if (couponType === 'field') {
 			$couponFieldRow.show();
 			$couponField.prop('required', true);
-		} else {
+			$couponLengthRow.hide();
+			$couponLength.prop('required', false);
+		} else if (couponType === 'email') {
 			$couponFieldRow.hide();
 			$couponField.prop('required', false);
+			$couponLengthRow.hide();
+			$couponLength.prop('required', false);
+		} else {
+			// random type
+			$couponFieldRow.hide();
+			$couponField.prop('required', false);
+			$couponLengthRow.show();
+			$couponLength.prop('required', true);
 		}
 	});
 

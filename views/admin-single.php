@@ -224,13 +224,13 @@ function gfwcg_display_generator_form($generator = null) {
 							<p class="description"><?php _e('Select any form field that will contain the coupon code.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
 						</td>
 					</tr>
-					<tr>
+					<tr id="coupon_length_row" style="display: <?php echo ($generator && $generator->coupon_type === 'random') ? 'table-row' : 'none'; ?>;">
 						<th scope="row">
 							<label for="coupon_length"><?php _e('Coupon Length', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
 						</th>
 						<td>
-							<input type="number" name="coupon_length" id="coupon_length"
-								   value="<?php echo $generator ? esc_attr($generator->coupon_length) : '8'; ?>"
+							<input type="number" name="coupon_length" id="coupon_length" 
+								   value="<?php echo $generator ? esc_attr($generator->coupon_length) : '8'; ?>" 
 								   min="4" max="32" required>
 						</td>
 					</tr>
@@ -689,6 +689,7 @@ function gfwcg_display_generator_form($generator = null) {
 		const couponType = document.getElementById('coupon_type');
 		const couponFieldRow = document.getElementById('coupon_field_id_row');
 		const couponField = document.getElementById('coupon_field_id');
+		const couponLengthRow = document.getElementById('coupon_length_row');
 		const form = document.querySelector('form');
 
 		function toggleCouponField() {
@@ -702,8 +703,22 @@ function gfwcg_display_generator_form($generator = null) {
 			}
 		}
 
-		couponType.addEventListener('change', toggleCouponField);
+		function toggleCouponLength() {
+			if (couponType.value === 'random') {
+				couponLengthRow.style.display = 'table-row';
+			} else {
+				couponLengthRow.style.display = 'none';
+				document.getElementById('coupon_length').value = '8'; // Reset to default
+			}
+		}
+
+		couponType.addEventListener('change', function() {
+			toggleCouponField();
+			toggleCouponLength();
+		});
+
 		toggleCouponField();
+		toggleCouponLength();
 
 		form.addEventListener('submit', function(e) {
 			if (couponType.value === 'field' && !couponField.value) {

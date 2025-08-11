@@ -15,7 +15,7 @@
  * HPOS compatible: yes
  * License: Unlicense
  * License URI: https://unlicense.org/
- * 
+ *
  * @package GFWCG
  */
 
@@ -140,7 +140,7 @@ function gfwcg_safe_unserialize($serialized_data, $type = '') {
 	}
 
 	$unserialized = maybe_unserialize($serialized_data);
-	
+
 	if (!is_array($unserialized) || empty($unserialized)) {
 		return false;
 	}
@@ -157,7 +157,7 @@ function gfwcg_safe_unserialize($serialized_data, $type = '') {
 				}
 			}
 			return !empty($validated) ? $validated : false;
-			
+
 		case 'category_ids':
 		case 'product_categories':
 		case 'exclude_categories':
@@ -169,7 +169,7 @@ function gfwcg_safe_unserialize($serialized_data, $type = '') {
 				}
 			}
 			return !empty($validated) ? $validated : false;
-			
+
 		default:
 			// For unknown types, just return the array if it's not empty
 			return $unserialized;
@@ -275,7 +275,7 @@ function gfwcg_init() {
 	global $gfwcg_autoloader;
 	if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_admin_files')) {
 		$gfwcg_autoloader->load_admin_files();
-		
+
 		// Load email class after WooCommerce is fully loaded
 		add_action('woocommerce_init', function() use ($gfwcg_autoloader) {
 			if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_email_class')) {
@@ -289,12 +289,12 @@ function gfwcg_init() {
 		new GFWCG_Admin(GFWCG_PLUGIN_NAME, GFWCG_VERSION);
 		new GFWCG_Coupon();
 	});
-	
+
 	// Initialize generator after Gravity Forms is loaded
 	add_action('gform_loaded', function() {
 		GFWCG_Generator::get_instance();
 	});
-	
+
 	// Fallback initialization if gform_loaded doesn't fire
 	add_action('wp_loaded', function() {
 		if (!class_exists('GFWCG_Generator')) {
@@ -304,7 +304,7 @@ function gfwcg_init() {
 				$gfwcg_autoloader->load_class('GFWCG_Generator');
 			}
 		}
-		
+
 		if (class_exists('GFWCG_Generator')) {
 			GFWCG_Generator::get_instance();
 		}
@@ -329,7 +329,7 @@ function gfwcg_activate() {
 
 	// Ensure WordPress upgrade functions are loaded
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	
+
 	// Create database tables
 	global $gfwcg_autoloader;
 	if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_class')) {
@@ -373,7 +373,7 @@ add_action('rest_api_init', 'gfwcg_register_rest_api');
  * Add CORS headers for admin-ajax.php
  */
 // Removed broad CORS overrides to avoid security risks; rely on WP defaults
-	
+
 
 
 /**
@@ -384,10 +384,10 @@ function gfwcg_get_generators_rest($request) {
 		if (!class_exists('GFWCG_DB')) {
 			return rest_ensure_response(array());
 		}
-		
+
 		$db = new GFWCG_DB();
 		$generators = $db->get_generators();
-		
+
 		$formatted_generators = array();
 		foreach ($generators as $generator) {
 			$formatted_generators[] = array(
@@ -397,7 +397,7 @@ function gfwcg_get_generators_rest($request) {
 				'status' => $generator->status
 			);
 		}
-		
+
 		return rest_ensure_response($formatted_generators);
 	} catch (Exception $e) {
 		return rest_ensure_response(array());

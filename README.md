@@ -403,7 +403,7 @@ Debug information will be logged to `/wp-content/debug.log`.
 - **Prefix**: Text de adăugat înaintea codului de reducere
 - **Sufix**: Text de adăugat după codul de reducere
 - **Separator**: Caracter pentru separarea prefixului/sufixului de cod (pentru email, separă username-ul de domain)
-- **Lungime**: Numărul de caractere pentru codurile aleatorii (implicit: 8)
+- **Lungime**: Numărul de caractere pentru codurile aleatorii (implicit: 8) - doar pentru tipul 'random'
 
 **Email-based Coupon Generation:**
 When using the `email` coupon type, the plugin automatically:
@@ -414,6 +414,11 @@ When using the `email` coupon type, the plugin automatically:
 - Example: Email `john.doe@example.com` with separator `-` becomes `john.doe-example`
 - Example: With prefix `WELCOME` and suffix `2024`, it becomes `WELCOME-john.doe-example-2024`
 - Example: Email `user@company.org` with separator `_` becomes `user_company`
+
+**Field Usage by Coupon Type:**
+- **Random**: Uses `prefix`, `separator`, `length`, `suffix` - generates random alphanumeric codes
+- **Field**: Uses `prefix`, `separator`, `suffix` - uses form field value as base
+- **Email**: Uses `prefix`, `separator`, `suffix` - uses email address as base (length not applicable)
 
 #### Discount Settings
 - **Discount Type**:
