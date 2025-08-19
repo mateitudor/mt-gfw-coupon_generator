@@ -12,28 +12,28 @@ if (!defined('ABSPATH')) {
 }
 
 class GFWCG_Autoloader {
-	
+
 	/**
 	 * Plugin base directory
 	 *
 	 * @var string
 	 */
 	private $plugin_dir;
-	
+
 	/**
 	 * Loaded files cache to prevent double includes
 	 *
 	 * @var array
 	 */
 	private $loaded_files = array();
-	
+
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		$this->plugin_dir = GFWCG_PLUGIN_DIR;
 	}
-	
+
 	/**
 	 * Load a class file
 	 *
@@ -42,7 +42,7 @@ class GFWCG_Autoloader {
 	 */
 	public function load_class($class_name) {
 		$file_path = $this->get_class_file_path($class_name);
-		
+
 		if ($file_path && file_exists($file_path)) {
 			if (!isset($this->loaded_files[$file_path])) {
 				require_once $file_path;
@@ -50,10 +50,10 @@ class GFWCG_Autoloader {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Load a partial file
 	 *
@@ -62,7 +62,7 @@ class GFWCG_Autoloader {
 	 */
 	public function load_partial($partial_name) {
 		$file_path = $this->plugin_dir . 'partials/' . $partial_name . '.php';
-		
+
 		if (file_exists($file_path)) {
 			if (!isset($this->loaded_files[$file_path])) {
 				require_once $file_path;
@@ -70,10 +70,10 @@ class GFWCG_Autoloader {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Load a view file
 	 *
@@ -82,7 +82,7 @@ class GFWCG_Autoloader {
 	 */
 	public function load_view($view_name) {
 		$file_path = $this->plugin_dir . 'views/' . $view_name . '.php';
-		
+
 		if (file_exists($file_path)) {
 			if (!isset($this->loaded_files[$file_path])) {
 				require_once $file_path;
@@ -90,10 +90,10 @@ class GFWCG_Autoloader {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Load multiple files at once
 	 *
@@ -103,10 +103,10 @@ class GFWCG_Autoloader {
 	 */
 	public function load_files($files, $type = 'custom') {
 		$loaded = array();
-		
+
 		foreach ($files as $file) {
 			$success = false;
-			
+
 			switch ($type) {
 				case 'class':
 					$success = $this->load_class($file);
@@ -122,15 +122,15 @@ class GFWCG_Autoloader {
 					$success = $this->load_custom_file($file);
 					break;
 			}
-			
+
 			if ($success) {
 				$loaded[] = $file;
 			}
 		}
-		
+
 		return $loaded;
 	}
-	
+
 	/**
 	 * Load a custom file by full path
 	 *
@@ -145,10 +145,10 @@ class GFWCG_Autoloader {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Get the file path for a class
 	 *
@@ -162,15 +162,16 @@ class GFWCG_Autoloader {
 			'GFWCG_Generator' => 'classes/class-gfwcg-generator.php',
 			'GFWCG_Coupon' => 'classes/class-gfwcg-coupon.php',
 			'GFWCG_Email' => 'classes/class-gfwcg-email.php',
+			'GFWCG_Placeholders' => 'classes/class-gfwcg-placeholders.php',
 		);
-		
+
 		if (isset($class_map[$class_name])) {
 			return $this->plugin_dir . $class_map[$class_name];
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Load all core classes
 	 *
@@ -183,10 +184,10 @@ class GFWCG_Autoloader {
 			'GFWCG_Generator',
 			'GFWCG_Coupon',
 		);
-		
+
 		return $this->load_files($core_classes, 'class');
 	}
-	
+
 	/**
 	 * Load all admin views
 	 *
@@ -198,10 +199,10 @@ class GFWCG_Autoloader {
 			'admin-grid',
 			'admin-single',
 		);
-		
+
 		return $this->load_files($admin_views, 'view');
 	}
-	
+
 	/**
 	 * Load all partials
 	 *
@@ -215,10 +216,10 @@ class GFWCG_Autoloader {
 			'gfwcg-actions',
 			'gfwcg-shortcodes',
 		);
-		
+
 		return $this->load_files($partials, 'partial');
 	}
-	
+
 	/**
 	 * Load all required files for admin functionality
 	 *
@@ -226,19 +227,19 @@ class GFWCG_Autoloader {
 	 */
 	public function load_admin_files() {
 		$loaded = array();
-		
+
 		// Load core classes (excluding email class which needs WooCommerce)
 		$loaded['classes'] = $this->load_core_classes();
-		
+
 		// Load admin views
 		$loaded['views'] = $this->load_admin_views();
-		
+
 		// Load partials
 		$loaded['partials'] = $this->load_partials();
-		
+
 		return $loaded;
 	}
-	
+
 	/**
 	 * Load all required files for frontend functionality
 	 *
@@ -246,16 +247,16 @@ class GFWCG_Autoloader {
 	 */
 	public function load_frontend_files() {
 		$loaded = array();
-		
+
 		// Load core classes (excluding email class which needs WooCommerce)
 		$loaded['classes'] = $this->load_core_classes();
-		
+
 		// Load shortcodes
 		$loaded['shortcodes'] = $this->load_partial('gfwcg-shortcodes');
-		
+
 		return $loaded;
 	}
-	
+
 	/**
 	 * Check if a file has been loaded
 	 *
@@ -265,7 +266,7 @@ class GFWCG_Autoloader {
 	public function is_loaded($file_path) {
 		return isset($this->loaded_files[$file_path]);
 	}
-	
+
 	/**
 	 * Get all loaded files
 	 *
@@ -274,7 +275,7 @@ class GFWCG_Autoloader {
 	public function get_loaded_files() {
 		return array_keys($this->loaded_files);
 	}
-	
+
 	/**
 	 * Load email class after WooCommerce is loaded
 	 *
@@ -287,7 +288,7 @@ class GFWCG_Autoloader {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Clear loaded files cache
 	 */

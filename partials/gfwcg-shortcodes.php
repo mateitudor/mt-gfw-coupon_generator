@@ -22,7 +22,7 @@ define('GFWCG_SHORTCODES_LOADED', true);
  * Usage: [gfwcg_restrictions id="1"] or [gfwcg_restrictions slug="my-generator"]
  */
 function gfwcg_restrictions_shortcode($atts) {
-	
+
 	$atts = shortcode_atts(array(
 		'id' => 0,
 		'slug' => '',
@@ -85,6 +85,25 @@ function gfwcg_restrictions_shortcode($atts) {
 		return '<p class="gfwcg-error">' . __('Generator not found or inactive.', 'gravity-forms-woocommerce-coupon-generator') . '</p>';
 	}
 
+	// If a custom frontend template is provided, render it with placeholders and skip legacy blocks
+	if (!empty($generator->frontend_template) && class_exists('GFWCG_Placeholders')) {
+		$placeholders = GFWCG_Placeholders::build($generator, '');
+		$template_html = GFWCG_Placeholders::replace($generator->frontend_template, $placeholders);
+		ob_start();
+		?>
+		<div class="<?php echo esc_attr($atts['css_class']); ?> gfwcg-template-wrapper">
+			<?php if ($atts['show_title'] === 'true' && !empty($generator->title)): ?>
+				<h3 class="gfwcg-title"><?php echo esc_html($generator->title); ?></h3>
+			<?php endif; ?>
+			<?php if ($atts['show_description'] === 'true' && !empty($generator->description)): ?>
+				<div class="gfwcg-description"><?php echo wp_kses_post($generator->description); ?></div>
+			<?php endif; ?>
+			<div class="gfwcg-restrictions-template-content"><?php echo wp_kses_post($template_html); ?></div>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
 	ob_start();
 	?>
 	<div class="<?php echo esc_attr($atts['css_class']); ?>">
@@ -106,7 +125,7 @@ function gfwcg_restrictions_shortcode($atts) {
 						<?php if ($atts['discount_type_value'] === 'true'): ?>
 							<li>
 								<?php if ($atts['display_discount_labels'] === 'true' && $atts['discount_type_label'] === 'true'): ?>
-									<strong><?php echo gfwcg_get_text('Type:'); ?></strong> 
+									<strong><?php echo gfwcg_get_text('Type:'); ?></strong>
 								<?php endif; ?>
 								<?php echo esc_html(gfwcg_get_text(ucfirst($generator->discount_type))); ?>
 							</li>
@@ -114,9 +133,9 @@ function gfwcg_restrictions_shortcode($atts) {
 						<?php if ($atts['discount_amount_value'] === 'true'): ?>
 							<li>
 								<?php if ($atts['display_discount_labels'] === 'true' && $atts['discount_amount_label'] === 'true'): ?>
-									<strong><?php echo gfwcg_get_text('Amount:'); ?></strong> 
+									<strong><?php echo gfwcg_get_text('Amount:'); ?></strong>
 								<?php endif; ?>
-								<?php 
+								<?php
 								$discount_amount = $generator->discount_amount;
 								if ($atts['discount_amount_show_decimals'] === 'false') {
 									$discount_amount = $generator->discount_type === 'percentage' ? round($discount_amount) : intval($discount_amount);
@@ -129,7 +148,7 @@ function gfwcg_restrictions_shortcode($atts) {
 						<?php if ($atts['discount_free_shipping_value'] === 'true' && $generator->allow_free_shipping): ?>
 							<li>
 								<?php if ($atts['display_discount_labels'] === 'true' && $atts['discount_free_shipping_label'] === 'true'): ?>
-									<strong><?php echo gfwcg_get_text('Free Shipping:'); ?></strong> 
+									<strong><?php echo gfwcg_get_text('Free Shipping:'); ?></strong>
 								<?php endif; ?>
 								<?php echo gfwcg_get_text('Yes'); ?>
 							</li>
@@ -161,7 +180,7 @@ function gfwcg_restrictions_shortcode($atts) {
 							<?php if ($atts['usage_per_coupon_value'] === 'true' && $generator->usage_limit_per_coupon > 0): ?>
 								<li>
 									<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_per_coupon_label'] === 'true'): ?>
-											<strong><?php echo gfwcg_get_text('Utilizări per cod de reducere:'); ?></strong> 
+											<strong><?php echo gfwcg_get_text('Utilizări per cod de reducere:'); ?></strong>
 									<?php endif; ?>
 									<?php echo esc_html($generator->usage_limit_per_coupon); ?>
 								</li>
@@ -169,7 +188,7 @@ function gfwcg_restrictions_shortcode($atts) {
 							<?php if ($atts['usage_per_user_value'] === 'true' && $generator->usage_limit_per_user > 0): ?>
 								<li>
 									<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_per_user_label'] === 'true'): ?>
-										<strong><?php echo gfwcg_get_text('Usage per user:'); ?></strong> 
+										<strong><?php echo gfwcg_get_text('Usage per user:'); ?></strong>
 									<?php endif; ?>
 									<?php echo esc_html($generator->usage_limit_per_user); ?>
 								</li>
@@ -177,7 +196,7 @@ function gfwcg_restrictions_shortcode($atts) {
 							<?php if ($atts['usage_individual_value'] === 'true' && $generator->individual_use): ?>
 								<li>
 									<?php if ($atts['display_usage_labels'] === 'true' && $atts['usage_individual_label'] === 'true'): ?>
-										<strong><?php echo gfwcg_get_text('Individual use only:'); ?></strong> 
+										<strong><?php echo gfwcg_get_text('Individual use only:'); ?></strong>
 									<?php endif; ?>
 									<?php echo gfwcg_get_text('Yes'); ?>
 								</li>
@@ -200,7 +219,7 @@ function gfwcg_restrictions_shortcode($atts) {
 				if ($atts['restrictions_exclude_sale_value'] === 'true' && $generator->exclude_sale_items) {
 					$has_restrictions_content = true;
 				}
-				
+
 				// Check product restrictions
 				if ($atts['restrictions_products_value'] === 'true') {
 					$product_ids = maybe_unserialize($generator->product_ids);
@@ -208,7 +227,7 @@ function gfwcg_restrictions_shortcode($atts) {
 						$has_restrictions_content = true;
 					}
 				}
-				
+
 				// Check exclude products
 				if ($atts['restrictions_exclude_products_value'] === 'true') {
 					$exclude_products = maybe_unserialize($generator->exclude_products);
@@ -216,7 +235,7 @@ function gfwcg_restrictions_shortcode($atts) {
 						$has_restrictions_content = true;
 					}
 				}
-				
+
 				// Check category restrictions
 				if ($atts['restrictions_categories_value'] === 'true') {
 					$product_categories = maybe_unserialize($generator->product_categories);
@@ -224,7 +243,7 @@ function gfwcg_restrictions_shortcode($atts) {
 						$has_restrictions_content = true;
 					}
 				}
-				
+
 				// Check exclude categories
 				if ($atts['restrictions_exclude_categories_value'] === 'true') {
 					$exclude_categories = maybe_unserialize($generator->exclude_categories);
@@ -242,7 +261,7 @@ function gfwcg_restrictions_shortcode($atts) {
 							<?php if ($atts['restrictions_minimum_value'] === 'true' && $generator->minimum_amount > 0): ?>
 								<li>
 									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_minimum_label'] === 'true'): ?>
-										<strong><?php echo gfwcg_get_text('Minimum spend:'); ?></strong> 
+										<strong><?php echo gfwcg_get_text('Minimum spend:'); ?></strong>
 									<?php endif; ?>
 									<?php echo wc_price($generator->minimum_amount); ?>
 								</li>
@@ -250,7 +269,7 @@ function gfwcg_restrictions_shortcode($atts) {
 							<?php if ($atts['restrictions_maximum_value'] === 'true' && $generator->maximum_amount > 0): ?>
 								<li>
 									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_maximum_label'] === 'true'): ?>
-										<strong><?php echo gfwcg_get_text('Maximum spend:'); ?></strong> 
+										<strong><?php echo gfwcg_get_text('Maximum spend:'); ?></strong>
 									<?php endif; ?>
 									<?php echo wc_price($generator->maximum_amount); ?>
 								</li>
@@ -258,7 +277,7 @@ function gfwcg_restrictions_shortcode($atts) {
 							<?php if ($atts['restrictions_exclude_sale_value'] === 'true' && $generator->exclude_sale_items): ?>
 								<li>
 									<?php if ($atts['display_restrictions_labels'] === 'true' && $atts['restrictions_exclude_sale_label'] === 'true'): ?>
-										<strong><?php echo gfwcg_get_text('Exclude sale items:'); ?></strong> 
+										<strong><?php echo gfwcg_get_text('Exclude sale items:'); ?></strong>
 									<?php endif; ?>
 									<?php echo gfwcg_get_text('Yes'); ?>
 								</li>
@@ -293,7 +312,7 @@ function gfwcg_restrictions_shortcode($atts) {
 										<?php endforeach; ?>
 									</ul>
 								</div>
-							<?php 
+							<?php
 								endif;
 							endif;
 						endif;
@@ -325,7 +344,7 @@ function gfwcg_restrictions_shortcode($atts) {
 										<?php endforeach; ?>
 									</ul>
 								</div>
-							<?php 
+							<?php
 								endif;
 							endif;
 						endif;
@@ -357,7 +376,7 @@ function gfwcg_restrictions_shortcode($atts) {
 										<?php endforeach; ?>
 									</ul>
 								</div>
-							<?php 
+							<?php
 								endif;
 							endif;
 						endif;
@@ -389,7 +408,7 @@ function gfwcg_restrictions_shortcode($atts) {
 										<?php endforeach; ?>
 									</ul>
 								</div>
-							<?php 
+							<?php
 								endif;
 							endif;
 						endif;
@@ -418,7 +437,7 @@ add_shortcode('gfwcg_restrictions', 'gfwcg_restrictions_shortcode');
  * Usage: [gfwcg_form id="1" show_restrictions="true"]
  */
 function gfwcg_form_shortcode($atts) {
-	
+
 	$atts = shortcode_atts(array(
 		'id' => 0,
 		'slug' => '',
@@ -447,7 +466,7 @@ function gfwcg_form_shortcode($atts) {
 		<?php if ($atts['show_restrictions'] === 'true'): ?>
 			<?php echo do_shortcode('[gfwcg_restrictions id="' . $generator->id . '" show_title="false"]'); ?>
 		<?php endif; ?>
-		
+
 		<?php echo do_shortcode('[gravityform id="' . $generator->form_id . '" gen="' . $generator->id . '" title="' . $atts['title'] . '" description="' . $atts['description'] . '" ajax="' . $atts['ajax'] . '"]'); ?>
 	</div>
 	<?php
@@ -460,7 +479,7 @@ add_shortcode('gfwcg_form', 'gfwcg_form_shortcode');
  * Usage: [gfwcg_discount id="1"] or [gfwcg_discount slug="my-generator"]
  */
 function gfwcg_discount_shortcode($atts) {
-	
+
 	$atts = shortcode_atts(array(
 		'id' => 0,
 		'slug' => '',
@@ -484,7 +503,7 @@ function gfwcg_discount_shortcode($atts) {
 	ob_start();
 	?>
 	<span class="<?php echo esc_attr($atts['css_class']); ?>">
-		<?php 
+		<?php
 		$discount_amount = $generator->discount_amount;
 		if ($atts['show_decimals'] === 'false') {
 			$discount_amount = $generator->discount_type === 'percentage' ? round($discount_amount) : intval($discount_amount);

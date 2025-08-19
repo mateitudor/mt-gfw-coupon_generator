@@ -31,6 +31,7 @@ function gfwcg_display_generator_form($generator = null) {
 
 	// Get default email template
 	$default_email_template = GFWCG_Email::get_default_template();
+	$default_frontend_template = class_exists('GFWCG_Placeholders') ? GFWCG_Placeholders::get_default_frontend_template() : '';
 	?>
 	<?php settings_errors(); ?>
 	<div class="wrap">
@@ -658,6 +659,25 @@ function gfwcg_display_generator_form($generator = null) {
 							<input type="checkbox" name="use_wc_email_template" id="use_wc_email_template" value="1"
 								   <?php checked($generator ? $generator->use_wc_email_template : 1, 1); ?>>
 							<label for="use_wc_email_template"><?php _e('Use WooCommerce email template for styling', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="gfwcg-form-section">
+				<h2><?php _e('Frontend Restrictions Template', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
+				<table class="form-table">
+					<tr>
+						<th scope="row">
+							<label for="frontend_template"><?php _e('Restrictions Display Template', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+						</th>
+						<td>
+							<textarea name="frontend_template" id="frontend_template" class="large-text" rows="8"><?php
+								echo $generator && !empty($generator->frontend_template) ? esc_textarea($generator->frontend_template) : $default_frontend_template;
+							?></textarea>
+							<p class="description">
+								<?php _e('Use the same placeholders as email: {coupon_code}, {discount_amount}, {expiry_date}, {minimum_amount}, {maximum_amount}, {usage_limit_per_coupon}, {usage_limit_per_user}, {individual_use}, {exclude_sale_items}, {allow_free_shipping}, {products}, {exclude_products}, {product_categories}, {exclude_categories}, {product_tags}, {exclude_product_tags}', 'gravity-forms-woocommerce-coupon-generator'); ?>
+							</p>
 						</td>
 					</tr>
 				</table>

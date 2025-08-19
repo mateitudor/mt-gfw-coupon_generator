@@ -301,6 +301,8 @@ function gfwcg_init() {
 	global $gfwcg_autoloader;
 	if ($gfwcg_autoloader && method_exists($gfwcg_autoloader, 'load_admin_files')) {
 		$gfwcg_autoloader->load_admin_files();
+		// Ensure shared placeholder class is available everywhere
+		$gfwcg_autoloader->load_class('GFWCG_Placeholders');
 
 		// Load email class after WooCommerce is fully loaded
 		add_action('woocommerce_init', function() use ($gfwcg_autoloader) {

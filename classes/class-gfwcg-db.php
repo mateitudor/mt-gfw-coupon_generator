@@ -41,6 +41,7 @@ class GFWCG_DB {
 			exclude_product_tags text DEFAULT NULL,
 			allowed_emails text DEFAULT NULL,
 			email_template text DEFAULT NULL,
+			frontend_template longtext DEFAULT NULL,
 			use_wc_email_template tinyint(1) DEFAULT 1 COMMENT '1 = use WooCommerce template, 0 = use custom template',
 			send_email tinyint(1) DEFAULT 0,
 			status varchar(20) DEFAULT 'active',
@@ -251,6 +252,11 @@ class GFWCG_DB {
 			$migrations[] = "ALTER TABLE $table_name ADD COLUMN validation_error_header varchar(255) DEFAULT NULL";
 		}
 
+		// Step 4: Add frontend template column if it doesn't exist
+		if (!in_array('frontend_template', $column_names)) {
+			$migrations[] = "ALTER TABLE $table_name ADD COLUMN frontend_template longtext DEFAULT NULL";
+		}
+
 		// Execute migrations
 		foreach ($migrations as $migration) {
 			$wpdb->query($migration);
@@ -313,7 +319,8 @@ class GFWCG_DB {
 			'allowed_emails' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN allowed_emails text DEFAULT NULL',
 			'email_template' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN email_template text DEFAULT NULL',
 			'use_wc_email_template' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN use_wc_email_template tinyint(1) DEFAULT 1',
-			'description' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN description text DEFAULT NULL'
+			'description' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN description text DEFAULT NULL',
+			'frontend_template' => 'ALTER TABLE ' . $table_name . ' ADD COLUMN frontend_template longtext DEFAULT NULL'
 		);
 
 		// Check each required column
