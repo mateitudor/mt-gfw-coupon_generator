@@ -108,7 +108,7 @@ class GFWCG_DB {
 	public static function get_next_available_id() {
 		global $wpdb;
 		$max_id = $wpdb->get_var("SELECT MAX(id) FROM {$wpdb->prefix}gfwcg_generators");
-		return $max_id ? $max_id + 1 : 1;
+		return $max_id ? ((int)$max_id + 1) : 1;
 	}
 
 	public static function save_generator($data) {
@@ -119,11 +119,24 @@ class GFWCG_DB {
 		if (isset($data['id'])) {
 			$id = $data['id'];
 			unset($data['id']);
-			$wpdb->update(
+			$update_result = $wpdb->update(
 				$wpdb->prefix . 'gfwcg_generators',
 				$data,
 				array('id' => $id)
 			);
+			// If no existing row was updated, insert a new one with this explicit ID
+			if ($update_result === false || $wpdb->rows_affected === 0) {
+				$insert_data = $data;
+				$insert_data['id'] = $id;
+				if (!isset($insert_data['created_at'])) {
+					$insert_data['created_at'] = current_time('mysql');
+				}
+				$insert_ok = $wpdb->insert(
+					$wpdb->prefix . 'gfwcg_generators',
+					$insert_data
+				);
+				return $insert_ok !== false ? $id : false;
+			}
 			return $id;
 		} else {
 			// Set the ID for new generators

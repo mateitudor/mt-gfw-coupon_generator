@@ -200,8 +200,35 @@ class GFWCG_Admin {
 		// Set the current submenu
 		gfwcg_set_current_submenu('add');
 
-		// Display the add form
-		$this->display_generator_form();
+		// Pre-generate a new ID and pass a stub generator so the form shows the ID
+		$fake = (object) array(
+			'id' => GFWCG_DB::get_next_available_id(),
+			'form_id' => 0,
+			'email_field_id' => 0,
+			'name_field_id' => 0,
+			'coupon_type' => 'random',
+			'coupon_length' => 8,
+			'coupon_prefix' => '',
+			'coupon_suffix' => '',
+			'coupon_separator' => '',
+			'discount_type' => 'percentage',
+			'discount_amount' => 0,
+			'individual_use' => 0,
+			'usage_limit_per_coupon' => 0,
+			'usage_limit_per_user' => 0,
+			'allow_free_shipping' => 0,
+			'exclude_sale_items' => 0,
+			'expiry_days' => 0,
+			'send_email' => 0,
+			'use_wc_email_template' => 1,
+			'email_subject' => '',
+			'email_message' => '',
+			'email_from_name' => '',
+			'email_from_email' => '',
+			'description' => '',
+			'frontend_template' => ''
+		);
+		gfwcg_display_generator_form($fake);
 	}
 
 	public function display_settings_page() {
@@ -407,7 +434,7 @@ class GFWCG_Admin {
 
 			wp_send_json_success(array(
 				'message' => __('Generator saved successfully.', 'gravity-forms-woocommerce-coupon-generator'),
-				'redirect_url' => admin_url('admin.php?page=gfwcg-generators'),
+				'redirect_url' => admin_url('admin.php?page=gfwcg-generators&view=edit&id=' . intval($result)),
 				'generator_id' => $result
 			));
 
