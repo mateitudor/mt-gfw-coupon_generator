@@ -78,8 +78,9 @@ class GFWCG_Email extends WC_Email {
 		$email_message = $generator->email_message ?: __('Your coupon code is: {coupon_code}', 'gravity-forms-woocommerce-coupon-generator');
 
 		// Process placeholders with all coupon restrictions
+		$extras = apply_filters('gfwcg_email_placeholder_extras', array());
 		$placeholders = class_exists('GFWCG_Placeholders')
-			? GFWCG_Placeholders::build($generator, $coupon_code)
+			? GFWCG_Placeholders::build($generator, $coupon_code, $extras)
 			: $this->prepare_placeholders($generator, $coupon_code);
 
 		// Send the email

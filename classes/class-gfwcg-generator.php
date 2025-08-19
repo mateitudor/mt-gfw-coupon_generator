@@ -14,7 +14,7 @@ class GFWCG_Generator {
 	public function __construct() {
 		$this->coupon = new GFWCG_Coupon();
 		add_action('gform_after_submission', array($this, 'process_form_submission'), 10, 2);
-		
+
 		// PHP-based validation overrides
 		add_filter('gform_field_validation_message', array($this, 'override_validation_message'), 1, 4);
 		add_filter('gform_validation_message', array($this, 'override_validation_error_header'), 1, 2);
@@ -54,6 +54,32 @@ class GFWCG_Generator {
 		if ($generator->send_email) {
 			$emails = WC()->mailer()->get_emails();
 			if (isset($emails['GFWCG_Email'])) {
+				// Derive recipient name (best-effort) from configured name field or email username
+				$recipient_name = '';
+				if (!empty($generator->name_field_id)) {
+					$form_def = GFAPI::get_form($form['id']);
+					$name_field = $form_def ? GFAPI::get_field($form_def, $generator->name_field_id) : null;
+					if ($name_field && isset($name_field->inputs) && is_array($name_field->inputs)) {
+						$parts = array();
+						foreach ($name_field->inputs as $input) {
+							$val = rgar($entry, (string)$input['id']);
+							if (!empty($val)) { $parts[] = $val; }
+						}
+						$recipient_name = trim(implode(' ', $parts));
+					} else {
+						$raw = rgar($entry, (string)$generator->name_field_id);
+						if (!empty($raw)) { $recipient_name = trim($raw); }
+					}
+				}
+				if ($recipient_name === '' && is_string($to)) {
+					$recipient_name = substr($to, 0, strpos($to, '@')) ?: '';
+				}
+				// Pass name/email extras via filterable global for email placeholders
+				add_filter('gfwcg_email_placeholder_extras', function($extras) use ($to, $recipient_name) {
+					$extras['email'] = $to;
+					$extras['name'] = $recipient_name;
+					return $extras;
+				});
 				$emails['GFWCG_Email']->send_coupon_email($generator, $to, $coupon_code);
 				gfwcg_debug_log('Email sent successfully to: ' . $to);
 			} else {
@@ -91,11 +117,11 @@ class GFWCG_Generator {
 		if (strpos($message, 'required') !== false && !empty($generator->validation_required_message)) {
 			return $generator->validation_required_message;
 		}
-		
+
 		if ((strpos($message, 'valid email') !== false || strpos($message, 'email address') !== false) && !empty($generator->validation_email_message)) {
 			return $generator->validation_email_message;
 		}
-		
+
 		if ((strpos($message, 'unique entry') !== false || strpos($message, 'already been used') !== false || strpos($message, 'already used') !== false) && !empty($generator->validation_duplicate_message)) {
 			return $generator->validation_duplicate_message;
 		}
@@ -126,7 +152,7 @@ class GFWCG_Generator {
 		// If validation failed, replace the message
 		if (!$result['is_valid']) {
 			$message = $result['message'];
-			
+
 			if (strpos($message, 'required') !== false && !empty($generator->validation_required_message)) {
 				$result['message'] = $generator->validation_required_message;
 			} elseif ((strpos($message, 'valid email') !== false || strpos($message, 'email address') !== false) && !empty($generator->validation_email_message)) {
@@ -162,7 +188,7 @@ class GFWCG_Generator {
 					// Update field validation message
 					if (!empty($field['validation_message'])) {
 						$message = $field['validation_message'];
-						
+
 						if (strpos($message, 'required') !== false && !empty($generator->validation_required_message)) {
 							$field['validation_message'] = $generator->validation_required_message;
 						} elseif ((strpos($message, 'valid email') !== false || strpos($message, 'email address') !== false) && !empty($generator->validation_email_message)) {
@@ -206,42 +232,42 @@ class GFWCG_Generator {
 
 		global $wpdb;
 		gfwcg_debug_log('Looking up generator for form ID: ' . $form_id);
-		
+
 		// Get the generator ID from the form submission
 		$generator_id = isset($_POST['gfwcg_generator_id']) ? intval($_POST['gfwcg_generator_id']) : 0;
 		gfwcg_debug_log('Generator ID from form submission: ' . $generator_id);
-		
+
 		if ($generator_id > 0) {
 			// If we have a specific generator ID, use that
 			$generator = $wpdb->get_row($wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}gfwcg_generators 
+				"SELECT * FROM {$wpdb->prefix}gfwcg_generators
 				WHERE id = %d AND form_id = %d AND status = 'active'",
 				$generator_id,
 				$form_id
 			));
-			
+
 			if ($generator) {
 				gfwcg_debug_log('Found specific generator by ID: ' . $generator_id);
 				return $generator;
 			}
 		}
-		
+
 		// Fallback to getting the most recent generator
 		$generator = $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM {$wpdb->prefix}gfwcg_generators 
-			WHERE form_id = %d AND status = 'active' 
+			"SELECT * FROM {$wpdb->prefix}gfwcg_generators
+			WHERE form_id = %d AND status = 'active'
 			ORDER BY id DESC LIMIT 1",
 			$form_id
 		));
-		
+
 		if (!$generator) {
 			gfwcg_debug_log('No active generator found for form ID: ' . $form_id);
 			return null;
 		}
-		
+
 		gfwcg_debug_log('Using fallback generator ID: ' . $generator->id);
 		gfwcg_debug_log('Generator configuration: ' . print_r($generator, true));
-		
+
 		return $generator;
 	}
 }

@@ -17,10 +17,17 @@ class GFWCG_Placeholders {
 	 * @param string $coupon_code Optional coupon code
 	 * @return array<string,string>
 	 */
-	public static function build($generator, $coupon_code = '') {
+	public static function build($generator, $coupon_code = '', $extras = array()) {
+		$recipient_email = isset($extras['email']) ? (string)$extras['email'] : '';
+		$recipient_name = isset($extras['name']) ? (string)$extras['name'] : '';
+		$name_fallback = __('Customer', 'gravity-forms-woocommerce-coupon-generator');
+		$email_fallback = __('your email address', 'gravity-forms-woocommerce-coupon-generator');
+
 		return array(
 			'coupon_code' => $coupon_code,
 			'site_name' => get_bloginfo('name'),
+			'name' => $recipient_name !== '' ? $recipient_name : $name_fallback,
+			'email' => $recipient_email !== '' ? $recipient_email : $email_fallback,
 			'discount_amount' => self::format_discount_amount($generator->discount_amount, $generator->discount_type),
 			'discount_type' => self::get_discount_type_label($generator->discount_type),
 			'expiry_date' => $generator->expiry_days ? date_i18n(get_option('date_format'), strtotime('+' . intval($generator->expiry_days) . ' days')) : __('No expiry', 'gravity-forms-woocommerce-coupon-generator'),
@@ -115,7 +122,7 @@ class GFWCG_Placeholders {
 		<div class="gfwcg-placeholder-help">
 			<h4 style="margin-top:0;"><?php _e('Available placeholders', 'gravity-forms-woocommerce-coupon-generator'); ?></h4>
 			<ul>
-				<li><strong><?php _e('Basic', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{coupon_code}</code>, <code>{site_name}</code>, <code>{discount_amount}</code>, <code>{expiry_date}</code></li>
+				<li><strong><?php _e('Basic', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{coupon_code}</code>, <code>{site_name}</code>, <code>{name}</code>, <code>{email}</code>, <code>{discount_amount}</code>, <code>{expiry_date}</code></li>
 				<li><strong><?php _e('Discount Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{discount_type}</code>, <code>{expiry_days}</code></li>
 				<li><strong><?php _e('Usage Restrictions', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{individual_use}</code>, <code>{usage_limit_per_coupon}</code>, <code>{usage_limit_per_user}</code></li>
 				<li><strong><?php _e('Amount Restrictions', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{minimum_amount}</code>, <code>{maximum_amount}</code></li>
