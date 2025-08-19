@@ -65,27 +65,25 @@ class GFWCG_Placeholders {
 	 */
 	public static function get_default_frontend_template() {
 		return sprintf(
-			'<div class="gfwcg-restrictions-template">
-				<h4>%s</h4>
-				<ul>
-					<li><strong>%s</strong> {discount_amount} ({discount_type})</li>
-					<li><strong>%s</strong> {expiry_date}</li>
-					<li><strong>%s</strong> {minimum_amount}</li>
-					<li><strong>%s</strong> {maximum_amount}</li>
-					<li><strong>%s</strong> {individual_use}</li>
-					<li><strong>%s</strong> {usage_limit_per_coupon}</li>
-					<li><strong>%s</strong> {usage_limit_per_user}</li>
-					<li><strong>%s</strong> {exclude_sale_items}</li>
-					<li><strong>%s</strong> {allow_free_shipping}</li>
-				</ul>
-				<div class="gfwcg-restrictions-groups">
-					<p><strong>%s</strong> {products}</p>
-					<p><strong>%s</strong> {exclude_products}</p>
-					<p><strong>%s</strong> {product_categories}</p>
-					<p><strong>%s</strong> {exclude_categories}</p>
-					<p><strong>%s</strong> {product_tags}</p>
-					<p><strong>%s</strong> {exclude_product_tags}</p>
-				</div>
+			'<h4>%s</h4>
+			<ul>
+				<li><strong>%s</strong> {discount_amount} ({discount_type})</li>
+				<li><strong>%s</strong> {expiry_date}</li>
+				<li><strong>%s</strong> {minimum_amount}</li>
+				<li><strong>%s</strong> {maximum_amount}</li>
+				<li><strong>%s</strong> {individual_use}</li>
+				<li><strong>%s</strong> {usage_limit_per_coupon}</li>
+				<li><strong>%s</strong> {usage_limit_per_user}</li>
+				<li><strong>%s</strong> {exclude_sale_items}</li>
+				<li><strong>%s</strong> {allow_free_shipping}</li>
+			</ul>
+			<div class="gfwcg-restrictions-groups">
+				<p><strong>%s</strong> {products}</p>
+				<p><strong>%s</strong> {exclude_products}</p>
+				<p><strong>%s</strong> {product_categories}</p>
+				<p><strong>%s</strong> {exclude_categories}</p>
+				<p><strong>%s</strong> {product_tags}</p>
+				<p><strong>%s</strong> {exclude_product_tags}</p>
 			</div>',
 			__('Coupon Details', 'gravity-forms-woocommerce-coupon-generator'),
 			__('Discount', 'gravity-forms-woocommerce-coupon-generator'),
@@ -104,6 +102,39 @@ class GFWCG_Placeholders {
 			__('Valid for tags:', 'gravity-forms-woocommerce-coupon-generator'),
 			__('Excluded tags:', 'gravity-forms-woocommerce-coupon-generator')
 		);
+	}
+
+	/**
+	 * Admin help HTML for placeholders and examples (shared for email and frontend boxes)
+	 *
+	 * @return string
+	 */
+	public static function get_admin_placeholders_help_html() {
+		ob_start();
+		?>
+		<div class="gfwcg-placeholder-help">
+			<h4 style="margin-top:0;"><?php _e('Available placeholders', 'gravity-forms-woocommerce-coupon-generator'); ?></h4>
+			<ul>
+				<li><strong><?php _e('Basic', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{coupon_code}</code>, <code>{site_name}</code>, <code>{discount_amount}</code>, <code>{expiry_date}</code></li>
+				<li><strong><?php _e('Discount Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{discount_type}</code>, <code>{expiry_days}</code></li>
+				<li><strong><?php _e('Usage Restrictions', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{individual_use}</code>, <code>{usage_limit_per_coupon}</code>, <code>{usage_limit_per_user}</code></li>
+				<li><strong><?php _e('Amount Restrictions', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{minimum_amount}</code>, <code>{maximum_amount}</code></li>
+				<li><strong><?php _e('Product Restrictions', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{exclude_sale_items}</code>, <code>{allow_free_shipping}</code>, <code>{products}</code>, <code>{exclude_products}</code></li>
+				<li><strong><?php _e('Category Restrictions', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{product_categories}</code>, <code>{exclude_categories}</code></li>
+				<li><strong><?php _e('Tag Restrictions', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>: <code>{product_tags}</code>, <code>{exclude_product_tags}</code></li>
+			</ul>
+			<h4><?php _e('Placeholder Examples', 'gravity-forms-woocommerce-coupon-generator'); ?></h4>
+			<ul>
+				<li><code>{coupon_code}</code> → <em>WELCOME2024</em></li>
+				<li><code>{discount_amount}</code> → <em>15.00%</em> <?php _e('or', 'gravity-forms-woocommerce-coupon-generator'); ?> <em>10.00</em></li>
+				<li><code>{minimum_amount}</code> → <em>$25.00</em> <?php _e('or', 'gravity-forms-woocommerce-coupon-generator'); ?> <em><?php _e('No minimum', 'gravity-forms-woocommerce-coupon-generator'); ?></em></li>
+				<li><code>{usage_limit_per_coupon}</code> → <em>1</em> <?php _e('or', 'gravity-forms-woocommerce-coupon-generator'); ?> <em><?php _e('Unlimited', 'gravity-forms-woocommerce-coupon-generator'); ?></em></li>
+				<li><code>{products}</code> → <em>Product A, Product B</em> <?php _e('or', 'gravity-forms-woocommerce-coupon-generator'); ?> <em><?php _e('All products', 'gravity-forms-woocommerce-coupon-generator'); ?></em></li>
+				<li><code>{individual_use}</code> → <em><?php _e('Yes', 'gravity-forms-woocommerce-coupon-generator'); ?></em> <?php _e('or', 'gravity-forms-woocommerce-coupon-generator'); ?> <em><?php _e('No', 'gravity-forms-woocommerce-coupon-generator'); ?></em></li>
+			</ul>
+		</div>
+		<?php
+		return ob_get_clean();
 	}
 
 	private static function format_discount_amount($amount, $type) {

@@ -91,14 +91,14 @@ function gfwcg_restrictions_shortcode($atts) {
 		$template_html = GFWCG_Placeholders::replace($generator->frontend_template, $placeholders);
 		ob_start();
 		?>
-		<div class="<?php echo esc_attr($atts['css_class']); ?> gfwcg-template-wrapper">
+		<div class="<?php echo esc_attr($atts['css_class']); ?> gfwcg-container">
 			<?php if ($atts['show_title'] === 'true' && !empty($generator->title)): ?>
 				<h3 class="gfwcg-title"><?php echo esc_html($generator->title); ?></h3>
 			<?php endif; ?>
 			<?php if ($atts['show_description'] === 'true' && !empty($generator->description)): ?>
 				<div class="gfwcg-description"><?php echo wp_kses_post($generator->description); ?></div>
 			<?php endif; ?>
-			<div class="gfwcg-restrictions-template-content"><?php echo wp_kses_post($template_html); ?></div>
+			<div class="gfwcg-content"><?php echo wp_kses_post($template_html); ?></div>
 		</div>
 		<?php
 		return ob_get_clean();

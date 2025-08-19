@@ -574,7 +574,7 @@ function gfwcg_display_generator_form($generator = null) {
 
 
 			<div class="gfwcg-form-section">
-				<h2><?php _e('Email Settings', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
+				<h2><?php _e('Email Composer', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
 				<table class="form-table">
 					<tr>
 						<th scope="row">
@@ -603,34 +603,7 @@ function gfwcg_display_generator_form($generator = null) {
 							<textarea name="email_message" id="email_message" class="large-text" rows="5"><?php
 								echo $generator ? esc_textarea($generator->email_message ?? '') : $default_email_template;
 							?></textarea>
-							<p class="description">
-								<?php _e('Available placeholders:', 'gravity-forms-woocommerce-coupon-generator'); ?>
-								<br><strong><?php _e('Basic:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
-								<code>{coupon_code}</code>, <code>{site_name}</code>, <code>{discount_amount}</code>, <code>{expiry_date}</code>
-								<br><strong><?php _e('Discount Settings:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
-								<code>{discount_type}</code>, <code>{expiry_days}</code>
-								<br><strong><?php _e('Usage Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
-								<code>{individual_use}</code>, <code>{usage_limit_per_coupon}</code>, <code>{usage_limit_per_user}</code>
-								<br><strong><?php _e('Amount Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
-								<code>{minimum_amount}</code>, <code>{maximum_amount}</code>
-								<br><strong><?php _e('Product Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
-								<code>{exclude_sale_items}</code>, <code>{allow_free_shipping}</code>, <code>{products}</code>, <code>{exclude_products}</code>
-								<br><strong><?php _e('Category Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
-								<code>{product_categories}</code>, <code>{exclude_categories}</code>
-								<br><strong><?php _e('Tag Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
-								<code>{product_tags}</code>, <code>{exclude_product_tags}</code>
-							</p>
-							<div class="gfwcg-placeholder-help" style="margin-top: 10px; padding: 10px; background: #f9f9f9; border-left: 4px solid #0073aa;">
-								<h4 style="margin-top: 0;"><?php _e('Placeholder Examples:', 'gravity-forms-woocommerce-coupon-generator'); ?></h4>
-								<ul style="margin: 0; padding-left: 20px;">
-									<li><code>{coupon_code}</code> → <em>WELCOME2024</em></li>
-									<li><code>{discount_amount}</code> → <em>15.00%</em> or <em>10.00</em></li>
-									<li><code>{minimum_amount}</code> → <em>$25.00</em> or <em>No minimum</em></li>
-									<li><code>{usage_limit_per_coupon}</code> → <em>1</em> or <em>Unlimited</em></li>
-									<li><code>{products}</code> → <em>Product A, Product B</em> or <em>All products</em></li>
-									<li><code>{individual_use}</code> → <em>Yes</em> or <em>No</em></li>
-								</ul>
-							</div>
+							<?php echo class_exists('GFWCG_Placeholders') ? GFWCG_Placeholders::get_admin_placeholders_help_html() : ''; ?>
 						</td>
 					</tr>
 					<tr>
@@ -665,19 +638,17 @@ function gfwcg_display_generator_form($generator = null) {
 			</div>
 
 			<div class="gfwcg-form-section">
-				<h2><?php _e('Frontend Restrictions Template', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
+				<h2><?php _e('Display restrictions in the front-end', 'gravity-forms-woocommerce-coupon-generator'); ?></h2>
 				<table class="form-table">
 					<tr>
 						<th scope="row">
-							<label for="frontend_template"><?php _e('Restrictions Display Template', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+							<label for="frontend_template"><?php _e('Restrictions Composer', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
 						</th>
 						<td>
 							<textarea name="frontend_template" id="frontend_template" class="large-text" rows="8"><?php
 								echo $generator && !empty($generator->frontend_template) ? esc_textarea($generator->frontend_template) : $default_frontend_template;
 							?></textarea>
-							<p class="description">
-								<?php _e('Use the same placeholders as email: {coupon_code}, {discount_amount}, {expiry_date}, {minimum_amount}, {maximum_amount}, {usage_limit_per_coupon}, {usage_limit_per_user}, {individual_use}, {exclude_sale_items}, {allow_free_shipping}, {products}, {exclude_products}, {product_categories}, {exclude_categories}, {product_tags}, {exclude_product_tags}', 'gravity-forms-woocommerce-coupon-generator'); ?>
-							</p>
+							<?php echo class_exists('GFWCG_Placeholders') ? GFWCG_Placeholders::get_admin_placeholders_help_html() : ''; ?>
 						</td>
 					</tr>
 				</table>
