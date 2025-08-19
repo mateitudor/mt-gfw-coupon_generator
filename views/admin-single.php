@@ -484,6 +484,7 @@ function gfwcg_display_generator_form($generator = null) {
 							<p class="description">Product categories that the coupon will be applied to, or that need to be in the cart in order for the "Fixed cart discount" to be applied.</p>
 						</td>
 					</tr>
+
 					<tr>
 						<th scope="row">
 							<label for="exclude_product_categories">Exclude Categories</label>
@@ -505,6 +506,67 @@ function gfwcg_display_generator_form($generator = null) {
 							<p class="description">Product categories that the coupon will not be applied to, or that cannot be in the cart in order for the "Fixed cart discount" to be applied.</p>
 						</td>
 					</tr>
+					<tr>
+						<th scope="row">
+							<label for="product_tags"><?php _e('Product Tags', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+						</th>
+						<td>
+							<select id="product_tags" name="product_tags[]" style="width: 100%;" class="wc-enhanced-select" multiple="" data-placeholder="<?php esc_attr_e('Any tag', 'gravity-forms-woocommerce-coupon-generator'); ?>">
+								<?php
+								$all_tags = get_terms(array(
+									'taxonomy' => 'product_tag',
+									'hide_empty' => false,
+									'orderby' => 'name',
+									'order' => 'ASC',
+									'number' => 200
+								));
+
+								$selected_tags = array();
+								if ($generator && !empty($generator->product_tags)) {
+									$selected_tags = maybe_unserialize($generator->product_tags);
+									if (!is_array($selected_tags)) {
+										$selected_tags = array();
+									}
+								}
+
+								if (!is_wp_error($all_tags) && !empty($all_tags)) {
+									foreach ($all_tags as $tag) {
+										$selected = in_array($tag->term_id, $selected_tags) ? 'selected' : '';
+										echo '<option value="' . esc_attr($tag->term_id) . '" ' . $selected . '>' . esc_html($tag->name) . '</option>';
+									}
+								}
+								?>
+							</select>
+							<p class="description"><?php _e('Product tags that the coupon will be applied to, or that need to be in the cart in order for the "Fixed cart discount" to be applied.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="exclude_product_tags"><?php _e('Exclude Tags', 'gravity-forms-woocommerce-coupon-generator'); ?></label>
+						</th>
+						<td>
+							<select id="exclude_product_tags" name="exclude_product_tags[]" style="width: 100%;" class="wc-enhanced-select" multiple="" data-placeholder="<?php esc_attr_e('No tags', 'gravity-forms-woocommerce-coupon-generator'); ?>">
+								<?php
+								$exclude_selected_tags = array();
+								if ($generator && !empty($generator->exclude_product_tags)) {
+									$exclude_selected_tags = maybe_unserialize($generator->exclude_product_tags);
+									if (!is_array($exclude_selected_tags)) {
+										$exclude_selected_tags = array();
+									}
+								}
+
+								if (!is_wp_error($all_tags) && !empty($all_tags)) {
+									foreach ($all_tags as $tag) {
+										$selected = in_array($tag->term_id, $exclude_selected_tags) ? 'selected' : '';
+										echo '<option value="' . esc_attr($tag->term_id) . '" ' . $selected . '>' . esc_html($tag->name) . '</option>';
+									}
+								}
+								?>
+							</select>
+							<p class="description"><?php _e('Product tags that the coupon will not be applied to, or that cannot be in the cart in order for the "Fixed cart discount" to be applied.', 'gravity-forms-woocommerce-coupon-generator'); ?></p>
+						</td>
+					</tr>
+
 				</table>
 			</div>
 
@@ -554,6 +616,8 @@ function gfwcg_display_generator_form($generator = null) {
 								<code>{exclude_sale_items}</code>, <code>{allow_free_shipping}</code>, <code>{products}</code>, <code>{exclude_products}</code>
 								<br><strong><?php _e('Category Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
 								<code>{product_categories}</code>, <code>{exclude_categories}</code>
+								<br><strong><?php _e('Tag Restrictions:', 'gravity-forms-woocommerce-coupon-generator'); ?></strong>
+								<code>{product_tags}</code>, <code>{exclude_product_tags}</code>
 							</p>
 							<div class="gfwcg-placeholder-help" style="margin-top: 10px; padding: 10px; background: #f9f9f9; border-left: 4px solid #0073aa;">
 								<h4 style="margin-top: 0;"><?php _e('Placeholder Examples:', 'gravity-forms-woocommerce-coupon-generator'); ?></h4>

@@ -84,7 +84,9 @@ function gfwcg_process_product_category_arrays($post_data) {
 			'product_ids' => array(),
 			'exclude_product_ids' => array(),
 			'product_categories' => array(),
-			'exclude_product_categories' => array()
+			'exclude_product_categories' => array(),
+			'product_tags' => array(),
+			'exclude_product_tags' => array()
 		);
 
 		// Handle product IDs
@@ -107,6 +109,16 @@ function gfwcg_process_product_category_arrays($post_data) {
 			$processed['exclude_product_categories'] = array_map('intval', array_filter($post_data['exclude_product_categories']));
 		}
 
+		// Handle product tags
+		if (isset($post_data['product_tags']) && is_array($post_data['product_tags'])) {
+			$processed['product_tags'] = array_map('intval', array_filter($post_data['product_tags']));
+		}
+
+		// Handle exclude product tags
+		if (isset($post_data['exclude_product_tags']) && is_array($post_data['exclude_product_tags'])) {
+			$processed['exclude_product_tags'] = array_map('intval', array_filter($post_data['exclude_product_tags']));
+		}
+
 		return $processed;
 	} catch (Exception $e) {
 		gfwcg_debug_log('Error in gfwcg_process_product_category_arrays: ' . $e->getMessage());
@@ -114,7 +126,9 @@ function gfwcg_process_product_category_arrays($post_data) {
 			'product_ids' => array(),
 			'exclude_product_ids' => array(),
 			'product_categories' => array(),
-			'exclude_product_categories' => array()
+			'exclude_product_categories' => array(),
+			'product_tags' => array(),
+			'exclude_product_tags' => array()
 		);
 	} catch (Error $e) {
 		gfwcg_debug_log('Fatal error in gfwcg_process_product_category_arrays: ' . $e->getMessage());
@@ -122,7 +136,9 @@ function gfwcg_process_product_category_arrays($post_data) {
 			'product_ids' => array(),
 			'exclude_product_ids' => array(),
 			'product_categories' => array(),
-			'exclude_product_categories' => array()
+			'exclude_product_categories' => array(),
+			'product_tags' => array(),
+			'exclude_product_tags' => array()
 		);
 	}
 }
@@ -162,6 +178,16 @@ function gfwcg_safe_unserialize($serialized_data, $type = '') {
 		case 'product_categories':
 		case 'exclude_categories':
 			// Ensure all values are integers
+			$validated = array();
+			foreach ($unserialized as $id) {
+				if (is_numeric($id) && intval($id) > 0) {
+					$validated[] = intval($id);
+				}
+			}
+			return !empty($validated) ? $validated : false;
+
+		case 'product_tags':
+		case 'exclude_product_tags':
 			$validated = array();
 			foreach ($unserialized as $id) {
 				if (is_numeric($id) && intval($id) > 0) {
@@ -311,6 +337,8 @@ function gfwcg_init() {
 	});
 }
 add_action('plugins_loaded', 'gfwcg_init');
+
+// Tag validation filter removed; tags are expanded into product IDs on coupon creation for WC parity
 
 // Deactivation hook
 register_deactivation_hook(__FILE__, 'gfwcg_deactivate');

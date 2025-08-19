@@ -52,6 +52,8 @@ class GFWCG_Email extends WC_Email {
 			'{exclude_products}' => '',
 			'{product_categories}' => '',
 			'{exclude_categories}' => '',
+			'{product_tags}' => '',
+			'{exclude_product_tags}' => '',
 		);
 
 		// Call parent constructor
@@ -74,7 +76,7 @@ class GFWCG_Email extends WC_Email {
 		// Prepare email content
 		$email_subject = $generator->email_subject ?: __('Your Coupon Code', 'gravity-forms-woocommerce-coupon-generator');
 		$email_message = $generator->email_message ?: __('Your coupon code is: {coupon_code}', 'gravity-forms-woocommerce-coupon-generator');
-		
+
 		// Process placeholders with all coupon restrictions
 		$placeholders = $this->prepare_placeholders($generator, $coupon_code);
 
@@ -116,6 +118,8 @@ class GFWCG_Email extends WC_Email {
 			'exclude_products' => $this->format_product_list($generator->exclude_products),
 			'product_categories' => $this->format_category_list($generator->product_categories),
 			'exclude_categories' => $this->format_category_list($generator->exclude_categories),
+			'product_tags' => $this->format_tag_list($generator->product_tags),
+			'exclude_product_tags' => $this->format_tag_list($generator->exclude_product_tags),
 		);
 
 		return $placeholders;
@@ -147,14 +151,14 @@ class GFWCG_Email extends WC_Email {
 		if (function_exists('wc_price')) {
 			return wc_price($amount);
 		}
-		
+
 		// Fallback formatting for Romanian currency
 		$locale = get_locale();
 		if (strpos($locale, 'ro') === 0) {
 			// Romanian formatting
 			return number_format($amount, 2, ',', '.') . ' Lei';
 		}
-		
+
 		// Default formatting
 		return number_format($amount, 2, '.', '') . ' ' . get_woocommerce_currency();
 	}
@@ -171,7 +175,7 @@ class GFWCG_Email extends WC_Email {
 			'fixed_cart' => __('Fixed cart discount', 'gravity-forms-woocommerce-coupon-generator'),
 			'fixed_product' => __('Fixed product discount', 'gravity-forms-woocommerce-coupon-generator'),
 		);
-		
+
 		return isset($labels[$type]) ? $labels[$type] : $type;
 	}
 
@@ -236,20 +240,52 @@ class GFWCG_Email extends WC_Email {
 		return !empty($category_links) ? implode(', ', $category_links) : __('All categories', 'gravity-forms-woocommerce-coupon-generator');
 	}
 
+	/**
+	 * Format tag list for display with links
+	 *
+	 * @param string $tag_ids Serialized tag IDs
+	 * @return string Formatted tag list with links
+	 */
+	private function format_tag_list($tag_ids) {
+		if (empty($tag_ids)) {
+			return __('Any tags', 'gravity-forms-woocommerce-coupon-generator');
+		}
+
+		$ids = maybe_unserialize($tag_ids);
+		if (!is_array($ids) || empty($ids)) {
+			return __('Any tags', 'gravity-forms-woocommerce-coupon-generator');
+		}
+
+		$tag_links = array();
+		foreach ($ids as $tag_id) {
+			$tag = get_term($tag_id, 'product_tag');
+			if ($tag && !is_wp_error($tag)) {
+				$tag_url = get_term_link($tag, 'product_tag');
+				if (!is_wp_error($tag_url)) {
+					$tag_links[] = sprintf('<a href="%s">%s</a>', esc_url($tag_url), esc_html($tag->name));
+				} else {
+					$tag_links[] = esc_html($tag->name);
+				}
+			}
+		}
+
+		return !empty($tag_links) ? implode(', ', $tag_links) : __('Any tags', 'gravity-forms-woocommerce-coupon-generator');
+	}
+
 	public function trigger($to, $subject, $message, $from_name = '', $from_email = '', $placeholders = array(), $use_wc_template = true) {
 		if (!$this->is_enabled() || !$to) {
 			return false;
 		}
 
 		$this->setup_locale();
-		
+
 		// Set placeholders
 		$this->placeholders = $placeholders;
-		
+
 		// Process placeholders in subject and message
 		$this->subject = $this->process_placeholders($subject, $placeholders);
 		$this->email_message = $this->process_placeholders($message, $placeholders);
-		
+
 		// Set from name and email if provided
 		if ($from_name && $from_email) {
 			$this->from_name = $from_name;
@@ -261,7 +297,7 @@ class GFWCG_Email extends WC_Email {
 
 		// Send the email via WooCommerce's email system
 		$result = $this->send($this->get_recipient(), $this->get_subject(), $this->get_content($use_wc_template), $this->get_headers(), array());
-		
+
 		$this->restore_locale();
 		return $result;
 	}

@@ -132,20 +132,87 @@ class GFWCG_Coupon {
 						$coupon->set_free_shipping(true);
 				}
 
-				// Set product restrictions
+				// Build product include/exclude lists, expanding tags into concrete product IDs for WC parity
+				$final_product_ids = array();
+				$final_excluded_product_ids = array();
+
+				// Start with explicitly selected product IDs
 				if (!empty($generator->product_ids)) {
 					$product_ids = maybe_unserialize($generator->product_ids);
-					if (is_array($product_ids) && !empty($product_ids)) {
-						$coupon->set_product_ids($product_ids);
+					if (is_array($product_ids)) {
+						$final_product_ids = array_map('intval', $product_ids);
 					}
 				}
 
-				// Set exclude product restrictions
 				if (!empty($generator->exclude_products)) {
 					$exclude_product_ids = maybe_unserialize($generator->exclude_products);
-					if (is_array($exclude_product_ids) && !empty($exclude_product_ids)) {
-						$coupon->set_excluded_product_ids($exclude_product_ids);
+					if (is_array($exclude_product_ids)) {
+						$final_excluded_product_ids = array_map('intval', $exclude_product_ids);
 					}
+				}
+
+				// Expand include tags into product IDs
+				if (!empty($generator->product_tags)) {
+					$include_tag_ids = maybe_unserialize($generator->product_tags);
+					if (is_array($include_tag_ids) && !empty($include_tag_ids)) {
+						$include_tag_ids = array_map('intval', $include_tag_ids);
+						$tag_query = new WP_Query(array(
+							'post_type' => 'product',
+							'post_status' => 'publish',
+							'posts_per_page' => -1,
+							'fields' => 'ids',
+							'tax_query' => array(
+								array(
+									'taxonomy' => 'product_tag',
+									'field' => 'term_id',
+									'terms' => $include_tag_ids,
+									'operator' => 'IN'
+								)
+							)
+						));
+						if ($tag_query->have_posts()) {
+							$final_product_ids = array_merge($final_product_ids, $tag_query->posts);
+						}
+						wp_reset_postdata();
+					}
+				}
+
+				// Expand exclude tags into product IDs
+				if (!empty($generator->exclude_product_tags)) {
+					$exclude_tag_ids = maybe_unserialize($generator->exclude_product_tags);
+					if (is_array($exclude_tag_ids) && !empty($exclude_tag_ids)) {
+						$exclude_tag_ids = array_map('intval', $exclude_tag_ids);
+						$exclude_tag_query = new WP_Query(array(
+							'post_type' => 'product',
+							'post_status' => 'publish',
+							'posts_per_page' => -1,
+							'fields' => 'ids',
+							'tax_query' => array(
+								array(
+									'taxonomy' => 'product_tag',
+									'field' => 'term_id',
+									'terms' => $exclude_tag_ids,
+									'operator' => 'IN'
+								)
+							)
+						));
+						if ($exclude_tag_query->have_posts()) {
+							$final_excluded_product_ids = array_merge($final_excluded_product_ids, $exclude_tag_query->posts);
+						}
+						wp_reset_postdata();
+					}
+				}
+
+				// Deduplicate and assign to coupon
+				$final_product_ids = array_values(array_unique(array_map('intval', $final_product_ids)));
+				$final_excluded_product_ids = array_values(array_unique(array_map('intval', $final_excluded_product_ids)));
+
+				if (!empty($final_product_ids)) {
+					$coupon->set_product_ids($final_product_ids);
+				}
+
+				if (!empty($final_excluded_product_ids)) {
+					$coupon->set_excluded_product_ids($final_excluded_product_ids);
 				}
 
 				// Set product category restrictions
@@ -164,6 +231,11 @@ class GFWCG_Coupon {
 					}
 				}
 
-				return $coupon->save();
+				// Save coupon first to ensure we have an ID
+				$coupon_id = $coupon->save();
+
+				// Meta storage for tags no longer needed for validation; keeping optional for audit is not required
+
+				return $coupon_id;
 		}
 }

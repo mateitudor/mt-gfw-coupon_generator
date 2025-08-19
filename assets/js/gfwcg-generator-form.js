@@ -89,6 +89,20 @@ jQuery(document).ready(function($) {
 			allowClear: true
 		});
 
+		// Initialize custom select for tag fields (same UX as products/categories)
+		window.GFWCGSelect.init('#product_tags, #exclude_product_tags', {
+			async: true,
+			ajax: {
+				url: gfwcgAdmin.ajaxUrl,
+				action: 'gfwcg_search_tags',
+				nonce: gfwcgAdmin.nonce,
+				minLength: 1,
+				preload: true,
+				placeholder: 'Search for a tag…'
+			},
+			allowClear: true
+		});
+
 		// Override Gravity Forms validation messages
 		overrideGravityFormsValidationMessages();
 	}, 100);
